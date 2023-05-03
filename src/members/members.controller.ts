@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { Bootpay } from '@bootpay/backend-js';
 import { AuthGuard } from '../auth/auth.guard';
+import { request, Request } from 'express';
+import { AuthUser } from './members.decorator';
 
 @Controller('members')
 export class MembersController {
@@ -26,7 +27,8 @@ export class MembersController {
   }
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string, @AuthUser() user: any) {
+    console.log(user);
     return this.membersService.findOne(+id);
   }
 

@@ -4,9 +4,7 @@ import { MembersService } from '../members/members.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Member } from '../../entity/entities/Member';
-import { JwtService } from '@nestjs/jwt';
 import { JwtModule } from '@nestjs/jwt';
-import * as process from 'process';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
