@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Campaign} from "./Campaign";
 
 @Entity("partner", { schema: "wairi" })
 export class Partner {
@@ -68,4 +69,7 @@ export class Partner {
 
   @Column("float", { name: "dc22", precision: 12 })
   dc22: number;
+
+  @OneToOne(() => Campaign)
+  campaign: Campaign;
 }

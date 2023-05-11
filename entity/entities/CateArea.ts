@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Campaign} from "./Campaign";
 
 @Entity("cateArea", { schema: "wairi" })
 export class CateArea {
@@ -13,4 +14,7 @@ export class CateArea {
 
   @Column("int", { name: "ordering" })
   ordering: number;
+
+  @OneToOne(() => Campaign)
+  campaign: Campaign;
 }

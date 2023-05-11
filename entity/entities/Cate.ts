@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {CampaignItem} from "./CampaignItem";
+import {Campaign} from "./Campaign";
 
 @Entity("cate", { schema: "wairi" })
 export class Cate {
@@ -25,4 +27,8 @@ export class Cate {
 
   @Column("varchar", { name: "type", length: 20 })
   type: string;
+
+  @OneToOne(() => Campaign)
+  campaign: Campaign;
+
 }

@@ -19,7 +19,7 @@ export class AuthService {
   ) {}
   async login(email: string, passwd: string) {
     const member = await this.memberService.findByEmail(email);
-
+console.log(member)
     const hash = member.passwd.replace(/^\$2y(.+)$/i, '$2a$1');
     const check: boolean = compareSync(passwd, hash);
 

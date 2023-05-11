@@ -1,4 +1,5 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Campaign} from "./Campaign";
 
 @Index("item_idx", ["campaignIdx"], {})
 @Entity("campaignImage", { schema: "wairi" })
@@ -32,4 +33,7 @@ export class CampaignImage {
 
   @Column("int", { name: "hasOrig", default: () => "'1'" })
   hasOrig: number;
+
+  @ManyToOne((type) => Campaign, (Campaign) => Campaign.campaignImage)
+  campaign: Campaign
 }

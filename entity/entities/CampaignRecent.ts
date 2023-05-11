@@ -20,7 +20,7 @@ export class CampaignRecent {
   regdate: number;
 
   @Column("int", { name: "ymd" })
-  ymd: number;
+  ymd: string;
 
   @Column("varchar", { name: "ip", length: 30 })
   ip: string;
