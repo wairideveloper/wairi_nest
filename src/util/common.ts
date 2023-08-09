@@ -59,6 +59,11 @@ export const AES_DECRYPT = (column: string) => {
     return `CAST(AES_DECRYPT(UNHEX(${column}),"@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")as char)`;
 }
 
+//FROM_UNIXTIME 유닉스타임스템프를 날짜로 변환
+export const FROM_UNIXTIME = (column: string) => {
+    return `FROM_UNIXTIME(${column})`;
+}
+
 //이름 마스킹처리
 export const getMaskingName = (name: string) => {
     if(name === null || name === undefined || name === '') return;
@@ -84,4 +89,9 @@ export const verifyToken = (req) => {
     } else {
         return {idx:0}
     }
+}
+
+//할인율 계산
+export const getDiscountRate = (price: number, salePrice: number) => {
+    return Math.round((price - salePrice) / price * 100);
 }

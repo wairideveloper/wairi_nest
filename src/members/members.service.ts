@@ -4,7 +4,7 @@ import {UpdateMemberDto} from './dto/update-member.dto';
 import {Member} from '../../entity/entities/Member';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {AES_ENCRYPT,AES_DECRYPT} from "../util/common";
+import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME} from "../util/common";
 
 @Injectable()
 export class MembersService {
@@ -29,8 +29,8 @@ export class MembersService {
             .getRawMany();
     }
 
-    findOne(id: number) {
-        return this.memberRepository
+    async findOne(id: number) {
+        return await this.memberRepository
             .createQueryBuilder()
             .select('*')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
@@ -43,12 +43,18 @@ export class MembersService {
     async findByEmail(email: string) {
         return await this.memberRepository
             .createQueryBuilder()
+            // .select('*')
             .select(['idx',
                 'id',
-                'level'
+                'level',
                 ])
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
+            .addSelect(`(${FROM_UNIXTIME('birth')})`, 'birth')
+            .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+            .addSelect(`(${FROM_UNIXTIME('lastUpdate')})`, 'lastUpdate')
+            .addSelect(`(${FROM_UNIXTIME('lastSignin')})`, 'lastSignin')
             .addSelect('passwd')
             .where(`${AES_DECRYPT('email')} = :email`, {email: email})
             .getRawOne();

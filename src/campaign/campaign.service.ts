@@ -113,7 +113,6 @@ export class CampaignService {
             campaignReview,
         }
 
-        // this.setRecency(id)
         return result;
     }
 

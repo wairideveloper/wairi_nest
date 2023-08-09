@@ -19,7 +19,12 @@ export class AuthService {
   ) {}
   async login(email: string, passwd: string) {
     const member = await this.memberService.findByEmail(email);
-console.log(member)
+    console.log(member)
+    if (!member) {
+        return {
+            message: '회원정보 없음',
+        };
+    }
     const hash = member.passwd.replace(/^\$2y(.+)$/i, '$2a$1');
     const check: boolean = compareSync(passwd, hash);
 
@@ -103,5 +108,14 @@ console.log(member)
     } else {
       return false;
     }
+  }
+
+    OAuthLogin(param: { res: Response; req: Request }) {
+
+    }
+
+  OAuthCallback(user) {
+	console.log('test')
+	console.log(user)
   }
 }
