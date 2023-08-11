@@ -5,7 +5,7 @@ import {Member} from '../../entity/entities/Member';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME} from "../util/common";
-
+import {FetchPaginationInput} from "../members/dto/fetch-pagination.input";
 @Injectable()
 export class MembersService {
     constructor(
@@ -18,7 +18,7 @@ export class MembersService {
         return 'This action adds a new member';
     }
 
-    async findAll() {
+    async findAll(skip,take) {
         return await this.memberRepository
             .createQueryBuilder()
             .select('*')
@@ -26,6 +26,8 @@ export class MembersService {
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
             .orderBy('idx', 'DESC')
+            .offset(skip)
+            .limit(take)
             .getRawMany();
     }
 

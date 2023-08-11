@@ -17,7 +17,7 @@ type Member {
 }
 
 type Query {
-  getAllMember: [Member]
+  getAllMember(skip: Int, take: Int!,title:String): [Member]
   getMember(id: Int!): Member
   getMemberByEmail(email: String!): Member
 }

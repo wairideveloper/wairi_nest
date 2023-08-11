@@ -36,6 +36,7 @@
     "@nestjs/typeorm": "^9.0.1",
     "@types/jsonwebtoken": "^9.0.2",
     "bcrypt": "^5.1.0",
+    "class-validator": "^0.14.0",
     "graphql": "^16.7.1",
     "graphql-scalars": "^1.22.2",
     "graphql-ws": "^5.14.0",

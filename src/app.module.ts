@@ -40,7 +40,7 @@ import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
             envFilePath: ['.development.env'],
         }),
         TypeOrmModule.forRoot({
-            type: 'mysql',
+            type: 'mariadb',
             host: process.env.DB_HOST,
             port: parseInt(process.env.DB_PORT),
             username: process.env.DB_USER,

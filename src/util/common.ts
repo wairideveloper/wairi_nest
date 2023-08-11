@@ -95,3 +95,13 @@ export const verifyToken = (req) => {
 export const getDiscountRate = (price: number, salePrice: number) => {
     return Math.round((price - salePrice) / price * 100);
 }
+
+//object 배열중 buffer 타입을 string으로 변환
+export const bufferToString = (data: any) => {
+    Object.keys(data).forEach(function(v){
+        if(data[v] instanceof Buffer) {
+            data[v] = data[v].toString();
+        }
+    })
+    return data;
+}

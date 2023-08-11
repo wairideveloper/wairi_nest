@@ -28,7 +28,7 @@ export class Member {
         name: 'email',
         default: '',
     })
-    email: Buffer;
+    email: string;
 
     @Column('blob', {
         name: 'phone',
@@ -124,9 +124,9 @@ export class Member {
     beforeInsertActions() {
         this.idx = 0;
         this.id = '';
-        this.email = Buffer.from('');
-        this.phone = Buffer.from('');
-        this.name = Buffer.from('');
+        // this.email = Buffer.from('');
+        // this.phone = Buffer.from('');
+        // this.name = Buffer.from('');
         this.passwd = '';
         this.type = 2;
         this.level = 0;

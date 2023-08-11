@@ -2,7 +2,9 @@ import {Args, Int, Query, Resolver} from '@nestjs/graphql';
 import {MembersService} from "../members/members.service";
 import {UseGuards, Req} from "@nestjs/common";
 import {GqlAuthGuard} from "../auth/GqlAuthGuard";
-
+import {bufferToString} from "../util/common";
+import {FetchPaginationInput} from "../members/dto/fetch-pagination.input";
+import {validate} from "class-validator";
 @Resolver('Member')
 export class MemberResolver {
     constructor(private readonly membersService: MembersService) {
@@ -10,9 +12,19 @@ export class MemberResolver {
 
     @Query()
     @UseGuards(GqlAuthGuard)
-    async getAllMember() {
+    async getAllMember(
+        // @Args() args?: FetchPaginationInput
+        @Args() {skip,take,title}: FetchPaginationInput
+    ) {
         try {
-            const data = await this.membersService.findAll();
+            console.log(skip,take)
+
+            let data = await this.membersService.findAll(skip,take);
+
+            data.forEach((element) => {
+               bufferToString(element);
+            });
+
             return data;
         } catch (error) {
             console.log(error)
@@ -24,8 +36,13 @@ export class MemberResolver {
     @UseGuards(GqlAuthGuard)
     async getMember(@Args('id', {type: () => Int}) id: number) {
         try {
-            const data = await this.membersService.findOne(id);
-            if(data == undefined) {
+            let data = await this.membersService.findOne(id);
+
+            if (data) {
+                data = bufferToString(data);
+            }
+
+            if (data == undefined) {
                 throw new Error('Not Found');
             }
             return data;
@@ -41,7 +58,7 @@ export class MemberResolver {
         try {
             const data = await this.membersService.findByEmail(email);
             console.log(data.regdate);
-            if(data == undefined) {
+            if (data == undefined) {
                 throw new Error('Not Found');
             }
             return data;

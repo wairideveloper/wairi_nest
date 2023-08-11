@@ -19,13 +19,13 @@ export class MembersController {
     @UseGuards(AuthGuard)
     @Get()
     async findAll() {
-        const data = await this.membersService.findAll();
-
-        data.forEach((element) => {
-            element.passwd = 'undifiend';
-        });
-
-        return data;
+        // const data = await this.membersService.findAll();
+        //
+        // data.forEach((element) => {
+        //     element.passwd = 'undifiend';
+        // });
+        //
+        // return data;
     }
 
     @UseGuards(AuthGuard)
@@ -56,6 +56,6 @@ export class MembersController {
     @Get('/members/graphql')
     async getMembers(@Req() req: Request) {
         const {query} = req.body;
-        return await this.membersService.findAll();
+        // return await this.membersService.findAll();
     }
 }

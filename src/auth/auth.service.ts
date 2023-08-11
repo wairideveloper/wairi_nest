@@ -25,7 +25,7 @@ export class AuthService {
             message: '회원정보 없음',
         };
     }
-    const hash = member.passwd.replace(/^\$2y(.+)$/i, '$2a$1');
+    const hash = member.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
     const check: boolean = compareSync(passwd, hash);
 
     const payload = {
