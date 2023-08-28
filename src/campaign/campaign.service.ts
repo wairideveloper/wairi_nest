@@ -94,9 +94,11 @@ export class CampaignService {
     }
 
     async findOne(id: number) {
-
         const campaign = await this.getCampaign(id);
+        // return campaign;
         const campaignItem = await this.getCampaignItem(id);
+
+
         const campaignImages = await this.getCampaignImages(id);
         const campaignCate = await this.getCampaignCate(id);
         const campaignCateArea = await this.getCampaignCateArea(id);
@@ -116,14 +118,17 @@ export class CampaignService {
         return result;
     }
 
-    getCampaign(id: number) {
-        return this.campaignRepository.createQueryBuilder('campaign')
+    async getCampaign(id: number) {
+        console.log('getCampaign'+id)
+        return await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .select(
                 [
                     'campaign.idx as idx',
-                    'campaign.name as name',
+                    // 'campaign.name as name',
+                    'CONVERT(campaign.name USING utf8) AS name',
                     'campaign.weight as weight',
+                    'campaign.partnerIdx as partnerIdx',
                     '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
                 ]
             )
@@ -131,8 +136,8 @@ export class CampaignService {
             .getRawOne()
     }
 
-    getCampaignItem(id: number) {
-        return this.campaignItemRepository.createQueryBuilder('campaignItem')
+    async getCampaignItem(id: number) {
+        return await this.campaignItemRepository.createQueryBuilder('campaignItem')
             .leftJoinAndSelect('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
             .where('campaignItem.campaignIdx = :idx', {idx: id})
             .andWhere('campaignItem.remove = :remove', {remove: 0})
@@ -140,8 +145,8 @@ export class CampaignService {
             .getMany()
     }
 
-    getCampaignImages(id: number) {
-        return this.campaignImageRepository.createQueryBuilder('campaignImage')
+    async getCampaignImages(id: number) {
+        return await this.campaignImageRepository.createQueryBuilder('campaignImage')
             .select(
                 [
                     'idx',
@@ -155,8 +160,8 @@ export class CampaignService {
             .getRawMany()
     }
 
-    getCampaignCate(id: number) {
-        return this.campaignRepository.createQueryBuilder('campaign')
+    async getCampaignCate(id: number) {
+        return await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.cate', 'cate')
             .select(
                 [
@@ -168,8 +173,8 @@ export class CampaignService {
             .getRawOne()
     }
 
-    getCampaignCateArea(id: number) {
-        return this.campaignRepository.createQueryBuilder('campaign')
+    async getCampaignCateArea(id: number) {
+        return await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.cateArea', 'cateArea')
             .select(
                 [
@@ -181,8 +186,8 @@ export class CampaignService {
             .getRawOne()
     }
 
-    getCampaignPartner(id: number) {
-        return this.campaignRepository.createQueryBuilder('campaign')
+    async getCampaignPartner(id: number) {
+        return await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.partner', 'partner')
             .select(
                 [
@@ -218,16 +223,28 @@ export class CampaignService {
         return data
     }
 
-    async setRecency(campaignIdx: number, memberIdx: number, ip: string) {
+    async setRecency(
+        campaignIdx: number,
+        memberIdx: number,
+        memberType:number,
+        referer:string,
+        refererHost:string,
+        isSelf:number,
+        ip: string) {
+        console.log("-> memberType", memberType);
         const regdate = getUnixTimeStamp();
         const ymd = getYmd();
 
         const recent = new CampaignRecent()
         recent.campaignIdx = campaignIdx
         recent.memberIdx = memberIdx
+        recent.memberType = memberType
         recent.ip = ip
         recent.regdate = regdate
         recent.ymd = ymd
+        recent.referer = referer
+        recent.refererHost = refererHost
+        recent.isSelf = isSelf
 
         return await this.campaignRecentRepository.save(recent)
     }

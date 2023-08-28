@@ -1,0 +1,85 @@
+input LoginInput{
+    id: String!
+    password: String!
+}
+
+input SignupInput {
+    id: String
+    password: String
+    nickname: String
+    phone: String
+    email: String
+    receipt_id: String
+    agree: Int
+}
+
+type LoginResponse{
+    message: String!
+    access_token: String
+    refresh_token: String
+    member: Member!
+}
+
+type identityVerificationResponse{
+    status: String!
+    code: String
+    message: String
+    data: identityVerificationData
+}
+
+type identityVerificationData{
+    receipt_id: String
+    order_id: String
+    pg: String
+    method: String
+    pg_name: String
+    certificate:certificate
+    payment_data:payment_data
+}
+
+type certificate{
+    username: String
+    phone   : String
+    birth   : String
+    gender  : String
+    unique  : String
+    di      : String
+}
+
+type payment_data{
+    username: String
+    phone   : String
+    birth   : String
+    gender  : String
+    unique  : String
+    di      : String
+    receipt_id: String
+    name: String
+    p : String
+    tid: String
+    pg : String
+    pm : String
+    pg_a : String
+    pm_a : String
+    o_id : String
+    p_at : String
+    s : Int
+    g : Int
+}
+
+type refresh_token{
+    refresh_token: String!
+}
+
+type Query {
+    identityVerification(receipt_id : String!): identityVerificationResponse
+    findId(phone : String!, username : String!): Member
+    getMemberInfo(id: String!): Member
+}
+type Mutation{
+    login(loginInput:LoginInput!): LoginResponse
+    signup(signupInput:SignupInput!): LoginResponse
+    getAccessToken(refresh_token : String!): LoginResponse
+}
+
+

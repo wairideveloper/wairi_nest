@@ -1,5 +1,6 @@
 import * as moment from "moment/moment";
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 
 export const getImgPath = (path: string, fileName: string) => {
     return `/api/images/${path}/${fileName}`;
@@ -51,7 +52,7 @@ export const getImgTag = (content: string) => {
 
 //AES_ENCRYPT 암호화
 export const AES_ENCRYPT = (column: string) => {
-    return `HEX(AES_ENCRYPT(${column},"@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`;
+    return `HEX(AES_ENCRYPT("${column}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`;
 }
 
 //AES_DECRYPT 복호화
@@ -104,4 +105,26 @@ export const bufferToString = (data: any) => {
         }
     })
     return data;
+}
+
+//logger
+export const customLogger = (logger,data,error) => {
+    logger.log(data);
+    logger.error(error);
+}
+
+export async function hashPassword(password: string): Promise<string> {
+    const saltRounds = 5; // 솔트 라운드 수 (조절 가능)
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+}
+
+//현제 타입값
+export const getNow = () => {
+    return moment().format('YYYY-MM-DD HH:mm:ss');
+}
+
+//현제 타입값
+export const getNowUnix = () => {
+    return moment().unix();
 }

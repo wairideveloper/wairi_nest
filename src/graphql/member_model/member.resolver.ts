@@ -1,9 +1,9 @@
 import {Args, Int, Query, Resolver} from '@nestjs/graphql';
-import {MembersService} from "../members/members.service";
+import {MembersService} from "../../members/members.service";
 import {UseGuards, Req} from "@nestjs/common";
-import {GqlAuthGuard} from "../auth/GqlAuthGuard";
-import {bufferToString} from "../util/common";
-import {FetchPaginationInput} from "../members/dto/fetch-pagination.input";
+import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
+import {bufferToString} from "../../util/common";
+import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {validate} from "class-validator";
 @Resolver('Member')
 export class MemberResolver {
@@ -22,10 +22,16 @@ export class MemberResolver {
 
             let data = await this.membersService.findAll(skip,take);
 
-            data.forEach((element) => {
-               bufferToString(element);
-            });
+            data.forEach((element,index) => {
+               if(element.regdate){
+                   //time -> datetime 형식으로 변환
+                     data[index].regdate = new Date(element.regdate * 1000).toISOString().slice(0, 19).replace('T', ' ');
+                     data[index].lastUpdate = new Date(element.lastUpdate * 1000).toISOString().slice(0, 19).replace('T', ' ');
+               }
 
+               // bufferToString(element);
+            });
+            // console.log(data)
             return data;
         } catch (error) {
             console.log(error)

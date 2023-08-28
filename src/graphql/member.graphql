@@ -3,6 +3,7 @@ scalar Date
 scalar DateTime
 
 type Member {
+  idx: Int!
   id: String!
   name: String!
   nickname: String
@@ -12,11 +13,22 @@ type Member {
   level: Int
   status: Int
   regdate: Date
-  lastUpdate: DateTime
-
+  lastUpdate: String
+  memberChannel: [MemberChannel]
+  campaignReview: [CampaignReview]
 }
 
-type Query {
+type MemberChannel {
+  idx: Int
+  type: Int
+  typeText: String
+  link: String
+  regdate: DateTime
+  level: Int
+}
+
+
+extend type Query {
   getAllMember(skip: Int, take: Int!,title:String): [Member]
   getMember(id: Int!): Member
   getMemberByEmail(email: String!): Member

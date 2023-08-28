@@ -15,12 +15,12 @@ export class HttpExceptionFilter implements GqlExceptionFilter {
             ctx = host.switchToHttp();
             const req = ctx.getRequest();
             const res = ctx.getResponse();
-console.log(exception);
+            // console.log("-> res", res);
             res.status(exception.getStatus()).json({
                 errors : [{
-                  message : exception.getResponse()['message'] || exception.message,
-                  code : exception.getResponse()['code'] || exception.getStatus(),
-                  name : exception.getResponse()['name'] || exception.name,
+                  // message : exception.getResponse()['message'] || exception.message,
+                  // code : exception.getResponse()['code'] || exception.getStatus(),
+                  // name : exception.getResponse()['name'] || exception.name,
                 }],
                 // statusCode: exception.getStatus(),
                 // error: exception.getResponse()['error'] || exception.name,
@@ -33,7 +33,23 @@ console.log(exception);
         } else if (host.getType<GqlContextType>() === 'graphql') {
             // do something that is only important in the context of GraphQL requests
             ctx = GqlExecutionContext.create(host);
-            return exception;
+            // 오류 커스텀 코드
+            const gqlHost = GqlExecutionContext.create(host);
+            const gqlResponse = gqlHost.getContext().res;
+            const gqlRequest = gqlHost.getContext().req;
+            const gqlStatus = exception.getStatus();
+            const gqlError = exception.getResponse()['error'] || exception.name;
+            const gqlMessage = exception.getResponse()['message'] || exception.message;
+            const gqlTimestamps = new Date().toISOString();
+            const gqlPath = gqlRequest ? gqlRequest.url : null;
+            gqlResponse.status(gqlStatus).json({
+                errors : [{
+                    message : gqlMessage,
+                    code : gqlStatus,
+                    name : gqlError,
+                }]
+            });
+
         }
     }
 

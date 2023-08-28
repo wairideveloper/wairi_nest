@@ -6,7 +6,7 @@ import {CateArea} from "./CateArea";
 import {Partner} from "./Partner";
 import {CampaignReview} from "./CampaignReview";
 
-@Entity("campaign", {schema: "wairi"})
+@Entity("campaign", {schema: "wairi", engine: 'InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' })
 export class Campaign {
     @PrimaryGeneratedColumn({type: "int", name: "idx"})
     idx: number;
@@ -17,7 +17,8 @@ export class Campaign {
     @Column("int", {name: "partnerIdx"})
     partnerIdx: number;
 
-    @Column("varchar", {name: "name", length: 100})
+    @Column("varchar", {name: "name", length: 100
+    })
     name: string;
 
     @Column("varchar", {name: "nameEn", nullable: true, length: 100})

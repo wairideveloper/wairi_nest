@@ -1,0 +1,57 @@
+type Campaign {
+    idx: Int!
+    id: String!
+    name: String
+    partnerIdx: Int
+    nickname: String
+    number: String
+    email: String
+    phone: String
+    level: Int
+    status: Int
+    regdate: String
+    lastUpdate: String
+    image: String
+    weight: Int
+    lowestPriceOrig: Int
+
+}
+
+type Campaigns implements Pagination {
+    #  pagination: Pagination!
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+    data: [Campaign!]!
+}
+
+type CampaignReview {
+    idx : Int
+    memberIdx: Int
+    campaignIdx: Int
+    itemIdx: Int
+    submitIdx: Int
+    rate: Int
+    content: String
+    images: String
+    regdate: Date
+    content_a: String
+    regdate_a: String
+}
+
+type returnLogin{
+    token: String!
+}
+
+extend type Query {
+    #  getAllMember(skip: Int, take: Int!,title:String): [Member]
+    getCampaign(id: Int!): Campaign!
+    getCampaigns(take: Int!,page:Int!): Campaigns!
+    login(idx:Int!): returnLogin!
+}
+
+#scalar DateTime
+#@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time")

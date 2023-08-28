@@ -10,7 +10,7 @@ export class Member {
     //default value 설정
     @Column('int', {
         name: 'type',
-        default: 2,
+        default: 1,
         comment: '1:인플루언서 / 2:일반고객 / 3:광고주',
     })
     type: number;
@@ -38,14 +38,14 @@ export class Member {
 
     @Column('blob', {
         name: 'name',
-        default: '',
+        // default: '',
     })
     name: Buffer;
 
-    @Column('varchar', {name: 'nickname', length: 50, default: ''})
+    @Column('varchar', {name: 'nickname', length: 50})
     nickname: string;
 
-    @Column('varchar', {name: 'passwd', length: 255, default: ''})
+    @Column('varchar', {name: 'passwd', length: 255})
     passwd: string;
 
     @Column('varchar', {name: 'regdate', default: new Date().getTime() / 1000, length: 20})
@@ -54,10 +54,10 @@ export class Member {
     @Column('int', {name: 'lastUpdate', default: new Date().getTime() / 1000})
     lastUpdate: number;
 
-    @Column('varchar', {name: 'exitdate', length: 20, default: ''})
+    @Column('varchar', {name: 'exitdate',length: 20, default: ''})
     exitdate: string;
 
-    @Column('int', {name: 'exit_admin_idx', nullable: true, default: 0})
+    @Column('int', {name: 'exit_admin_idx', nullable: true})
     exit_admin_idx: number;
 
     @Column('varchar', {name: 'last_visit', length: 20, default: new Date().getTime() / 1000})
@@ -120,40 +120,40 @@ export class Member {
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
 
-    @BeforeInsert()
-    beforeInsertActions() {
-        this.idx = 0;
-        this.id = '';
-        // this.email = Buffer.from('');
-        // this.phone = Buffer.from('');
-        // this.name = Buffer.from('');
-        this.passwd = '';
-        this.type = 2;
-        this.level = 0;
-        this.status = 1;
-        this.nickname = '';
-        this.regdate = new Date().getTime() / 1000 + '';
-        this.lastUpdate = new Date().getTime() / 1000;
-        this.exitdate = '';
-        this.exit_admin_idx = 0;
-        this.last_visit = new Date().getTime() / 1000 + '';
-        this.social_type = '';
-        this.social_naver = '';
-        this.social_kakao = '';
-        this.social_google = '';
-        this.social_facebook = '';
-        this.is_website = 0;
-        this.channelType = 0;
-        this.channelTypeText = '';
-        this.channelLink = '';
-        this.ci = '';
-        this.di = '';
-        this.birth = 0;
-        this.gender = '';
-        this.lastSignin = 0;
-        this.refererRoot = 0;
-        this.refererRootInput = '';
-        this.isTest = 0;
-        this.agreeMsg = 0;
-    }
+    // @BeforeInsert()
+    // beforeInsertActions() {
+    //     this.idx = 0;
+    //     this.id = '';
+    //     // this.email = Buffer.from('');
+    //     // this.phone = Buffer.from('');
+    //     // this.name = Buffer.from('');
+    //     // this.passwd = '';
+    //     this.type = 2;
+    //     this.level = 0;
+    //     this.status = 1;
+    //     this.nickname = '';
+    //     this.regdate = new Date().getTime() / 1000 + '';
+    //     this.lastUpdate = new Date().getTime() / 1000;
+    //     this.exitdate = '';
+    //     // this.exit_admin_idx = 0;
+    //     this.last_visit = new Date().getTime() / 1000 + '';
+    //     this.social_type = '';
+    //     this.social_naver = '';
+    //     this.social_kakao = '';
+    //     this.social_google = '';
+    //     this.social_facebook = '';
+    //     this.is_website = 0;
+    //     this.channelType = 0;
+    //     this.channelTypeText = '';
+    //     this.channelLink = '';
+    //     this.ci = '';
+    //     this.di = '';
+    //     this.birth = 0;
+    //     this.gender = '';
+    //     this.lastSignin = 0;
+    //     this.refererRoot = 0;
+    //     this.refererRootInput = '';
+    //     this.isTest = 0;
+    //     this.agreeMsg = 0;
+    // }
 }

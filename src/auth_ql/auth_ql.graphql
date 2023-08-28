@@ -1,0 +1,32 @@
+type AuthQl {
+    # Example field (placeholder)
+    exampleField: Int
+}
+
+input CreateAuthQlInput {
+    email: String!
+    password: String!
+}
+
+input UpdateAuthQlInput {
+    id: Int!
+}
+
+#input LoginInput{
+#    id:String!
+#    password:String!
+#}
+
+#type LoginResponse {
+#    message:String!
+#    access_token:String!
+#    refresh_token:String!
+#}
+
+#extend type Query {
+#    findAll(id:Int!): Campaign!
+#}
+#
+#type Mutation{
+#    login(loginInput:LoginInput!):LoginResponse!
+#}

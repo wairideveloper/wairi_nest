@@ -1,9 +1,10 @@
-import {Module} from '@nestjs/common';
-import {ConfigModule} from '@nestjs/config';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+// import {Module} from '@nestjs/common';
+import {ConfigModule, ConfigService} from '@nestjs/config';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
-import { GraphQLModule } from '@nestjs/graphql';
+import {GraphQLModule} from '@nestjs/graphql';
 import {ApolloDriver, ApolloDriverConfig, ApolloGatewayDriver, ApolloGatewayDriverConfig} from '@nestjs/apollo';
 import * as process from 'process';
 //entities
@@ -19,19 +20,28 @@ import {Board} from "../entity/entities/Board";
 import {BoardArticles} from "../entity/entities/BoardArticles";
 import {CampaignRecent} from "../entity/entities/CampaignRecent";
 import {CampaignItemSchedule} from "../entity/entities/CampaignItemSchedule";
+import {MemberChannel} from "../entity/entities/MemberChannel";
 //modules
 import {AuthModule} from './auth/auth.module';
 import {MembersModule} from './members/members.module';
 import {CampaignModule} from './campaign/campaign.module';
-import { UploadModule } from './upload/upload.module';
-import { ReviewModule } from './review/review.module';
-import { NoticeModule } from './notice/notice.module';
+import {UploadModule} from './upload/upload.module';
+import {ReviewModule} from './review/review.module';
+import {NoticeModule} from './notice/notice.module';
 import * as moment from 'moment';
-import {MemberModule} from "./model/member.module";
+
+//GraphQL
+import {MemberModule} from "./graphql/member_model/member.module";
+import {Campaign_gqlModule} from "./graphql/campaign_model/campaign_gql.module";
 import {IntrospectAndCompose} from "@apollo/gateway";
 
-import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars';
+import {BigIntResolver, DateResolver, DateTimeResolver} from 'graphql-scalars';
+// import { AuthQlModule } from './auth_ql/auth_ql.module';
+import {Auth_gqlModule} from "./graphql/auth_model/auth_gql.module";
+import {AuthQlModelModule} from "./graphql/auth_ql_model/auth_ql_model.module"
 
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import {ApolloServerPluginLandingPageLocalDefault} from "@apollo/server/dist/cjs/plugin/landingPage/default";
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -40,18 +50,23 @@ import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
             envFilePath: ['.development.env'],
         }),
         TypeOrmModule.forRoot({
-            type: 'mariadb',
+            type: 'mysql',
             host: process.env.DB_HOST,
             port: parseInt(process.env.DB_PORT),
             username: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_SCHEMA,
             entities: [
-                Member, Campaign, CampaignItem, CampaignImage,
+                Member, MemberChannel, Campaign, CampaignItem, CampaignImage,
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule
             ],
             synchronize: false,
+            charset: 'UTF8_GENERAL_CI',
+            // extra: {
+            //     charset: "utf8mb4"
+            // },
+            logging: true,
         }),
         // 마이크로 서비스 계획시 사용
         // GraphQLModule.forRoot<ApolloGatewayDriverConfig>({
@@ -66,12 +81,13 @@ import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
         //     },
         //     // typePaths: ['./**/*.graphql'],
         // }),
+
         GraphQLModule.forRoot({
             driver: ApolloDriver,
             debug: true,
-            path: 'user',
+            path: 'api/graphql',
             playground: true,
-            include: [MemberModule],
+            include: [MemberModule, Campaign_gqlModule, Auth_gqlModule, AuthQlModelModule],
             typePaths: ['./**/*.graphql'],
             definitions: {
                 customScalarTypeMapping: {
@@ -84,16 +100,16 @@ import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
                 Date: DateResolver,
                 DateTime: DateTimeResolver,
             },
-            context: ({ req, connection }) => { //graphql에게 request를 요청할때 req안으로 jwt토큰이 담김
+            context: ({req, connection}) => { //graphql에게 request를 요청할때 req안으로 jwt토큰이 담김
                 if (req) {
                     const user = req.headers.authorization;
-                    return { ...req, user };
+                    return {...req, user};
                 } else {
                     return connection;
                 }
             },
-            //
             formatError: (error) => {
+                console.log(error)
                 const graphQLFormattedError = {
                     message:
                         error.extensions?.exception?.response?.message || error.message,
@@ -110,10 +126,16 @@ import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
         UploadModule,
         ReviewModule,
         NoticeModule,
-        MemberModule
+        MemberModule,
+        Campaign_gqlModule,
+        // AuthQlModule,
+        Auth_gqlModule,
+        AuthQlModelModule
+
     ],
     controllers: [AppController],
     providers: [
+        Logger,
         AppService,
         {
             provide: 'moment',
@@ -121,5 +143,8 @@ import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
         }
     ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LoggerMiddleware).forRoutes('*');
+    }
 }

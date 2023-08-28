@@ -57,7 +57,13 @@ export class CampaignController {
         try {
             const userInfo: any = verifyToken(req);
             const campaign = await this.campaignService.findOne(+id);
-            const recent = this.campaignService.setRecency(+id, userInfo.idx, req.ip);
+            const referer = req.headers.referer ? req.headers.referer : "";
+            const refererHost = referer.split('/')[2]? referer.split('/')[2] : "";
+            const serverHost = req.headers.host; // req.headers.origin
+            const isSelf = refererHost === serverHost ? 1 : 0;
+
+            // const recent = this.campaignService.setRecency(
+            //     +id, userInfo.idx, userInfo.memberType, referer, refererHost, isSelf, req.ip);
             res.status(HttpStatus.OK).json(campaign);
         } catch (error) {
             throw new HttpException({

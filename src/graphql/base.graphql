@@ -1,0 +1,8 @@
+interface Pagination {
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+}
