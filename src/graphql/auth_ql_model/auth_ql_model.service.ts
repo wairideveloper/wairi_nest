@@ -60,10 +60,9 @@ export class AuthQlModelService {
                 throw new HttpException('이미 회원정보가 있습니다.', HttpStatus.CONFLICT);
             }
 
-            // 비밀번호 암호화
             data = {
                 id: `"${data.id}"`,
-                passwd: `"${await hashPassword(data.password)}"`,
+                passwd: `"${await hashPassword(data.password)}"`, // 비밀번호 암호화
                 name: AES_ENCRYPT(data.name),
                 nickname: data.nickname,
                 email: AES_ENCRYPT(data.email),
@@ -162,5 +161,56 @@ export class AuthQlModelService {
         }catch (error) {
             throw new HttpException(error.message, error.status);
         }
+    }
+
+    async checkNickName(nickname: string) {
+        try{
+            const data = await this.memberService.findByNickName(nickname);
+            if(data) {
+                return data
+            }
+        }catch (error) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
+
+    async changePassword(data: any) {
+        console.log("-> data", data);
+        try {
+            //본인인증 후 비밀번호 변경
+            const member = await this.memberService.findByPhone(data.phone,data.username);
+            console.log("-> member", member);
+            const password = await hashPassword(data.password);
+            console.log("-> password", password);
+            const update = await this.memberService.updatePassword(member.idx, password);
+            console.log("-> update", update);
+            if(update) {
+                return member
+            }
+        }catch (error) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
+
+    async getSnsChannel() {
+        const data = await this.memberService.findSnsChannel();
+        // , 구분값 추출 후 배열로 변환
+        const channel = data[0].cfgValue.split(',');
+        // channel 배열 원소를 ['text' => channel[i]]로 변환
+        const channelText = channel.map((item) => {
+            return {text: item}
+        })
+        return channelText;
+    }
+
+    async getSubscriptionPath() {
+        const data = await this.memberService.findSubscriptionPath();
+        // , 구분값 추출 후 배열로 변환
+        const path = data[0].cfgValue.split(',');
+        // channel 배열 원소를 ['text' => channel[i]]로 변환
+        const pathText = path.map((item) => {
+            return {text: item}
+        })
+        return pathText;
     }
 }

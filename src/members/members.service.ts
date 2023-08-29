@@ -6,6 +6,22 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME} from "../util/common";
 import {FetchPaginationInput} from "../members/dto/fetch-pagination.input";
+
+
+/*
+type
+1. 블로그
+2. youtube
+3. 인스타그램
+9. 기타
+
+level
+0. 승인대기
+1. 인플루언서
+2. 성장형 인플루언서
+9. 재승인요청
+-1. 승인거절
+ */
 @Injectable()
 export class MembersService {
     constructor(

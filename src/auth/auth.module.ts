@@ -9,6 +9,8 @@ import {ConfigModule, ConfigService} from '@nestjs/config';
 import {PassportModule} from "@nestjs/passport";
 import {JwtKakaoStrategy} from "./strategies/kakao.strategy";
 import {JwtStrategy} from "./strategies/jwt.strategy";
+import {NaverStrategy} from "./strategies/naver.strategy";
+import {JwtGoogleStrategy} from "./strategies/google.strategy";
 
 @Module({
     imports: [
@@ -27,7 +29,8 @@ import {JwtStrategy} from "./strategies/jwt.strategy";
         PassportModule.register({defaultStrategy: 'jwt'}),
     ],
     controllers: [AuthController],
-    providers: [AuthService, MembersService, JwtKakaoStrategy, JwtStrategy],
+    providers: [AuthService, MembersService, JwtKakaoStrategy,
+        JwtStrategy, NaverStrategy, JwtGoogleStrategy],
 })
 export class AuthModule {
 }

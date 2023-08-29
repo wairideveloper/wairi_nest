@@ -7,6 +7,7 @@ import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import { SignupInput } from '../auth_ql_model/dto/signupInput';
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
+import {Config} from "../../../entity/entities/Config";
 
 @Injectable()
 export class MembersService {
@@ -17,6 +18,8 @@ export class MembersService {
         private memberChannelRepository: Repository<MemberChannel>,
         @InjectRepository(CampaignReview)
         private campaignReviewRepository: Repository<CampaignReview>,
+        @InjectRepository(Config)
+        private configRepository: Repository<Config>,
     ) {
     }
 
@@ -130,7 +133,7 @@ export class MembersService {
     async findByPhone(phone: string, username: string) {
         return await this.memberRepository
             .createQueryBuilder()
-            .select('idx')
+            .select('idx,type,level,nickname,status,regdate,lastSignin')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
@@ -148,5 +151,30 @@ export class MembersService {
         return await this.campaignReviewRepository.find({
             select: ["regdate"],
             where: [{memberIdx: memberIdx}]});
+    }
+
+    async findByNickName(nickname: string) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('nickname = :nickname', {nickname: nickname})
+            .getRawOne();
+    }
+
+    async updatePassword(idx, password: string) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .update()
+            .set({passwd: password})
+            .where('idx = :idx', {idx: idx})
+            .execute();
+    }
+
+    async findSnsChannel() {
+        return await this.configRepository.find({where: [{cfgKey: 'sns_channel'}]})
+    }
+
+    async findSubscriptionPath() {
+        return await this.configRepository.find({where: [{cfgKey: 'subscription_path'}]})
     }
 }

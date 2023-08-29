@@ -42,6 +42,7 @@ import {AuthQlModelModule} from "./graphql/auth_ql_model/auth_ql_model.module"
 
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import {ApolloServerPluginLandingPageLocalDefault} from "@apollo/server/dist/cjs/plugin/landingPage/default";
+import {Config} from "../entity/entities/Config";
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -59,7 +60,8 @@ import {ApolloServerPluginLandingPageLocalDefault} from "@apollo/server/dist/cjs
             entities: [
                 Member, MemberChannel, Campaign, CampaignItem, CampaignImage,
                 Cate, CateArea, Partner, CampaignReview,
-                Board, BoardArticles, CampaignRecent, CampaignItemSchedule
+                Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
+                Config
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',

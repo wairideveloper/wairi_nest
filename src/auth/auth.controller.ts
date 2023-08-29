@@ -78,4 +78,50 @@ export class AuthController {
         </div>
         `);
     }
+
+    //-----------------------네이버 로그인-----------------------------//
+    @Get("/login/naver")
+    @UseGuards(AuthGuard("naver"))
+    async loginNaver(
+        @Req() req: Request & IOAuthUser, //
+        @Res() res: Response
+    ) {
+        this.authService.OAuthLogin({req, res});
+    }
+
+    @UseGuards(AuthGuard("naver"))
+    @Get('/naver/callback')
+    async naverCallback(@Req() req, @Res() res): Promise<any> {
+        console.log("-> req", req);
+
+        const user = req.user;
+
+        return res.status(200).json({
+            message: 'User information from Naver',
+            user,
+        });
+    }
+
+    //----------------------- 구글 로그인-----------------------------//
+    @Get("/login/google")
+    @UseGuards(AuthGuard("google"))
+    async loginGoogle(
+        @Req() req: Request & IOAuthUser, //
+        @Res() res: Response
+    ) {
+        this.authService.OAuthLogin({req, res});
+    }
+
+    @UseGuards(AuthGuard("google"))
+    @Get('/google/callback')
+    async googleCallback(@Req() req, @Res() res): Promise<any> {
+        console.log("-> req", req);
+
+        const user = req.user;
+
+        return res.status(200).json({
+            message: 'User information from Naver',
+            user,
+        });
+    }
 }

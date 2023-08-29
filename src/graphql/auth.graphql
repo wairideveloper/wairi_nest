@@ -13,6 +13,12 @@ input SignupInput {
     agree: Int
 }
 
+input ChangePasswordInput{
+    username: String!
+    phone: String!
+    password: String!
+}
+
 type LoginResponse{
     message: String!
     access_token: String
@@ -71,15 +77,24 @@ type refresh_token{
     refresh_token: String!
 }
 
+type SnsChannel {
+    text: String
+}
+
+type SubscriptionPath {
+    text: String
+}
+
 type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
     findId(phone : String!, username : String!): Member
     getMemberInfo(id: String!): Member
+    getSnsChannel : [SnsChannel]
+    getSubscriptionPath : [SubscriptionPath]
 }
 type Mutation{
     login(loginInput:LoginInput!): LoginResponse
     signup(signupInput:SignupInput!): LoginResponse
+    changePassword(changePasswordInput: ChangePasswordInput!): Member
     getAccessToken(refresh_token : String!): LoginResponse
 }
-
-

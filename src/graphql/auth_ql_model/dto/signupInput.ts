@@ -29,5 +29,19 @@ export class SignupInput {
     receipt_id: string;
 
     @Field()
+    unique: string;
+
+    @Field()
+    di: string;
+
+    @Field()
+    birth: number;
+
+    @Field()
+    gender: number;
+
+
+
+    @Field()
     agree: number;
 }

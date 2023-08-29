@@ -5,6 +5,7 @@ scalar DateTime
 type Member {
   idx: Int!
   id: String!
+  type: Int
   name: String!
   nickname: String
   number: String
@@ -27,12 +28,8 @@ type MemberChannel {
   level: Int
 }
 
-
 extend type Query {
   getAllMember(skip: Int, take: Int!,title:String): [Member]
   getMember(id: Int!): Member
   getMemberByEmail(email: String!): Member
 }
-
-#scalar DateTime
-#@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time")
