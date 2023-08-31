@@ -1,16 +1,54 @@
+type Partner {
+    idx: Int!
+    status: Int
+    corpName: String
+    corpCeo: String
+    corpTel: String
+    attachBiz: String
+    contactName: String
+    contactPhone: String
+    contactEmail: String
+    id: String
+    password: String
+    regdate: String
+    lastSignin: String
+    noteReceivers: String
+}
+
 input LoginInput{
     id: String!
     password: String!
 }
 
 input SignupInput {
+    type: Int
     id: String
     password: String
     nickname: String
     phone: String
     email: String
     receipt_id: String
+    name: String
+    unique: String
+    di: String
+    birth: Int
+    gender: Int
+    channelType: Int
+    refererRoot: Int
+    refererRootInput: String
     agree: Int
+}
+
+input PartnerSignupInput {
+    id: String
+    password: String
+    corpName: String
+    corpCeo: String
+    corpTel: String
+    attachBiz: String
+    contactName: String
+    contactPhone: String
+    contactEmail: String
 }
 
 input ChangePasswordInput{
@@ -24,6 +62,20 @@ type LoginResponse{
     access_token: String
     refresh_token: String
     member: Member!
+}
+
+type MemberSignupResponse{
+    message: String!
+    access_token: String
+    refresh_token: String
+    data: Member!
+}
+
+type PartnerSignupResponse{
+    message: String!
+    access_token: String
+    refresh_token: String
+    data: Partner!
 }
 
 type identityVerificationResponse{
@@ -87,6 +139,7 @@ type SubscriptionPath {
 
 type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
+    identityVerificationV2(receipt_id : String!): identityVerificationResponse
     findId(phone : String!, username : String!): Member
     getMemberInfo(id: String!): Member
     getSnsChannel : [SnsChannel]
@@ -94,7 +147,9 @@ type Query {
 }
 type Mutation{
     login(loginInput:LoginInput!): LoginResponse
-    signup(signupInput:SignupInput!): LoginResponse
+    signup(signupInput:SignupInput!): MemberSignupResponse
+    partnerSignup(partnerSignupInput:PartnerSignupInput!): PartnerSignupResponse
     changePassword(changePasswordInput: ChangePasswordInput!): Member
     getAccessToken(refresh_token : String!): LoginResponse
 }
+

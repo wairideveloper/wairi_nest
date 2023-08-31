@@ -23,33 +23,68 @@ export class MembersService {
     ) {
     }
 
+    async findAlltest(skip,take) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .addSelect(`(${AES_DECRYPT('name')})`, 'name')
+            .addSelect(`(${AES_DECRYPT('email')})`, 'email')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
+            .orderBy('idx', 'DESC')
+            .offset(skip)
+            .limit(take)
+            .orderBy('idx', 'DESC')
+            .getRawMany();
+    }
+
     //회원 생성
     async create(data: any) {
-        console.log("-> data", data);
-
         try{
-            const user = this.memberRepository
+            const user = await this.memberRepository
                 .createQueryBuilder()
                 .insert()
-                .into(Member, ['id', 'email', 'name', 'passwd','phone','type','status','level','regdate'])
+                .into(Member, [
+                    'type',
+                    'id',
+                    'passwd',
+                    'email',
+                    'name',
+                    'nickname',
+                    'phone',
+                    'ci',
+                    'di',
+                    'birth',
+                    'gender',
+                    'refererRoot',
+                    'refererRootInput',
+                    'agreeMsg',
+                    'status',
+                    'level',
+                    'regdate'
+                ])
                 .values({
+                    type: () => data.type,
                     id: () => data.id,
+                    passwd: () => data.passwd,
                     email: () => data.email,
                     name: () => data.name,
+                    nickname: () => `"${data.nickname}"`,
                     phone: () => data.phone,
-                    passwd: () => data.passwd,
-                    type : 1,
-                    status: 9,
-                    level: 1,
+                    ci: () => `"${data.ci}"`,
+                    di: () => `"${data.di}"`,
+                    birth: () => data.birth,
+                    gender: () => `"${data.gender}"`,
+                    refererRoot: () => data.refererRoot,
+                    refererRootInput: () => `"${data.refererRootInput}"`,
+                    agreeMsg: () => data.agree,
+                    status: () => data.status,
+                    level: () => data.level,
                     regdate: () => data.regdate
                 })
                 // .getSql();
-            // console.log("-> user", user);
+                // console.log("-> user", user);
                 .execute();
             return user;
-
-            // const member = await this.memberRepository.create(data);
-            // console.log("-> member", member);
         }catch (error) {
             throw error;
         }
@@ -104,12 +139,7 @@ export class MembersService {
     async findById(id: string) {
         return await this.memberRepository
             .createQueryBuilder()
-            // .select('*')
-            .select(['idx',
-                'id',
-                'level',
-                'type',
-            ])
+            .select('*')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
@@ -148,9 +178,12 @@ export class MembersService {
     }
 
     async findReview(memberIdx: number) {
-        return await this.campaignReviewRepository.find({
-            select: ["regdate"],
-            where: [{memberIdx: memberIdx}]});
+        return await this.campaignReviewRepository
+            .createQueryBuilder()
+            .select('*')
+            .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+            .where('memberIdx = :memberIdx', {memberIdx: memberIdx})
+            .getRawMany();
     }
 
     async findByNickName(nickname: string) {
@@ -176,5 +209,18 @@ export class MembersService {
 
     async findSubscriptionPath() {
         return await this.configRepository.find({where: [{cfgKey: 'subscription_path'}]})
+    }
+
+    async setMemberChannel(data: {memberIdx: number; link: string; type: number}) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .insert()
+            .into(MemberChannel)
+            .values({
+                memberIdx: data.memberIdx,
+                link: data.link,
+                type: data.type,
+            })
+            .execute();
     }
 }

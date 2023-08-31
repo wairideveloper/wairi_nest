@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {CreateMemberDto} from './dto/create-member.dto';
 import {UpdateMemberDto} from './dto/update-member.dto';
 import {Member} from '../../entity/entities/Member';
+import {MemberChannel} from "../../entity/entities/MemberChannel";
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME} from "../util/common";
@@ -27,6 +28,8 @@ export class MembersService {
     constructor(
         @InjectRepository(Member)
         private memberRepository: Repository<Member>,
+        @InjectRepository(MemberChannel)
+        private memberChannelRepository: Repository<MemberChannel>,
     ) {
     }
 
@@ -107,5 +110,18 @@ export class MembersService {
 
     remove(id: number) {
         return `This action removes a #${id} member`;
+    }
+
+    async setMemberChannel(data: {memberIdx: number; link: string; type: number}) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .insert()
+            .into(MemberChannel)
+            .values({
+                memberIdx: data.memberIdx,
+                link: data.link,
+                type: data.type,
+            })
+            .execute();
     }
 }

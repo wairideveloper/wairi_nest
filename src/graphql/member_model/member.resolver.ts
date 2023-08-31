@@ -1,10 +1,12 @@
 import {Args, Int, Query, Resolver} from '@nestjs/graphql';
-import {MembersService} from "../../members/members.service";
+import {MembersService} from "./member.service";
+
 import {UseGuards, Req} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {bufferToString} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {validate} from "class-validator";
+
 @Resolver('Member')
 export class MemberResolver {
     constructor(private readonly membersService: MembersService) {
@@ -15,21 +17,21 @@ export class MemberResolver {
     @UseGuards(GqlAuthGuard)
     async getAllMember(
         // @Args() args?: FetchPaginationInput
-        @Args() {skip,take,title}: FetchPaginationInput
+        @Args() {skip, take, title}: FetchPaginationInput
     ) {
         try {
-            console.log(skip,take)
+            console.log(skip, take)
 
-            let data = await this.membersService.findAll(skip,take);
+            let data = await this.membersService.findAll(skip, take);
 
-            data.forEach((element,index) => {
-               if(element.regdate){
-                   //time -> datetime 형식으로 변환
-                     data[index].regdate = new Date(element.regdate * 1000).toISOString().slice(0, 19).replace('T', ' ');
-                     data[index].lastUpdate = new Date(element.lastUpdate * 1000).toISOString().slice(0, 19).replace('T', ' ');
-               }
+            data.forEach((element, index) => {
+                if (element.regdate) {
+                    //time -> datetime 형식으로 변환
+                    data[index].regdate = new Date(element.regdate * 1000).toISOString().slice(0, 19).replace('T', ' ');
+                    data[index].lastUpdate = new Date(element.lastUpdate * 1000).toISOString().slice(0, 19).replace('T', ' ');
+                }
 
-               // bufferToString(element);
+                // bufferToString(element);
             });
             // console.log(data)
             return data;
@@ -73,5 +75,26 @@ export class MemberResolver {
             console.log(error)
             throw error;
         }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async setMemberChannel(
+        @Args('memberIdx', {type: () => Int}) memberIdx: number,
+        @Args('type', {type: () => Int}) type: number,
+        @Args('link', {type: () => String}) link: string,
+    ) {
+        try {
+            const data = {
+                memberIdx: memberIdx,
+                type: type,
+                link: link
+            }
+            return await this.membersService.setMemberChannel(data);
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+
     }
 }

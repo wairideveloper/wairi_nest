@@ -37,7 +37,7 @@ type CampaignReview {
     rate: Int
     content: String
     images: String
-    regdate: Date
+    regdate: String
     content_a: String
     regdate_a: String
 }
@@ -52,6 +52,3 @@ extend type Query {
     getCampaigns(take: Int!,page:Int!): Campaigns!
     login(idx:Int!): returnLogin!
 }
-
-#scalar DateTime
-#@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time")

@@ -43,6 +43,11 @@ import {AuthQlModelModule} from "./graphql/auth_ql_model/auth_ql_model.module"
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import {ApolloServerPluginLandingPageLocalDefault} from "@apollo/server/dist/cjs/plugin/landingPage/default";
 import {Config} from "../entity/entities/Config";
+import { BannerModelModule } from './graphql/banner_model/banner_model.module';
+import {Banner} from "../entity/entities/Banner";
+import { CateModelModule } from './graphql/cate_model/cate_model.module';
+import { MainModelModule } from './graphql/main_model/main_model.module';
+import {CampaignSubmit} from "../entity/entities/CampaignSubmit";
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -61,7 +66,7 @@ import {Config} from "../entity/entities/Config";
                 Member, MemberChannel, Campaign, CampaignItem, CampaignImage,
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
-                Config
+                Config, Banner, Cate, CateArea, CampaignSubmit
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',
@@ -89,7 +94,14 @@ import {Config} from "../entity/entities/Config";
             debug: true,
             path: 'api/graphql',
             playground: true,
-            include: [MemberModule, Campaign_gqlModule, Auth_gqlModule, AuthQlModelModule],
+            include: [MemberModule,
+                Campaign_gqlModule,
+                Auth_gqlModule,
+                AuthQlModelModule,
+                BannerModelModule,
+                CateModelModule,
+                MainModelModule
+            ],
             typePaths: ['./**/*.graphql'],
             definitions: {
                 customScalarTypeMapping: {
@@ -122,7 +134,8 @@ import {Config} from "../entity/entities/Config";
                 return graphQLFormattedError;
             },
         }),
-        MembersModule,
+        // MembersModule,
+        MemberModule,
         AuthModule,
         CampaignModule,
         UploadModule,
@@ -132,7 +145,10 @@ import {Config} from "../entity/entities/Config";
         Campaign_gqlModule,
         // AuthQlModule,
         Auth_gqlModule,
-        AuthQlModelModule
+        AuthQlModelModule,
+        BannerModelModule,
+        CateModelModule,
+        MainModelModule
 
     ],
     controllers: [AppController],

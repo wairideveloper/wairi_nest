@@ -1,0 +1,50 @@
+type Banner{
+  idx: Int
+  pageCode: Int
+  code: String
+  image: String
+  name: String
+  regdate: String
+  ordering: Int
+  link: String
+}
+type Category{
+  idx: Int
+  name: String
+  icon: String
+  ordering: Int
+  memberType: Int
+  signinRequired: Int
+  notEditable: Int
+  type: String
+  cateArea: [CateArea]
+}
+
+type Product{
+    idx: Int
+    name: String
+    price: Int
+    discount: Int
+    image: String
+    regdate: String
+    ordering: Int
+    link: String
+    category: Category
+    campaignItem: [CampaignItem]
+}
+
+type CampaignItem{
+    name: String
+}
+
+type MainPage {
+    banner: [Banner]
+    categories: [Category]
+    products: [Product]
+}
+
+extend type Query {
+    getMainPage(sort:String): MainPage
+
+}
+

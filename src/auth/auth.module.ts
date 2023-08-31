@@ -4,6 +4,7 @@ import {MembersService} from '../members/members.service';
 import {AuthController} from './auth.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Member} from '../../entity/entities/Member';
+import {MemberChannel} from "../../entity/entities/MemberChannel";
 import {JwtModule} from '@nestjs/jwt';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {PassportModule} from "@nestjs/passport";
@@ -14,7 +15,7 @@ import {JwtGoogleStrategy} from "./strategies/google.strategy";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Member]),
+        TypeOrmModule.forFeature([Member, MemberChannel]),
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],

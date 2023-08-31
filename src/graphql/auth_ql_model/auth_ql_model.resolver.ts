@@ -1,8 +1,10 @@
 import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {AuthQlModelService} from './auth_ql_model.service';
 import {LoginResponse} from "./dto/login-response";
+import {SignupResponse} from "./dto/signup-response";
 import {LoginInput} from "./dto/loginInput";
 import {SignupInput} from "./dto/signupInput";
+import {PartnerSignupInput} from "./dto/partnerSignupInput";
 import {ChangePasswordInput} from "./dto/changePasswordInput";
 import {Logger} from '@nestjs/common';
 import {customLogger} from "../../util/common";
@@ -23,22 +25,51 @@ export class AuthQlModelResolver {
         }
     }
 
-    @Mutation(() => LoginResponse)
+    @Mutation(() => SignupResponse)
     async signup(@Args('signupInput') signupInput: SignupInput) {
         try {
             const data = {
+                type: signupInput.type,
                 id: signupInput.id,
                 password: signupInput.password,
-                name: 'name',
+                name: signupInput.name,
                 nickname: signupInput.nickname,
                 email: signupInput.email,
                 phone: signupInput.phone,
                 receipt_id: signupInput.receipt_id,
+                unique: signupInput.unique,
+                di: signupInput.di,
+                birth: signupInput.birth,
+                gender: signupInput.gender,
+                refererRoot: signupInput.refererRoot,
+                refererRootInput: signupInput.refererRootInput,
                 agree: signupInput.agree,
             }
             return await this.authQlModelService.signup(data);
         } catch (error) {
             customLogger(this.logger, signupInput, error);
+            throw error;
+        }
+    }
+
+    @Mutation(() => SignupResponse)
+    async partnerSignup(@Args('partnerSignupInput') partnerSignupInput: PartnerSignupInput) {
+        try {
+            const data = {
+                id: partnerSignupInput.id,
+                password: partnerSignupInput.password,
+                corpName: partnerSignupInput.corpName,
+                corpCeo: partnerSignupInput.corpCeo,
+                corpTel: partnerSignupInput.corpTel,
+                attachBiz: partnerSignupInput.attachBiz,
+                contactName: partnerSignupInput.contactName,
+                contactPhone: partnerSignupInput.contactPhone,
+                contactEmail: partnerSignupInput.contactEmail,
+            }
+            return await this.authQlModelService.partnerSignup(data);
+
+        }catch (error) {
+            customLogger(this.logger, partnerSignupInput, error);
             throw error;
         }
     }
@@ -57,6 +88,16 @@ export class AuthQlModelResolver {
     async identityVerification(@Args({name: 'receipt_id', type: () => String}) receipt_id: string) {
         try {
             return await this.authQlModelService.identityVerification(receipt_id);
+        } catch (error) {
+            customLogger(this.logger, receipt_id, error);
+            throw error;
+        }
+    }
+
+    @Query(() => String)
+    async identityVerificationV2(@Args({name: 'receipt_id', type: () => String}) receipt_id: string) {
+        try {
+            return await this.authQlModelService.identityVerificationV2(receipt_id);
         } catch (error) {
             customLogger(this.logger, receipt_id, error);
             throw error;

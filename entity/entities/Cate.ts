@@ -1,6 +1,7 @@
 import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {CampaignItem} from "./CampaignItem";
 import {Campaign} from "./Campaign";
+import {CateArea} from "./CateArea";
 
 @Entity("cate", { schema: "wairi" })
 export class Cate {
@@ -31,4 +32,6 @@ export class Cate {
   @OneToOne(() => Campaign)
   campaign: Campaign;
 
+  @OneToMany((type) => CateArea, (CateArea) => CateArea.cate)
+    cateArea: CateArea[]
 }

@@ -29,6 +29,12 @@ export class SignupInput {
     receipt_id: string;
 
     @Field()
+    name: string;
+
+    @Field()
+    type: number;
+
+    @Field()
     unique: string;
 
     @Field()
@@ -40,7 +46,14 @@ export class SignupInput {
     @Field()
     gender: number;
 
+    @Field()
+    channelType: number;
 
+    @Field()
+    refererRoot: number;
+
+    @Field()
+    refererRootInput: string;
 
     @Field()
     agree: number;

@@ -1,0 +1,22 @@
+type Cate{
+  idx: Int
+  name: String
+  icon: String
+  ordering: Int
+  memberType: Int
+  signinRequired: Int
+  notEditable: Int
+  type: String
+  cateArea: [CateArea]
+}
+
+type CateArea{
+  idx: Int
+  cateIdx: Int
+  name: String
+  ordering: Int
+}
+
+extend type Query {
+  getCategories: [Cate]
+}

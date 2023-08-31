@@ -62,7 +62,7 @@ export const AES_DECRYPT = (column: string) => {
 
 //FROM_UNIXTIME 유닉스타임스템프를 날짜로 변환
 export const FROM_UNIXTIME = (column: string) => {
-    return `FROM_UNIXTIME(${column})`;
+    return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),'UTC','Asia/Seoul'),'%Y-%m-%d %H:%i:%s')`;
 }
 
 //이름 마스킹처리

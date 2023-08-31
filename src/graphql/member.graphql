@@ -13,7 +13,8 @@ type Member {
   phone: String
   level: Int
   status: Int
-  regdate: Date
+  regdate: String
+  lastSignin: String
   lastUpdate: String
   memberChannel: [MemberChannel]
   campaignReview: [CampaignReview]
@@ -28,8 +29,14 @@ type MemberChannel {
   level: Int
 }
 
+type setMemberChannelResponse {
+  message: String
+}
+
+
 extend type Query {
   getAllMember(skip: Int, take: Int!,title:String): [Member]
   getMember(id: Int!): Member
   getMemberByEmail(email: String!): Member
+  setMemberChannel(memberIdx: Int!, type: Int!, link: String!):setMemberChannelResponse
 }

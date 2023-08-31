@@ -1,16 +1,23 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {LoginInput} from './dto/loginInput';
 import {MembersService} from '../member_model/member.service';
+import {Partner} from "../../../entity/entities/Partner";
 import {compareSync} from "bcrypt";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
 import {SignupInput} from "./dto/signupInput";
-import {AES_ENCRYPT, getNowUnix, hashPassword} from "../../util/common";
+import {AES_DECRYPT, AES_ENCRYPT, FROM_UNIXTIME, getNowUnix, hashPassword} from "../../util/common";
 import {RestClient} from "@bootpay/server-rest-client";
+import {Bootpay} from '@bootpay/backend-js'
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+
 
 @Injectable()
 export class AuthQlModelService {
     constructor(
+        @InjectRepository(Partner)
+        private partnerRepository: Repository<Partner>,
         private readonly memberService: MembersService,
         private readonly jwtService: JwtService) {
     }
@@ -53,28 +60,153 @@ export class AuthQlModelService {
         }
     }
 
-    async signup(data:any) {
-        try{
+    async signup(data: any) {
+        try {
             const member = await this.memberService.findById(data.id);
             if (member) {
                 throw new HttpException('이미 회원정보가 있습니다.', HttpStatus.CONFLICT);
             }
 
             data = {
+                type: data.type,
                 id: `"${data.id}"`,
                 passwd: `"${await hashPassword(data.password)}"`, // 비밀번호 암호화
                 name: AES_ENCRYPT(data.name),
                 nickname: data.nickname,
                 email: AES_ENCRYPT(data.email),
                 phone: AES_ENCRYPT(data.phone),
+                ci: data.unique,
+                di: data.di,
+                birth: data.birth ? data.birth : 0,
+                gender: data.gender ? (data.gender == 1 ? 'm' : 'f') : "",
+                refererRoot: data.refererRoot ? data.refererRoot : 0,
+                refererRootInput: data.refererRootInput ? data.refererRootInput : "",
+                agree: data.agree,
                 level: 1,
-                type: 9,
-                regdate:  getNowUnix(),
-                lastSignin:  getNowUnix(),
+                status: 4,
+                regdate: getNowUnix(),
+                lastSignin: getNowUnix(),
             }
             const newMember = await this.memberService.create(data);
 
-        }catch (error) {
+            if (newMember) {
+                const result = await this.memberService.findById(newMember.generatedMaps[0].id);
+                console.log("-> result", result);
+                const payload = {
+                    idx: result.idx,
+                    username: result.name,
+                    memberType: result.type,
+                };
+                const access_token = await this.jwtService.signAsync(payload, {
+                    expiresIn: process.env.JWT_EXPIRATION_TIME,
+                    secret: process.env.JWT_SECRET
+                });
+                const refresh_token = await this.jwtService.signAsync({id: payload.idx}, {
+                    expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
+                    secret: process.env.JWT_SECRET
+                });
+                return {
+                    message: '회원가입 성공',
+                    access_token: access_token,
+                    refresh_token: refresh_token,
+                    data: result,
+                };
+            }else {
+                throw new HttpException('회원가입에 실패하였습니다.', HttpStatus.CONFLICT);
+            }
+
+        } catch (error) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
+
+    async partnerSignup(data: any) {
+        try {
+            const partner = await this.partnerRepository.findOne({where: {id: data.id}});
+            if (partner) {
+                throw new HttpException('이미 회원정보가 있습니다.', HttpStatus.CONFLICT);
+            }
+
+            data = {
+                id: `"${data.id}"`,
+                passwd: `"${await hashPassword(data.password)}"`, // 비밀번호 암호화
+                status: 4,
+                corpName: data.corpName,
+                corpCeo: data.corpCeo,
+                corpTel: data.corpTel,
+                attachBiz: data.attachBiz,
+                contactName: AES_ENCRYPT(data.contactName),
+                contactPhone: AES_ENCRYPT(data.contactPhone),
+                contactEmail: AES_ENCRYPT(data.contactEmail),
+                regdate: getNowUnix(),
+            }
+
+            const newPartner = await this.partnerRepository
+                .createQueryBuilder()
+                .insert()
+                .into(Partner, [
+                    'id',
+                    'passwd',
+                    'status',
+                    'corpName',
+                    'corpCeo',
+                    'corpTel',
+                    'attachBiz',
+                    'contactName',
+                    'contactPhone',
+                    'contactEmail',
+                    'regdate'
+                ])
+                .values({
+                    id: () => data.id,
+                    passwd: () => data.passwd,
+                    status: () => data.status,
+                    corpName: () => `"${data.corpName}"`,
+                    corpCeo: () => `"${data.corpCeo}"`,
+                    corpTel: () => data.corpTel,
+                    attachBiz: () => `"${data.attachBiz}"`,
+                    contactName: () => data.contactName,
+                    contactPhone: () => data.contactPhone,
+                    contactEmail: () => data.contactEmail,
+                    regdate: () => data.regdate
+                }).execute()
+            if(newPartner){
+                const result = await this.partnerRepository
+                    .createQueryBuilder()
+                    .select('*')
+                    .addSelect(`(${AES_DECRYPT('contactName')})`, 'contactName')
+                    .addSelect(`(${AES_DECRYPT('contactPhone')})`, 'contactPhone')
+                    .addSelect(`(${AES_DECRYPT('contactEmail')})`, 'contactEmail')
+                    .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+                    .addSelect(`(${FROM_UNIXTIME('lastSignin')})`, 'lastSignin')
+                    .where('idx = :idx', {idx: newPartner.raw.insertId})
+                    .getRawOne();
+                const payload = {
+                    idx: result.idx,
+                    username: result.name,
+                    memberType: result.type,
+                };
+                const access_token = await this.jwtService.signAsync(payload, {
+                    expiresIn: process.env.JWT_EXPIRATION_TIME,
+                    secret: process.env.JWT_SECRET
+                });
+                const refresh_token = await this.jwtService.signAsync({id: payload.idx}, {
+                    expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
+                    secret: process.env.JWT_SECRET
+                });
+                console.log("-> result", result);
+                return {
+                    message: '파트너 등록 성공',
+                    access_token: access_token,
+                    refresh_token: refresh_token,
+                    data: result,
+                }
+            }else{
+                throw new HttpException('파트너 등록에 실패하였습니다.', HttpStatus.CONFLICT);
+            }
+
+
+        } catch (error) {
             throw new HttpException(error.message, error.status);
         }
     }
@@ -97,11 +229,31 @@ export class AuthQlModelService {
                 message: '토큰 발급 성공',
                 access_token: access_token,
             };
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(error.message, error.status);
         }
 
     }
+
+    async identityVerificationV2(receipt_id: string) {
+        console.log("-> receipt_id", receipt_id);
+        Bootpay.setConfiguration({
+            application_id: '6143fb797b5ba4002152b6e1',
+            private_key: 'RQ/RYIauHAVJZ8jkKggH6o3EIKKNnviRcGXN4hPNjiM='
+        })
+
+        try {
+            await Bootpay.getAccessToken()
+            const data = await Bootpay.certificate('[ receipt_id ]')
+            return {
+                message: '본인인증 성공',
+                data: data,
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
 
     async identityVerification(receipt_id: string) {
         console.log("-> receipt_id", receipt_id);
@@ -111,12 +263,12 @@ export class AuthQlModelService {
         );
         const tokenData = await RestClient.getAccessToken()
 
-        if(tokenData.status !== 200) {
+        if (tokenData.status !== 200) {
             throw new HttpException('AccessToken을 가져오는데 실패하였습니다.', Number(tokenData.status));
         }
         const data = await RestClient.certificate(receipt_id)
 
-        if(data.status !== 200) {
+        if (data.status !== 200) {
             throw new HttpException(data.message, Number(data.status));
         }
 
@@ -129,47 +281,44 @@ export class AuthQlModelService {
     async findId(phone: string, username: string) {
         try {
             //본인인증 후 아이디 찾기
-            const data = await this.memberService.findByPhone(phone,username);
+            const data = await this.memberService.findByPhone(phone, username);
             console.log("-> data", data.idx);
             const channel = await this.memberService.findChannel(data.idx);
             console.log("-> channel", channel);
             data.memberChannel = channel;
 
-            if(data) {
+            if (data) {
                 return data
             }
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(error.message, error.status);
         }
     }
 
     async getMemberInfo(id: string) {
-        try{
+        try {
             const data = await this.memberService.findById(id);
-
             const channel = await this.memberService.findChannel(data.idx);
-
             const review = await this.memberService.findReview(data.idx);
-            console.log("-> review", review);
 
             data.memberChannel = channel;
             data.campaignReview = review;
 
-            if(data) {
+            if (data) {
                 return data
             }
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(error.message, error.status);
         }
     }
 
     async checkNickName(nickname: string) {
-        try{
+        try {
             const data = await this.memberService.findByNickName(nickname);
-            if(data) {
+            if (data) {
                 return data
             }
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(error.message, error.status);
         }
     }
@@ -178,16 +327,16 @@ export class AuthQlModelService {
         console.log("-> data", data);
         try {
             //본인인증 후 비밀번호 변경
-            const member = await this.memberService.findByPhone(data.phone,data.username);
+            const member = await this.memberService.findByPhone(data.phone, data.username);
             console.log("-> member", member);
             const password = await hashPassword(data.password);
             console.log("-> password", password);
             const update = await this.memberService.updatePassword(member.idx, password);
             console.log("-> update", update);
-            if(update) {
+            if (update) {
                 return member
             }
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(error.message, error.status);
         }
     }
