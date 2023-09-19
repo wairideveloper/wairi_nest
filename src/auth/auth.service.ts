@@ -8,6 +8,7 @@ import {MembersService} from '../members/members.service';
 import {compareSync, genSaltSync, hashSync} from 'bcrypt';
 import {JwtService} from '@nestjs/jwt';
 import * as process from 'process';
+import {AES_ENCRYPT, getNowUnix, hashPassword} from "../util/common";
 
 @Injectable()
 export class AuthService {
@@ -65,7 +66,7 @@ export class AuthService {
     //토큰 재발급 refresh
     async refreshToken(refresh_token: string) {
         // JWT Refresh Token 검증 로직
-        const decodedRefreshToken = this.jwtService.verify(refresh_token, { secret: process.env.JWT_REFRESH_SECRET });
+        const decodedRefreshToken = this.jwtService.verify(refresh_token, {secret: process.env.JWT_REFRESH_SECRET});
 
         // // Check if user exists
         // const userId = decodedRefreshToken.id;
@@ -122,21 +123,117 @@ export class AuthService {
         }
     }
 
-    findAll() {
-        return `This action returns all auth`;
+    async kakaoLogin(user: any) {
+        console.log("-> user", user);
+        try {
+            const memberCheck = await this.memberService.findByEmail(user.email);
+            const passwd = await hashPassword(user.id.toString());
+
+            if (memberCheck) {
+                console.log("-> memberCheck", memberCheck);
+
+                const payload = {
+                    idx: user.idx,
+                    username: user.name,
+                    memberType: 1
+                }
+                const result = await this.jwtResponse(payload, memberCheck);
+                return result;
+            } else {
+                const now = getNowUnix();
+                // 회원 닉네임 난수 생성
+                const nickname = `user_${Math.floor(Math.random() * 1000000)}`;
+
+                const memberInsert = await this.memberRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(Member, ['id', 'social_kakao', 'type', 'level', 'status', 'nickname', 'email',
+                        'phone', 'name', 'passwd', 'regdate',
+                    ])
+                    .values({
+                        id: () => user.id,
+                        social_kakao: () => user.id,
+                        type: 1,
+                        level: 0,
+                        status: 4,
+                        nickname: () => user.profile.displayName == '닉네임을 등록해주세요' ? `"${nickname}"` : `"${user.nickname}"`,
+                        email: () => AES_ENCRYPT(user.email),
+                        phone: () => user.phone ? AES_ENCRYPT(user.phone) : AES_ENCRYPT(""),
+                        name: () => user.name == '닉네임을 등록해주세요' ? AES_ENCRYPT("") : AES_ENCRYPT(user.name),
+                        passwd: () => `"${passwd}"`,
+                        regdate: () => `"${now}"`,
+                    })
+                    .execute();
+                if (memberInsert) {
+                    const member = await this.memberService.findById(user.id);
+                    const payload = {
+                        idx: member.idx,
+                        username: member.name,
+                        memberType: 1
+                    }
+                    const result = await this.jwtResponse(payload, member);
+                    return result;
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} auth`;
+    async naverLogin(user:any) {
+        try{
+            const memberCheck = await this.memberService.findByEmail(user.email);
+            const passwd = await hashPassword(user.id.toString());
+
+            if(memberCheck) {
+                const payload = {
+                    idx: memberCheck.idx,
+                    username: user.name,
+                    memberType: 1
+                }
+                const result = await this.jwtResponse(payload, memberCheck);
+                console.log("-> result", result);
+                return result;
+            }else{
+                const now = getNowUnix();
+                // 회원 닉네임 난수 생성
+                const nickname = `user_${Math.floor(Math.random() * 1000000)}`;
+                const memberInsert = await this.memberRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(Member, ['id', 'social_naver', 'type', 'level', 'status', 'nickname', 'email',
+                        'phone', 'name', 'passwd', 'regdate',
+                    ])
+                    .values({
+                        id: () => `"${user.id}"`,
+                        social_naver: () => `"${user.id}"`,
+                        type: 1,
+                        level: 0,
+                        status: 4,
+                        nickname: () => user.profile.displayName == '닉네임을 등록해주세요' ? `"${nickname}"` : `"${user.profile.displayName}"`,
+                        email: () => AES_ENCRYPT(user.email),
+                        phone: () => user.phone ? AES_ENCRYPT(user.phone) : AES_ENCRYPT(""),
+                        name: () => user.name == '닉네임을 등록해주세요' ? AES_ENCRYPT("") : AES_ENCRYPT(user.name),
+                        passwd: () => `"${passwd}"`,
+                        regdate: () => `"${now}"`,
+                    })
+                    .execute();
+                if (memberInsert) {
+                    const member = await this.memberService.findById(user.id);
+                    const payload = {
+                        idx: member.idx,
+                        username: member.name,
+                        memberType: 1
+                    }
+                    const result = await this.jwtResponse(payload, member);
+                    return result;
+                }
+            }
+        }catch (error) {
+            console.log(error);
+        }
     }
 
-    update(id: number, updateAuthDto: UpdateAuthDto) {
-        return `This action updates a #${id} auth`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} auth`;
-    }
 
     async passwordHash(passwd: string) {
         const salt = genSaltSync(5, 'a');
@@ -163,5 +260,23 @@ export class AuthService {
     OAuthCallback(user) {
         console.log('test')
         console.log(user)
+    }
+
+    async jwtResponse(payload: any, data: any) {
+        const access_token = await this.jwtService.signAsync(payload, {
+            expiresIn: process.env.JWT_EXPIRATION_TIME,
+            secret: process.env.JWT_SECRET
+        })
+        const refresh_token = await this.jwtService.signAsync({id: payload.idx}, {
+            expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
+            secret: process.env.JWT_SECRET
+        })
+        return {
+            message: '로그인 성공',
+            access_token: access_token,
+            refresh_token: refresh_token,
+            data: data
+        }
+
     }
 }

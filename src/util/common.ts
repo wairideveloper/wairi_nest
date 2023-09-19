@@ -128,3 +128,49 @@ export const getNow = () => {
 export const getNowUnix = () => {
     return moment().unix();
 }
+
+//bootpay status code Text
+export const getBootpayStatusText = (status: number) => {
+    switch (status) {
+        case -61:
+            return '현금영수증 발행취소가 실패';
+        case -60:
+            return '현금영수증 발행이 실패';
+        case -40:
+            return '자동결제 빌링키 발급 실패';
+        case -11:
+            return '자동결제 빌링키 발급 취소';
+        case -2:
+            return '결제 승인실패 오류가 발생';
+        case -4:
+            return '결제 요청 실패가 발생';
+        case 0:
+            return '결제 대기 상태';
+        case 1:
+            return '결제완료된 상태입니다';
+        case 2:
+            return '결제승인중 상태입니다';
+        case 4:
+            return 'PG로 결제 승인 요청 상태 ';
+        case 5:
+            return '가상계좌 발급완료 및 입금 대기 상태';
+        case 11:
+            return '자동결제 빌링키 발급 완료 상태';
+        case 12:
+            return '본인인증이 완료';
+        case 20:
+            return '결제취소 완료상태';
+        case 40:
+            return '자동결제 빌링키 발급 준비 상태';
+        case 41:
+            return '자동결제 빌링키 발급 이전 상태';
+        case 42:
+            return '자동결제 빌링키 발급 성공 상태';
+        case 50:
+            return '본인인증 시작 준비 상태';
+        case 60:
+            return '현금영수증을 별도 발행시 현금영수증 발행 완료된 상태';
+        case 61:
+            return '현금영수증 별도 발행시 현금영수증 발행 취소가 완료된 상태';
+    }
+}

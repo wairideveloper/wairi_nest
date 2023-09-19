@@ -11,6 +11,26 @@ import {JwtService} from "@nestjs/jwt";
 export class CampaignResolver {
     constructor(private readonly campaignsService: CampaignService) {
     }
+
+    @Query()
+    async search(@Args('keyword', {type: () => String}) keyword: string) {
+        try {
+            let data = await this.campaignsService.search(keyword);
+            //json 형식으로 변환
+
+            console.log(data)
+            // console.log(bufferToString(data))
+            // data.forEach((element) => {
+            //     bufferToString(element);
+            // });
+            return data
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+
     @Query()
     @UseGuards(GqlAuthGuard)
     async getCampaign(@Args('id', {type: () => Int}) id: number) {
@@ -50,6 +70,19 @@ export class CampaignResolver {
             throw error;
         }
     }
+    @Query()
+    async getDetailCampaign(@Args('idx', {type: () => Int}) idx: number) {
+        try {
+            console.log(idx)
+            let data = await this.campaignsService.findOne(idx);
+            //json 형식으로 변환
+            console.log(data)
+            return data
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
 
     @Query()
     @UseGuards(GqlAuthGuard)
@@ -72,4 +105,6 @@ export class CampaignResolver {
             throw error;
         }
     }
+
+
 }

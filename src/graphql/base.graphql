@@ -6,3 +6,17 @@ interface Pagination {
     previous: Int
     currentPage: Int
 }
+
+input ReceiverInput {
+    templateCode: String
+    phone: String
+}
+
+type AlimtalkResponse {
+    code: Int
+    msg: String
+}
+
+extend type Mutation {
+    sendAlimtalk(receiverInput:ReceiverInput!, templateCode:String): AlimtalkResponse
+}

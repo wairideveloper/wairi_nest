@@ -11,6 +11,7 @@ import {RestClient} from "@bootpay/server-rest-client";
 import {Bootpay} from '@bootpay/backend-js'
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
+import {Connection} from "typeorm";
 
 
 @Injectable()
@@ -19,7 +20,9 @@ export class AuthQlModelService {
         @InjectRepository(Partner)
         private partnerRepository: Repository<Partner>,
         private readonly memberService: MembersService,
-        private readonly jwtService: JwtService) {
+        private readonly jwtService: JwtService,
+        private readonly connection: Connection,
+        ) {
     }
 
     async login(id: string, password: string) {
@@ -50,6 +53,7 @@ export class AuthQlModelService {
                     message: '로그인 성공',
                     access_token: access_token,
                     refresh_token: refresh_token,
+                    member: member,
                 };
             } else {
                 throw new HttpException('로그인 실패', 404);
@@ -61,6 +65,11 @@ export class AuthQlModelService {
     }
 
     async signup(data: any) {
+        //transaction 처리
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
         try {
             const member = await this.memberService.findById(data.id);
             if (member) {
@@ -81,17 +90,40 @@ export class AuthQlModelService {
                 gender: data.gender ? (data.gender == 1 ? 'm' : 'f') : "",
                 refererRoot: data.refererRoot ? data.refererRoot : 0,
                 refererRootInput: data.refererRootInput ? data.refererRootInput : "",
+                channelType: data.channelType,
+                link: data.link,
                 agree: data.agree,
                 level: 1,
                 status: 4,
                 regdate: getNowUnix(),
                 lastSignin: getNowUnix(),
             }
+
             const newMember = await this.memberService.create(data);
+            console.log("-> newMember", newMember);
+            const channelType = data.channelType;
+            const link = data.link;
+
+            //채널정보가 있을경우
+            if (channelType && link) {
+                const channel = await this.memberService.checkChannelType(channelType,newMember.generatedMaps[0].idx);
+                if (!channel) {
+                    const channelData = {
+                        memberIdx: newMember.generatedMaps[0].idx,
+                        type: channelType,
+                        link: link,
+                        regdate: getNowUnix(),
+                        level: 0,
+                    }
+                    const newChannel = await this.memberService.createChannel(channelData);
+                    console.log("-> newChannel", newChannel);
+                }else{
+                    throw new HttpException('이미 채널정보가 있습니다.', HttpStatus.CONFLICT);
+                }
+            }
 
             if (newMember) {
                 const result = await this.memberService.findById(newMember.generatedMaps[0].id);
-                console.log("-> result", result);
                 const payload = {
                     idx: result.idx,
                     username: result.name,
@@ -105,6 +137,9 @@ export class AuthQlModelService {
                     expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
                     secret: process.env.JWT_SECRET
                 });
+
+                await queryRunner.commitTransaction();
+
                 return {
                     message: '회원가입 성공',
                     access_token: access_token,
@@ -112,11 +147,18 @@ export class AuthQlModelService {
                     data: result,
                 };
             }else {
+                await queryRunner.rollbackTransaction();
                 throw new HttpException('회원가입에 실패하였습니다.', HttpStatus.CONFLICT);
+
             }
 
         } catch (error) {
+            if (queryRunner.isTransactionActive) {
+                await queryRunner.rollbackTransaction();
+            }
             throw new HttpException(error.message, error.status);
+        } finally {
+            await queryRunner.release();
         }
     }
 

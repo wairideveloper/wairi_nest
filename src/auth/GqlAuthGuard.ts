@@ -24,19 +24,19 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
         const ctx = GqlExecutionContext.create(context);
         const req = ctx.getContext().req;
         const token = this.extractTokenFromHeader(req);
-        console.log("-> token", token);
+        // console.log("-> token", token);
         req.user = this.validateToken(token);
         return true;
     }
     validateToken(token: string) {
-        console.log("-> token", token);
+        // console.log("-> token", token);
         const secretKey = process.env.JWT_SECRET;
-        console.log("-> secretKey", secretKey);
+        // console.log("-> secretKey", secretKey);
 
         try {
-            const verify = this.jwtService.verify(token, { secret: secretKey });
-            console.log("-> verify", verify);
-            return verify;
+            const user = this.jwtService.verify(token, { secret: secretKey });
+            // console.log("-> user", user);
+            return user;
         } catch (e) {
             console.log("-> e", e);
             switch (e.message) {

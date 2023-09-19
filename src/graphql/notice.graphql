@@ -1,0 +1,31 @@
+type Board {
+    idx: Int
+    name: String
+    id: String,
+    boardArticles: BoardArticles
+}
+
+type BoardArticles implements Pagination {
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+    data: [BoardArticle]
+}
+
+type BoardArticle {
+    idx: Int
+    boardIdx: Int
+    memberType: Int
+    title: String
+    content: String
+    regdate: String
+}
+
+extend type Query {
+    getBoardList(take: Int!,page:Int!,type:Int!): [Board]
+}
+
+

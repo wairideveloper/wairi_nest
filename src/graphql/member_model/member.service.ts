@@ -41,6 +41,7 @@ export class MembersService {
     async create(data: any) {
         try{
             const user = await this.memberRepository
+
                 .createQueryBuilder()
                 .insert()
                 .into(Member, [
@@ -220,7 +221,51 @@ export class MembersService {
                 memberIdx: data.memberIdx,
                 link: data.link,
                 type: data.type,
+                typeText: "",
+                regdate: getNowUnix(),
+                level: 0
             })
+            .execute();
+    }
+
+    async checkChannelType(channelType: number, memberIdx: number) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('type = :type', {type: channelType})
+            .andWhere('memberIdx = :memberIdx', {memberIdx: memberIdx})
+            .getRawOne();
+    }
+
+    async createChannel(channelData) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .insert()
+            .into(MemberChannel,[
+                'memberIdx',
+                'type',
+                'typeText',
+                'link',
+                'regdate',
+                'level'
+            ])
+            .values({
+                memberIdx: channelData.memberIdx,
+                type: channelData.type,
+                typeText: "",
+                link: channelData.link,
+                regdate: channelData.regdate,
+                level: channelData.level
+            })
+            .execute();
+    }
+
+    async deleteMemberChannel(data: { memberIdx: number; channelIdx: number }) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .delete()
+            .where('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+            .andWhere('idx = :idx', {idx: data.channelIdx})
             .execute();
     }
 }

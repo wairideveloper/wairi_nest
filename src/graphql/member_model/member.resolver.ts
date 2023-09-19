@@ -1,11 +1,13 @@
 import {Args, Int, Query, Resolver} from '@nestjs/graphql';
 import {MembersService} from "./member.service";
 
-import {UseGuards, Req} from "@nestjs/common";
+import {UseGuards, Req, HttpException} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {bufferToString} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {validate} from "class-validator";
+import {AuthUser} from "../../auth/auth-user.decorator";
+import {Member} from "../../../entity/entities/Member";
 
 @Resolver('Member')
 export class MemberResolver {
@@ -77,24 +79,61 @@ export class MemberResolver {
         }
     }
 
-    @Query()
+    @Query((returns) => Member)
     @UseGuards(GqlAuthGuard)
-    async setMemberChannel(
-        @Args('memberIdx', {type: () => Int}) memberIdx: number,
-        @Args('type', {type: () => Int}) type: number,
-        @Args('link', {type: () => String}) link: string,
+    async setMemberChannel(@AuthUser() authUser: Member,
+                           @Args('memberIdx', {type: () => Int}) memberIdx: number,
+                           @Args('type', {type: () => Int}) type: number,
+                           @Args('link', {type: () => String}) link: string,
     ) {
         try {
             const data = {
-                memberIdx: memberIdx,
+                memberIdx: authUser.idx,
                 type: type,
                 link: link
             }
-            return await this.membersService.setMemberChannel(data);
-        } catch (error) {
-            console.log(error)
-            throw error;
-        }
 
+            const channel = await this.membersService.setMemberChannel(data);
+            const channelIdx = channel.raw.insertId;
+            return {
+                code: 200,
+                message: '채널 등록 성공',
+                idx: channelIdx,
+                type: type,
+                link: link
+            }
+        } catch (error) {
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Query((returns) => Member)
+    @UseGuards(GqlAuthGuard)
+    async deleteMemberChannel(@AuthUser() authUser: Member,
+                              @Args('channelIdx', {type: () => Int}) channelIdx: number,
+    ) {
+        try {
+            const data = {
+                memberIdx: authUser.idx,
+                channelIdx: channelIdx
+            }
+            const channel = await this.membersService.deleteMemberChannel(data);
+            console.log("-> channel", channel);
+            if(channel.affected > 0){
+                return {
+                    code: 200,
+                    message: '채널 삭제 성공',
+                    idx: channelIdx
+                }
+            }else{
+                return {
+                    code: 500,
+                    message: '채널 삭제 실패',
+                    idx: channelIdx
+                }
+            }
+        }catch (error) {
+            throw new HttpException(error.message, 500);
+        }
     }
 }

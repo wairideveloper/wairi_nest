@@ -15,6 +15,7 @@ export class UploadController {
   @UseInterceptors(FilesInterceptor('file')) // 10은 최대파일개수
   async uploadFile(@UploadedFiles() files) {
     const imgurl: string[] = [];
-    return this.uploadService.uploadImage(files);
+    // return this.uploadService.uploadImage(files);
+    return this.uploadService.uploadImageV2(files);
   }
 }

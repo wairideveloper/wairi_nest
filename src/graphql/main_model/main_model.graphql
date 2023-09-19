@@ -35,6 +35,7 @@ type Product{
 
 type CampaignItem{
     name: String
+    priceOrig: Int
 }
 
 type MainPage {
@@ -45,6 +46,5 @@ type MainPage {
 
 extend type Query {
     getMainPage(sort:String): MainPage
-
 }
 

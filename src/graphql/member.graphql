@@ -3,40 +3,46 @@ scalar Date
 scalar DateTime
 
 type Member {
-  idx: Int!
-  id: String!
-  type: Int
-  name: String!
-  nickname: String
-  number: String
-  email: String
-  phone: String
-  level: Int
-  status: Int
-  regdate: String
-  lastSignin: String
-  lastUpdate: String
-  memberChannel: [MemberChannel]
-  campaignReview: [CampaignReview]
+    idx: Int!
+    id: String!
+    type: Int
+    name: String!
+    nickname: String
+    number: String
+    email: String
+    phone: String
+    level: Int
+    status: Int
+    regdate: String
+    lastSignin: String
+    lastUpdate: String
+    memberChannel: [MemberChannel]
+    campaignReview: [CampaignReview]
 }
 
 type MemberChannel {
-  idx: Int
-  type: Int
-  typeText: String
-  link: String
-  regdate: DateTime
-  level: Int
+    idx: Int
+    type: Int
+    typeText: String
+    link: String
+    regdate: DateTime
+    level: Int
 }
 
 type setMemberChannelResponse {
-  message: String
+    code: Int
+    message: String
+    idx: Int
+    type: Int
+    typeText: String
+    link: String
 }
 
 
 extend type Query {
-  getAllMember(skip: Int, take: Int!,title:String): [Member]
-  getMember(id: Int!): Member
-  getMemberByEmail(email: String!): Member
-  setMemberChannel(memberIdx: Int!, type: Int!, link: String!):setMemberChannelResponse
+    getAllMember(skip: Int, take: Int!,title:String): [Member]
+    getMember(id: Int!): Member
+    getMemberByEmail(email: String!): Member
+    setMemberChannel(type: Int!, link: String!):setMemberChannelResponse
+    deleteMemberChannel(channelIdx: Int!):setMemberChannelResponse
 }

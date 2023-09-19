@@ -32,7 +32,8 @@ export class NaverStrategy extends PassportStrategy(Strategy) {
         return {
             name: profile.displayName,
             email: profile._json.email,
-            password: profile.id,
+            id: profile.id,
+            profile: profile
         };
 
         // const user = await this.authService.validateUser(user_email);

@@ -22,7 +22,7 @@ const dailyOptions = (level: string) => {
 export const winstonLogger = WinstonModule.createLogger({
     transports: [
         new winston.transports.Console({
-            level: env === 'production' ? 'http' : 'silly',
+            level: env === 'production' ? 'http' : 'warn',
             // production 환경이라면 http, 개발환경이라면 모든 단계를 로그
             format:
                 env === 'production'

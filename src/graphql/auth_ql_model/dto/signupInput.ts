@@ -50,6 +50,9 @@ export class SignupInput {
     channelType: number;
 
     @Field()
+    link: string;
+
+    @Field()
     refererRoot: number;
 
     @Field()

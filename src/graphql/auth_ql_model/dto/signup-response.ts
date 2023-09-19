@@ -7,5 +7,5 @@ export class SignupResponse {
     message: string;
 
     @Field()
-    data: string;
+    data: Member;
 }

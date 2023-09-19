@@ -14,7 +14,11 @@ type Campaign {
     image: String
     weight: Int
     lowestPriceOrig: Int
+}
 
+type CampaignDetail{
+    campaign: Campaign!
+    campaignItem: [CampaignItem!]!
 }
 
 type Campaigns implements Pagination {
@@ -50,5 +54,7 @@ extend type Query {
     #  getAllMember(skip: Int, take: Int!,title:String): [Member]
     getCampaign(id: Int!): Campaign!
     getCampaigns(take: Int!,page:Int!): Campaigns!
+    getDetailCampaign(idx: Int!): CampaignDetail!
+    search(keyword: String!): Campaigns!
     login(idx:Int!): returnLogin!
 }

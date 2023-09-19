@@ -48,6 +48,9 @@ import {Banner} from "../entity/entities/Banner";
 import { CateModelModule } from './graphql/cate_model/cate_model.module';
 import { MainModelModule } from './graphql/main_model/main_model.module';
 import {CampaignSubmit} from "../entity/entities/CampaignSubmit";
+import { BoardModelModule } from './graphql/board_model/board_model.module';
+import { PaymentModelModule } from './graphql/payment_model/payment_model.module';
+import { Madein20ModelModule } from './graphql/madein20_model/madein20_model.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -100,7 +103,10 @@ import {CampaignSubmit} from "../entity/entities/CampaignSubmit";
                 AuthQlModelModule,
                 BannerModelModule,
                 CateModelModule,
-                MainModelModule
+                MainModelModule,
+                BoardModelModule,
+                PaymentModelModule,
+                Madein20ModelModule
             ],
             typePaths: ['./**/*.graphql'],
             definitions: {
@@ -148,7 +154,10 @@ import {CampaignSubmit} from "../entity/entities/CampaignSubmit";
         AuthQlModelModule,
         BannerModelModule,
         CateModelModule,
-        MainModelModule
+        MainModelModule,
+        BoardModelModule,
+        PaymentModelModule,
+        Madein20ModelModule
 
     ],
     controllers: [AppController],

@@ -43,8 +43,11 @@ export class AuthQlModelResolver {
                 gender: signupInput.gender,
                 refererRoot: signupInput.refererRoot,
                 refererRootInput: signupInput.refererRootInput,
+                channelType: signupInput.channelType,
+                link: signupInput.link,
                 agree: signupInput.agree,
             }
+            console.log("-> data", data);
             return await this.authQlModelService.signup(data);
         } catch (error) {
             customLogger(this.logger, signupInput, error);

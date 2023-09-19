@@ -46,6 +46,65 @@ export class CampaignService {
         this.additionalDiscountRate = 0;
     }
 
+    async search(keyword: string) {
+        const {take, page} = {take: 10, page: 1};
+        const data = await this.campaignRepository.createQueryBuilder('campaign')
+            .leftJoin('campaign.campaignItem', 'campaignItem')
+            .leftJoin('campaign.campaignImage', 'campaignImage')
+            .leftJoin('campaign.cate', 'cate')
+            .leftJoin('campaign.cateArea', 'cateArea')
+            .leftJoin('campaign.partner', 'partner')
+            .select([
+                'campaign.idx as idx',
+                'campaign.name as name',
+                'campaign.weight as weight',
+                'min(campaignItem.priceOrig) as lowestPriceOrig',
+                'min(campaignItem.calcType1) as lowestPriceCalcType1',
+                'min(campaignItem.calcType2) as lowestPriceCalcType2',
+                'min(campaignItem.sellType) as lowestPriceSellType',
+                '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
+                'cate.name as cateName',
+                'cate.idx as cateIdx',
+                'cateArea.name as cateAreaName',
+                'partner.corpName as partnerName',
+            ])
+            // .where('campaign.remove = :remove', {remove: 0})
+            // .andWhere('campaign.name like :keyword', {keyword: '%' + keyword + '%'})
+            // .orWhere('campaignItem.name like :keyword', {keyword: '%' + keyword + '%'})
+            .where('(campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
+                remove: 0,
+                campaignKeyword: '%' + keyword + '%',
+                itemRemove: 0,
+                itemKeyword: '%' + keyword + '%',
+            })
+            .orderBy('campaign.idx', 'DESC')
+            .addOrderBy('campaign.weight', 'DESC')
+            .groupBy('campaign.idx')
+            .offset(take * (page - 1))
+            .limit(take)
+            .getRawMany();
+
+        const total = await this.campaignRepository.createQueryBuilder('campaign')
+            .leftJoin('campaign.campaignItem', 'campaignItem')
+            .where('campaign.remove = :remove', {remove: 0})
+            .andWhere('campaign.name like :keyword', {keyword: '%' + keyword + '%'})
+            .orWhere('campaignItem.name like :keyword', {keyword: '%' + keyword + '%'})
+            .getCount()
+
+        let totalPage = Math.ceil(total / take);
+        if (page > totalPage) {
+            throw new NotFoundException();
+        }
+        const currentPage = page;
+
+        return new Pagination({
+            data,
+            total,
+            totalPage,
+            currentPage
+        });
+    }
+
     async mainList(options: PaginationOptions) {
         const {take, page} = options;
         const data = await this.campaignRepository.createQueryBuilder('campaign')
@@ -94,6 +153,8 @@ export class CampaignService {
     }
 
     async findOne(id: number) {
+        console.log("-> id", id);
+
         const campaign = await this.getCampaign(id);
         // return campaign;
         const campaignItem = await this.getCampaignItem(id);
@@ -106,7 +167,7 @@ export class CampaignService {
         const campaignReview = await this.getCampaignReview(id);
 
         const result = {
-            ...campaign,
+            campaign,
             campaignItem,
             campaignImages,
             campaignCate,
@@ -125,7 +186,7 @@ export class CampaignService {
             .select(
                 [
                     'campaign.idx as idx',
-                    // 'campaign.name as name',
+                    'campaign.name as name',
                     'CONVERT(campaign.name USING utf8) AS name',
                     'campaign.weight as weight',
                     'campaign.partnerIdx as partnerIdx',
@@ -267,5 +328,38 @@ export class CampaignService {
 
     async getBanner() {
 
+    }
+
+
+    async getDetailCampaign(idx: number) {
+        try {
+            let data = await this.campaignRepository.createQueryBuilder('campaign')
+                .leftJoin('campaign.campaignItem', 'campaignItem')
+                .leftJoin('campaign.campaignImage', 'campaignImage')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .leftJoin('campaign.partner', 'partner')
+                .select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.weight as weight',
+                    'min(campaignItem.priceOrig) as lowestPriceOrig',
+                    'min(campaignItem.calcType1) as lowestPriceCalcType1',
+                    'min(campaignItem.calcType2) as lowestPriceCalcType2',
+                    'min(campaignItem.sellType) as lowestPriceSellType',
+                    '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
+                    'cate.name as cateName',
+                    'cate.idx as cateIdx',
+                    'cateArea.name as cateAreaName',
+                    'partner.corpName as partnerName',
+                ])
+                .where('campaign.idx = :idx', {idx: idx})
+                .getRawOne();
+
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
     }
 }

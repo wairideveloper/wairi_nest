@@ -34,6 +34,7 @@ input SignupInput {
     birth: Int
     gender: Int
     channelType: Int
+    link: String
     refererRoot: Int
     refererRootInput: String
     agree: Int
@@ -144,10 +145,15 @@ type Query {
     getMemberInfo(id: String!): Member
     getSnsChannel : [SnsChannel]
     getSubscriptionPath : [SubscriptionPath]
+
+    kakaoSignup(signupInput:SignupInput!): MemberSignupResponse
+    naverSignup(signupInput:SignupInput!): MemberSignupResponse
+    googleSignup(signupInput:SignupInput!): MemberSignupResponse
 }
 type Mutation{
     login(loginInput:LoginInput!): LoginResponse
     signup(signupInput:SignupInput!): MemberSignupResponse
+
     partnerSignup(partnerSignupInput:PartnerSignupInput!): PartnerSignupResponse
     changePassword(changePasswordInput: ChangePasswordInput!): Member
     getAccessToken(refresh_token : String!): LoginResponse
