@@ -1,0 +1,24 @@
+type Madein20Model {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input CreateMadein20ModelInput {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input UpdateMadein20ModelInput {
+  id: Int!
+}
+
+#type Query {
+#  madein20Model: [Madein20Model]!
+#  madein20Model(id: Int!): Madein20Model
+#}
+
+#type Mutation {
+#  createMadein20Model(createMadein20ModelInput: CreateMadein20ModelInput!): Madein20Model!
+#  updateMadein20Model(updateMadein20ModelInput: UpdateMadein20ModelInput!): Madein20Model!
+#  removeMadein20Model(id: Int!): Madein20Model
+#}
