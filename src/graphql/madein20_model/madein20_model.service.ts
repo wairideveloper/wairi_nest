@@ -36,8 +36,7 @@ export class Madein20ModelService {
       'X-CLIENT-ID': `${process.env.MADEIN20_CLIENT_ID}`,
       'Content-Type': 'application/json;charset=UTF-8',
     };
-    console.log(receivers.phone);
-    return
+
     const receiver =
       {
         // phone: '010-8230-8203',
