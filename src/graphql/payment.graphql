@@ -57,7 +57,7 @@ type Vbank_data {
     cash_receipt_no: String
 }
 
-type Query {
+extend type Query {
 #    부트페이 토큰 발급
     confirmPayment(receipt_id:String): ConfirmResponse
 #    결제 취소

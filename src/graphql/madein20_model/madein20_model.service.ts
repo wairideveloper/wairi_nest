@@ -61,7 +61,6 @@ export class Madein20ModelService {
       // alt: false
     };
     console.log(data)
-console.log(process.env.MADEIN20_CLIENT_ID)
 //     return
     try {
       const response = await axios.post(url, data, { headers });

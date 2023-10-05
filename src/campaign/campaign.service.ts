@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import {CreateCampaignDto} from './dto/create-campaign.dto';
 import {UpdateCampaignDto} from './dto/update-campaign.dto';
 import {Campaign} from "../../entity/entities/Campaign";
@@ -13,7 +13,10 @@ import {Partner} from "../../entity/entities/Partner";
 import {CampaignImage} from "../../entity/entities/CampaignImage";
 import {CampaignReview} from "../../entity/entities/CampaignReview";
 import {CampaignRecent} from "../../entity/entities/CampaignRecent";
-import {getUnixTimeStamp, getYmd} from "../util/common"
+import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
+import {CampaignSubmit} from "../../entity/entities/CampaignSubmit";
+import {CampaignFav} from "../../entity/entities/CampaignFav";
+import {FROM_UNIXTIME, getUnixTimeStamp, getYmd} from "../util/common"
 import * as moment from 'moment';
 
 @Injectable()
@@ -38,6 +41,12 @@ export class CampaignService {
         private campaignReviewRepository: Repository<CampaignReview>,
         @InjectRepository(CampaignRecent)
         private campaignRecentRepository: Repository<CampaignRecent>,
+        @InjectRepository(CampaignItemSchedule)
+        private campaignItemScheduleRepository: Repository<CampaignItemSchedule>,
+        @InjectRepository(CampaignFav)
+        private campaignFavRepository: Repository<CampaignFav>,
+        @InjectRepository(CampaignSubmit)
+        private campaignSubmit: Repository<CampaignSubmit>,
     ) {
         //할인율 기본값
         this.discountRate = 0;
@@ -180,7 +189,7 @@ export class CampaignService {
     }
 
     async getCampaign(id: number) {
-        console.log('getCampaign'+id)
+        console.log('getCampaign' + id)
         return await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .select(
@@ -287,10 +296,10 @@ export class CampaignService {
     async setRecency(
         campaignIdx: number,
         memberIdx: number,
-        memberType:number,
-        referer:string,
-        refererHost:string,
-        isSelf:number,
+        memberType: number,
+        referer: string,
+        refererHost: string,
+        isSelf: number,
         ip: string) {
         console.log("-> memberType", memberType);
         const regdate = getUnixTimeStamp();
@@ -309,27 +318,6 @@ export class CampaignService {
 
         return await this.campaignRecentRepository.save(recent)
     }
-
-    create(createCampaignDto: CreateCampaignDto) {
-        return 'This action adds a new campaign';
-    }
-
-    findAll() {
-        return `This action returns all campaign`;
-    }
-
-    update(id: number, updateCampaignDto: UpdateCampaignDto) {
-        return `This action updates a #${id} campaign`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} campaign`;
-    }
-
-    async getBanner() {
-
-    }
-
 
     async getDetailCampaign(idx: number) {
         try {
@@ -358,6 +346,193 @@ export class CampaignService {
 
             return data;
         } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    async getItemSchedule(idx: number, start_day: string, end_day: string) {
+        try {
+            let data = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
+                .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
+                .leftJoin('campaignItem.campaign', 'campaign')
+                .select([
+                    'campaignItem.idx as idx',
+                    'campaignItem.name as name',
+                    'campaignItem.priceOrig as priceOrig',
+                    'campaignItem.calcType1 as calcType1',
+                    'campaignItem.calcType2 as calcType2',
+                    'campaignItem.sellType as sellType',
+                    'campaignItemSchedule.stock as stock',
+                    'campaignItemSchedule.priceDeposit as priceDeposit',
+                ])
+                .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
+                .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
+                .addSelect(`(${FROM_UNIXTIME('campaignItemSchedule.date')})`, 'date')
+                .where('campaignItem.remove = :remove', {remove: 0})
+                .andWhere('campaign.idx = :idx', {idx: idx})
+                //UNIX_TIMESTAMP 로 campaignItemSchedule.date 비교
+                .andWhere(`campaignItemSchedule.date >= UNIX_TIMESTAMP('${start_day}')`)
+                .andWhere(`campaignItemSchedule.date <= UNIX_TIMESTAMP('${end_day}')`)
+                .getRawMany();
+            console.log("-> data", data);
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    async getActiveItemSchedule(idx: number, start_day: number, end_day: number, now: number) {
+        try {
+            let data = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
+                .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
+                .leftJoin('campaignItem.campaign', 'campaign')
+                .select([
+                    'campaignItem.idx as idx',
+                    'campaignItem.name as name',
+                    'campaignItem.priceOrig as priceOrig',
+                    'campaignItem.calcType1 as calcType1',
+                    'campaignItem.calcType2 as calcType2',
+                    'campaignItem.sellType as sellType',
+                    'campaignItemSchedule.stock as stock',
+                    'campaignItemSchedule.priceDeposit as priceDeposit',
+                    'FROM_UNIXTIME(date,("%Y-%m-%d")) as active',
+                ])
+                .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDay')
+                .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDay')
+                .addSelect(`(${FROM_UNIXTIME('campaignItemSchedule.date')})`, 'date')
+                .where('campaignItem.remove = :remove', {remove: 0})
+                .andWhere('campaignItemSchedule.stock > 0')
+                .andWhere('campaignItemSchedule.date >= :start_day', {start_day: start_day})
+                .andWhere('campaignItemSchedule.date < :end_day', {end_day: end_day + 86400})
+                .andWhere('campaign.idx = :idx', {idx: idx})
+                .getRawMany();
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    async recentList(take: number, page: number, memberIdx: number) {
+        try {
+            let data = await this.campaignRecentRepository.createQueryBuilder('campaignRecent')
+                .leftJoin('campaignRecent.campaign', 'campaign')
+                .leftJoin('campaign.campaignItem', 'campaignItem')
+                .leftJoin('campaign.campaignImage', 'campaignImage')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .leftJoin('campaign.partner', 'partner')
+                .select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.weight as weight',
+                    'min(campaignItem.priceOrig) as lowestPriceOrig',
+                    'min(campaignItem.calcType1) as lowestPriceCalcType1',
+                    'min(campaignItem.calcType2) as lowestPriceCalcType2',
+                    'min(campaignItem.sellType) as lowestPriceSellType',
+                    '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
+                    'cate.name as cateName',
+                    'cate.idx as cateIdx',
+                    'cateArea.name as cateAreaName',
+                    'partner.corpName as partnerName',
+                ])
+                .where('campaignRecent.memberIdx = :memberIdx', {memberIdx: memberIdx})
+                .andWhere('campaign.remove = :remove', {remove: 0})
+                .orderBy('campaignRecent.regdate', 'DESC')
+                .groupBy('campaign.idx')
+                .offset(take * (page - 1))
+                .limit(take)
+                .getRawMany();
+
+            const total = await this.campaignRecentRepository.createQueryBuilder('campaignRecent')
+                .leftJoin('campaignRecent.campaign', 'campaign')
+                .where('campaignRecent.memberIdx = :memberIdx', {memberIdx: memberIdx})
+                .andWhere('campaign.remove = :remove', {remove: 0})
+                .getCount()
+
+            let totalPage = Math.ceil(total / take);
+            if (page > totalPage) {
+                throw new NotFoundException();
+            }
+            const currentPage = page;
+
+            return new Pagination({
+                data,
+                total,
+                totalPage,
+                currentPage
+            });
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    async setCampaignFav(memberIdx: number, campaignIdx: number) {
+        try{
+            const regdate = getUnixTimeStamp();
+            const ymd = getYmd();
+
+            const fav = new CampaignFav()
+            fav.memberIdx = memberIdx
+            fav.campaignIdx = campaignIdx
+            fav.regdate = regdate
+
+            return await this.campaignFavRepository.save(fav)
+
+        }catch (error){
+            console.log(error)
+            throw error;
+        }
+    }
+
+    async getRecommendedSearchWords(type:string, limit:number = 5) {
+        try{
+            const weight = await this.campaignRepository.createQueryBuilder('campaign')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.weight as count',
+                    'cate.name as cateName',
+                    'cateArea.name as cateAreaName',
+                ])
+                .where('campaign.remove = :remove', {remove: 0})
+                .orderBy('campaign.weight', 'DESC')
+                .limit(limit)
+                .getRawMany();
+
+            const submit = this.campaignSubmit.createQueryBuilder('campaignSubmit')
+                .select([
+                    'campaignSubmit.campaignIdx as idx',
+                    'count(*) as count',
+                    'campaign.name as name',
+                    'campaign.weight as weight',
+                    'cate.name as cateName',
+                    'cateArea.name as cateAreaName',
+                ])
+                .leftJoin('campaignSubmit.campaign', 'campaign')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .where('campaign.remove = :remove', {remove: 0})
+                //wherein campaignSubmit.status = 400, 500, 700
+                .andWhere('campaignSubmit.status IN (:...status)', {status: [400, 500, 700]})
+                .groupBy('campaignSubmit.campaignIdx')
+                .orderBy('count', 'DESC')
+                .limit(limit)
+                .getRawMany();
+
+            if(type == 'weight'){
+                return weight;
+            }else if(type == 'submit'){
+                return submit;
+            }else{
+                return [];
+            }
+        }catch (error){
             console.log(error)
             throw error;
         }

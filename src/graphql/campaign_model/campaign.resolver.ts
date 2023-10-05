@@ -1,16 +1,32 @@
-import {Args, Int, Query, Resolver} from '@nestjs/graphql';
+import {Args, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {CampaignService} from "../../campaign/campaign.service";
 import {UseGuards, Req} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
-import {bufferToString} from "../../util/common";
+import {bufferToString, FROM_UNIXTIME, FROM_UNIXTIME_JS} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
+import {LoginInput} from "../auth_ql_model/dto/loginInput";
+import {FavInput} from "./dto/favInput";
 
 @Resolver('Campaign')
 export class CampaignResolver {
     constructor(private readonly campaignsService: CampaignService) {
     }
+
+    @Query()
+    async getRecommendedSearchWords(
+        @Args('type', {type: () => String}) type: string,
+        @Args('limit', {type: () => Int}) limit: number,
+    ){
+            try{
+            let data = await this.campaignsService.getRecommendedSearchWords(type,limit);
+            console.log("-> data", data);
+            return data;
+        }catch (error){
+            console.log(error)
+            throw error;
+        } }
 
     @Query()
     async search(@Args('keyword', {type: () => String}) keyword: string) {
@@ -70,6 +86,7 @@ export class CampaignResolver {
             throw error;
         }
     }
+
     @Query()
     async getDetailCampaign(@Args('idx', {type: () => Int}) idx: number) {
         try {
@@ -77,6 +94,59 @@ export class CampaignResolver {
             let data = await this.campaignsService.findOne(idx);
             //json 형식으로 변환
             console.log(data)
+            return data
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Query()
+    async getCampaignItem(@Args('idx', {type: () => Int}) idx: number) {
+        try {
+            console.log(idx)
+            let data = await this.campaignsService.findOne(idx);
+            //json 형식으로 변환
+            console.log(data.campaignItem)
+            return data.campaignItem
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Query()
+    async getItemSchedule(
+        @Args('idx', {type: () => Int}) idx: number,
+        @Args('start_day', {type: () => String}) start_day: string,
+        @Args('end_day', {type: () => String}) end_day: string
+    ) {
+        try {
+            let data = await this.campaignsService.getItemSchedule(idx, start_day, end_day);
+            return data
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Query()
+    async getActiveItemSchedule(
+        @Args('idx', {type: () => Int}) idx: number,
+        @Args('start_day', {type: () => String}) start_day: string,
+        @Args('end_day', {type: () => String}) end_day: string
+    ) {
+        try {
+            //현제시간 YYYY-MM-DD HH:mm:ss
+            let now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            //유닉스 타임스템프
+            let nowUnix = Math.floor(new Date().getTime() / 1000);
+            let startUnix = Math.floor(new Date(start_day).getTime() / 1000);
+            let endUnix = Math.floor(new Date(end_day).getTime() / 1000);
+
+            console.log(now, nowUnix, startUnix, endUnix)
+
+            let data = await this.campaignsService.getActiveItemSchedule(idx, startUnix, endUnix, nowUnix);
             return data
         } catch (error) {
             console.log(error)
@@ -106,5 +176,52 @@ export class CampaignResolver {
         }
     }
 
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getCampaignRecent(
+        @Args('take', {type: () => Int}) take: number,
+        @Args('page', {type: () => Int}) page: number,
+        @Args('memberIdx', {type: () => Int}) memberIdx: number,
+    ) {
+        try {
+            const list = await this.campaignsService.recentList(take, page, memberIdx);
+            //json 형식으로 변환
+            console.log(list)
+            return list
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async setCampaignFav(@Args('favInput',) favInput: FavInput){
+        try{
+            let result = {
+                idx: null,
+                memberIdx: null,
+                campaignIdx: null,
+                regdate: null,
+
+            };
+            const response = await this.campaignsService.setCampaignFav(favInput.memberIdx, favInput.campaignIdx);
+
+            result.idx = response.idx;
+            result.memberIdx = response.memberIdx;
+            result.campaignIdx = response.campaignIdx;
+            result.regdate = FROM_UNIXTIME_JS(response.regdate);
+
+
+            console.log("-> result", result);
+            return result;
+        }catch (error){
+            console.log(error)
+            throw error;
+        }
+    }
+
 
 }
+
+

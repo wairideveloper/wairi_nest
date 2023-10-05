@@ -5,6 +5,8 @@ import {Cate} from "./Cate";
 import {CateArea} from "./CateArea";
 import {Partner} from "./Partner";
 import {CampaignReview} from "./CampaignReview";
+import {CampaignRecent} from "./CampaignRecent";
+import {CampaignSubmit} from "./CampaignSubmit";
 
 @Entity("campaign", {schema: "wairi", engine: 'InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' })
 export class Campaign {
@@ -155,6 +157,9 @@ export class Campaign {
     @OneToMany(() => CampaignImage, campaignImage => campaignImage.campaign)
     campaignImage: CampaignImage[]
 
+    @OneToMany(() => CampaignSubmit, campaignSubmit => campaignSubmit.campaignIdx)
+    campaignSubmit: CampaignImage[]
+
     @OneToOne(() => Cate)
     @JoinColumn({name: 'cateIdx', referencedColumnName: 'idx'})
     cate: Cate;
@@ -162,6 +167,10 @@ export class Campaign {
     @OneToOne(() => CateArea)
     @JoinColumn({name: 'cateAreaIdx', referencedColumnName: 'idx'})
     cateArea: CateArea;
+
+    @OneToOne(() => CampaignRecent)
+    @JoinColumn({name: 'idx', referencedColumnName: 'campaignIdx'})
+    campaignRecent: CampaignRecent;
 
     @OneToOne(() => Partner)
     @JoinColumn({name: 'partnerIdx', referencedColumnName: 'idx'})

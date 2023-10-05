@@ -1,4 +1,6 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {CateArea} from "./CateArea";
+import {Campaign} from "./Campaign";
 
 @Index("memberIdx", ["memberIdx"], {})
 @Index("campaignIdx", ["campaignIdx"], {})
@@ -45,4 +47,8 @@ export class CampaignRecent {
 
   @Column("int", { name: "utmInfIdx" })
   utmInfIdx: number;
+
+  @OneToOne(() => Campaign)
+  @JoinColumn({name: 'campaignIdx', referencedColumnName: 'idx'})
+  campaign: Campaign;
 }

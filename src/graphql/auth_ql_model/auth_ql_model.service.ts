@@ -6,7 +6,7 @@ import {compareSync} from "bcrypt";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
 import {SignupInput} from "./dto/signupInput";
-import {AES_DECRYPT, AES_ENCRYPT, FROM_UNIXTIME, getNowUnix, hashPassword} from "../../util/common";
+import {AES_DECRYPT, AES_ENCRYPT, FROM_UNIXTIME, FROM_UNIXTIME_JS, getNowUnix, hashPassword} from "../../util/common";
 import {RestClient} from "@bootpay/server-rest-client";
 import {Bootpay} from '@bootpay/backend-js'
 import {InjectRepository} from "@nestjs/typeorm";
@@ -49,11 +49,37 @@ export class AuthQlModelService {
                     expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
                     secret: process.env.JWT_SECRET
                 });
+                console.log("-> member.idx", member.idx);
+                let memberChannel = await this.memberService.findChannel(member.idx);
+                //array memberChannel.regdate 변환
+                let result = {
+                    idx:null,
+                    type: null,
+                    typeText: null,
+                    link: null,
+                    regdate: null,
+                    date: null,
+                    level: null,
+                    filename: null,
+                    origName: null,
+                    average_visitor: null,
+                    subscriber: null,
+                    content_count: null,
+                    followers: null,
+                    follow: null,
+                }
+                memberChannel.map((item,    index) => {
+                    memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();
+                    return memberChannel[index];
+                });
+                console.log("-> memberChannel", memberChannel);
+
+                member.memberChannel = memberChannel;
                 return {
                     message: '로그인 성공',
                     access_token: access_token,
                     refresh_token: refresh_token,
-                    member: member,
+                    member: member
                 };
             } else {
                 throw new HttpException('로그인 실패', 404);
@@ -286,7 +312,7 @@ export class AuthQlModelService {
 
         try {
             await Bootpay.getAccessToken()
-            const data = await Bootpay.certificate('[ receipt_id ]')
+            const data = await Bootpay.certificate(receipt_id)
             return {
                 message: '본인인증 성공',
                 data: data,

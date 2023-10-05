@@ -58,6 +58,13 @@ input ChangePasswordInput{
     password: String!
 }
 
+input ChannelInput{
+    channelType: Int
+    link: String
+    refererRoot: Int
+    refererRootInput: String
+}
+
 type LoginResponse{
     message: String!
     access_token: String
@@ -138,7 +145,7 @@ type SubscriptionPath {
     text: String
 }
 
-type Query {
+extend type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
     identityVerificationV2(receipt_id : String!): identityVerificationResponse
     findId(phone : String!, username : String!): Member
@@ -150,12 +157,13 @@ type Query {
     naverSignup(signupInput:SignupInput!): MemberSignupResponse
     googleSignup(signupInput:SignupInput!): MemberSignupResponse
 }
-type Mutation{
+extend type Mutation{
     login(loginInput:LoginInput!): LoginResponse
     signup(signupInput:SignupInput!): MemberSignupResponse
 
     partnerSignup(partnerSignupInput:PartnerSignupInput!): PartnerSignupResponse
     changePassword(changePasswordInput: ChangePasswordInput!): Member
     getAccessToken(refresh_token : String!): LoginResponse
+    setChannelManagement(channelInput: ChannelInput): String
 }
 

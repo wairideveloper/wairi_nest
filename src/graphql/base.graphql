@@ -17,6 +17,22 @@ type AlimtalkResponse {
     msg: String
 }
 
-extend type Mutation {
+type SearchWord {
+    idx: Int!
+    name: String
+    count: Int
+    cateName: String
+    cateAreaName: String
+}
+
+type RecommendedSearchWordsResponse{
+    searchWord: [SearchWord]
+}
+
+type Query{
+    getRecommendedSearchWords(type:String, limit:Int): [SearchWord]!
+}
+
+type Mutation {
     sendAlimtalk(receiverInput:ReceiverInput!, templateCode:String): AlimtalkResponse
 }

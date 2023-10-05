@@ -11,9 +11,15 @@ import {CateArea} from "../../../entity/entities/CateArea";
 import {Partner} from "../../../entity/entities/Partner";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {CampaignRecent} from "../../../entity/entities/CampaignRecent";
+import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
+import {CampaignFav} from "../../../entity/entities/CampaignFav";
+import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Campaign,CampaignItem,CampaignImage,Cate,CateArea,Partner,CampaignReview,CampaignRecent])],
+    imports: [TypeOrmModule.forFeature([Campaign,CampaignItem,CampaignImage,Cate,
+        CateArea,Partner,CampaignReview,CampaignRecent, CampaignItemSchedule, CampaignFav,
+        CampaignSubmit
+    ])],
     providers: [CampaignResolver,CampaignService,JwtService],
 })
 export class Campaign_gqlModule {}

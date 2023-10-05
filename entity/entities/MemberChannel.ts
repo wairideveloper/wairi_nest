@@ -22,4 +22,5 @@ export class MemberChannel {
 
   @Column("int", { name: "level" })
   level: number;
+    date: string;
 }

@@ -11,11 +11,14 @@ import {CateArea} from "../../entity/entities/CateArea";
 import {Partner} from "../../entity/entities/Partner";
 import {CampaignReview} from "../../entity/entities/CampaignReview";
 import {CampaignRecent} from "../../entity/entities/CampaignRecent";
+import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
+import {CampaignFav} from "../../entity/entities/CampaignFav";
+import {CampaignSubmit} from "../../entity/entities/CampaignSubmit";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
-            CampaignRecent
+            CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit
         ]
     )],
     controllers: [CampaignController],

@@ -21,7 +21,7 @@ type CampaignDetail{
     campaignItem: [CampaignItem!]!
 }
 
-type Campaigns implements Pagination {
+type  Campaigns implements Pagination {
     #  pagination: Pagination!
     dataPerPage: Int
     totalPage: Int
@@ -50,11 +50,88 @@ type returnLogin{
     token: String!
 }
 
+type CampaignItemSchedule{
+    idx: Int
+    name: String
+    priceOrig: Int
+    priceDeposit: Int
+    stock: Int
+    startDay: String
+    endDay: String
+    date: String
+    active: String
+}
+
+type CampaignRecent{
+    idx: Int
+    name: String
+    priceOrig: Int
+    priceDeposit: Int
+    lowestPriceCalcType1: Int
+    lowestPriceCalcType2: Int
+    lowestPriceSellType1: Int
+    lowestPriceOrig: Int
+    image: String
+    cateName: String
+    cateIdx: Int
+    cateAreaName: String
+    partnerName: String
+}
+
+type CampaignRecents implements Pagination {
+    #  pagination: Pagination!
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+    data: [CampaignRecent!]!
+}
+
+type CampaignFav{
+    idx: Int
+    memberIdx: Int
+    campaignIdx: Int
+    regdate: String
+}
+
+type CampaignFavs implements Pagination {
+    #  pagination: Pagination!
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+    data: [CampaignFav!]!
+}
+
+input FavInput{
+    memberIdx: Int!
+    campaignIdx: Int!
+}
+
+type SetCampaignFavResponse{
+    idx: Int
+    regdate: String
+    campaignIdx: Int
+}
+
 extend type Query {
     #  getAllMember(skip: Int, take: Int!,title:String): [Member]
     getCampaign(id: Int!): Campaign!
     getCampaigns(take: Int!,page:Int!): Campaigns!
     getDetailCampaign(idx: Int!): CampaignDetail!
+    getCampaignItem(idx:Int!): [CampaignItem]!
+    getItemSchedule(idx:Int!, start_day:String, end_day:String): [CampaignItemSchedule]!
+    getActiveItemSchedule(idx:Int!, start_day:String, end_day:String): [CampaignItemSchedule]!
+    getCampaignRecent(memberIdx:Int!,page:Int,take:Int): CampaignRecents!
     search(keyword: String!): Campaigns!
+
     login(idx:Int!): returnLogin!
+}
+
+extend type Mutation{
+    setCampaignFav(favInput: FavInput): SetCampaignFavResponse!
 }

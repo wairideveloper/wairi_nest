@@ -1,13 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {HttpExceptionFilter} from "../src/util/HttpExceptionFilter";
+import {HttpExceptionFilter} from "./util/HttpExceptionFilter";
 import {winstonLogger} from "./util/winston.util";
 import {ValidationPipe} from "@nestjs/common";
+import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,
       {
           logger: winstonLogger,
+
       });
     app.useGlobalPipes(new ValidationPipe());
   //예외 필터 연결
@@ -20,6 +22,8 @@ async function bootstrap() {
     optionsSuccessStatus: 200,
   });
 
+  app.use(graphqlUploadExpress({maxFileSize:1000000, maxFiles: 5}))
+
   await app.listen(3000);
 }
-bootstrap();
+bootstrap().then(r => console.log("NestJS Server Start"));

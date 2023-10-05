@@ -14,10 +14,13 @@ import {AuthQlService} from "../../auth_ql/auth_ql.service";
 import {AuthGqlService} from "./auth_gql.service";
 import {CampaignService} from "../../campaign/campaign.service";
 import {JwtService} from "@nestjs/jwt";
+import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
+import {CampaignFav} from "../../../entity/entities/CampaignFav";
+import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Member,Campaign,CampaignItem,CampaignImage,Cate,CateArea
-        ,Partner,CampaignReview,CampaignRecent
+        ,Partner,CampaignReview,CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit
     ])],
     providers: [AuthResolver, AuthQlService,CampaignService, AuthGqlService, JwtService]
 })

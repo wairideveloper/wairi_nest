@@ -25,8 +25,16 @@ type MemberChannel {
     type: Int
     typeText: String
     link: String
-    regdate: DateTime
+    regdate: String
+    date: String
     level: Int
+    filename: String
+    origName: String
+    average_visitor: Int
+    subscriber: Int
+    content_count: Int
+    followers: Int
+    follow: Int
 }
 
 type setMemberChannelResponse {

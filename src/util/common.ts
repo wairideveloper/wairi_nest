@@ -65,6 +65,17 @@ export const FROM_UNIXTIME = (column: string) => {
     return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),'UTC','Asia/Seoul'),'%Y-%m-%d %H:%i:%s')`;
 }
 
+//유닉스타임스템프를 javacript  한국 날짜로 변환 YYYY-MM-DD HH:mm:ss
+export const FROM_UNIXTIME_JS = (column: number) => {
+    return moment.unix(Number(column)).format('YYYY-MM-DD HH:mm:ss');
+}
+
+
+// 날짜를 유닉스 타임스템프로 변환
+export const UNIX_TIMESTAMP = (column: string) => {
+    return `UNIX_TIMESTAMP(${column})`;
+}
+
 //이름 마스킹처리
 export const getMaskingName = (name: string) => {
     if(name === null || name === undefined || name === '') return;

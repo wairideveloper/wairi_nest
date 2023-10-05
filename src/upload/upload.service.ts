@@ -102,9 +102,32 @@ export class UploadService {
             // const res = await this.s3_V2.send(new GetObjectCommand(uploadParams));
             // const str = await res.Body;
         }
+        // return res.$metadata.httpStatusCode;
+    }
 
+    async uploadImageGraphQl(file) {
+        const fileName = `${uuidv4()}-${file[0].originalname}`;
+        const encodeFileName = encodeURIComponent(fileName);
 
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            // Key: String(file[0].originalname),
+            Key: String(encodeFileName),
+            Body: file[0].buffer,
+            ContentType: file[0].mimetype,
+            ACL: 'public-read',
+        };
 
+        const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
+
+        if(res.$metadata.httpStatusCode === 200) {
+            // https://[BUCKET_NAME].s3.[REGION].amazonaws.com/[OBJECT_KEY]
+            const url = getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
+            console.log(url);
+            return url;
+            // const res = await this.s3_V2.send(new GetObjectCommand(uploadParams));
+            // const str = await res.Body;
+        }
         // return res.$metadata.httpStatusCode;
     }
 }

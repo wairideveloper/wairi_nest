@@ -24,11 +24,6 @@ export class CampaignController {
     constructor(private readonly campaignService: CampaignService) {
     }
 
-    @Post()
-    create(@Body() createCampaignDto: CreateCampaignDto) {
-        return this.campaignService.create(createCampaignDto);
-    }
-
     @Get('main')
     async mainList(
         @Request() req,
@@ -75,13 +70,4 @@ export class CampaignController {
         }
     }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateCampaignDto: UpdateCampaignDto) {
-        return this.campaignService.update(+id, updateCampaignDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.campaignService.remove(+id);
-    }
 }
