@@ -313,6 +313,7 @@ export class AuthQlModelService {
         try {
             await Bootpay.getAccessToken()
             const data = await Bootpay.certificate(receipt_id)
+            console.log(data)
             return {
                 message: '본인인증 성공',
                 data: data,

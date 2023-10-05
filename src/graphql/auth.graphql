@@ -92,6 +92,12 @@ type identityVerificationResponse{
     message: String
     data: identityVerificationData
 }
+type identityVerificationV2Response{
+    status: String!
+    code: String
+    message: String
+    data: identityVerificationDataV2
+}
 
 type identityVerificationData{
     receipt_id: String
@@ -101,6 +107,28 @@ type identityVerificationData{
     pg_name: String
     certificate:certificate
     payment_data:payment_data
+}
+
+type identityVerificationDataV2{
+    receipt_id: String
+    order_id: String
+    pg: String
+    method: String
+    pg_name: String
+    authenticated_at: String
+    status_locale:String
+    authenticate_data: authenticate_data
+}
+
+type authenticate_data{
+    phone: String
+    unique: String
+    di: String
+    name: String
+    birth: String
+    gender: Int
+    carrier: String
+    tid: String
 }
 
 type certificate{
@@ -147,7 +175,7 @@ type SubscriptionPath {
 
 extend type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
-    identityVerificationV2(receipt_id : String!): identityVerificationResponse
+    identityVerificationV2(receipt_id : String!): identityVerificationV2Response
     findId(phone : String!, username : String!): Member
     getMemberInfo(id: String!): Member
     getSnsChannel : [SnsChannel]
