@@ -1,0 +1,12 @@
+scalar Upload
+
+input ChannelInput {
+  name: String!
+  url: String!
+  followers: Int!
+  follow: Int!
+}
+
+extend type Mutation {
+  uploadFile(file: Upload!,channelInput: ChannelInput): String!
+}
