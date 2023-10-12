@@ -34,34 +34,17 @@ export class CommonModelService {
         });
     }
 
-    create(createCommonModelInput: CreateCommonModelInput) {
-        return 'This action adds a new commonModel';
-    }
-
-    findAll() {
-        return `This action returns all commonModel`;
-    }
-
-    findOne(id: number) {
-        return `This action returns a #${id} commonModel`;
-    }
-
-    update(id: number, updateCommonModelInput: UpdateCommonModelInput) {
-        return `This action updates a #${id} commonModel`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} commonModel`;
+    async createChannel(channelData){
+        console.log("-> channelData", channelData);
+        return channelData;
     }
 
     async uploadImage(file: FileUpload) {
         const fileName = `${uuidv4()}-${file.filename}`;
-        console.log("-> fileName", fileName);
         const encodeFileName = encodeURIComponent(fileName);
         const buffer = await this.streamToBuffer(file.createReadStream());
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            // Key: String(file[0].originalname),
             Key: String(encodeFileName),
             Body: buffer,
             ContentType: file.mimetype,
@@ -70,17 +53,11 @@ export class CommonModelService {
         console.log("-> process.env.AWS_BUCKET_NAME", process.env.AWS_BUCKET_NAME);
 
         const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
-        console.log(res);
 
         if (res.$metadata.httpStatusCode === 200) {
-        //     // https://[BUCKET_NAME].s3.[REGION].amazonaws.com/[OBJECT_KEY]
             const url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
-            console.log(url);
             return url;
-        //     // const res = await this.s3_V2.send(new GetObjectCommand(uploadParams));
-        //     // const str = await res.Body;
         }
-        // return res.$metadata.httpStatusCode;
     }
 
     async streamToBuffer(stream: Stream): Promise<Buffer> {

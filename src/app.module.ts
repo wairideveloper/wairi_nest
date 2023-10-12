@@ -55,6 +55,7 @@ import { Madein20ModelModule } from './graphql/madein20_model/madein20_model.mod
 import { CommonModelModule } from './graphql/common_model/common_model.module';
 import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 // import {GraphQLUpload} from "graphql-upload";
+import { FirebaseModule } from './graphql/firebase/firebase.module';
 
 @Module({
     imports: [
@@ -166,7 +167,8 @@ import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
         BoardModelModule,
         PaymentModelModule,
         Madein20ModelModule,
-        CommonModelModule
+        CommonModelModule,
+        FirebaseModule
 
     ],
     controllers: [AppController],

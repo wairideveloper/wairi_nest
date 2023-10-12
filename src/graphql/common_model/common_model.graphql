@@ -1,12 +1,21 @@
 scalar Upload
 
 input ChannelInput {
-  name: String!
-  url: String!
-  followers: Int!
-  follow: Int!
+    name: String!
+    url: String!
+    followers: Int!
+    follow: Int!
 }
 
 extend type Mutation {
-  uploadFile(file: Upload!,channelInput: ChannelInput): String!
+    signupUploadFile(file: Upload!,
+        originalname: String,
+        type: Int,
+        url:String,
+        average_visitor:Int,
+        subscriber:Int,
+        content_count:Int,
+        followers:Int,
+        follow:Int
+    ): String
 }

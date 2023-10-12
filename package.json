@@ -44,6 +44,7 @@
     "class-validator": "^0.14.0",
     "config": "^3.3.9",
     "cross-env": "^7.0.3",
+    "firebase-admin": "^11.11.0",
     "graphql": "^16.7.1",
     "graphql-scalars": "^1.22.2",
     "graphql-upload": "14",

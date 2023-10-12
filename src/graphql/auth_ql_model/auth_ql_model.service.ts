@@ -12,6 +12,8 @@ import {Bootpay} from '@bootpay/backend-js'
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Connection} from "typeorm";
+import * as admin from 'firebase-admin';
+import {ServiceAccount} from "firebase-admin";
 
 
 @Injectable()
@@ -91,6 +93,7 @@ export class AuthQlModelService {
     }
 
     async signup(data: any) {
+        console.log("=>(auth_ql_model.service.ts:94) data", data);
         //transaction 처리
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
@@ -131,6 +134,7 @@ export class AuthQlModelService {
             const link = data.link;
 
             //채널정보가 있을경우
+            //Todo: 회원가입 입력관련 체크
             if (channelType && link) {
                 const channel = await this.memberService.checkChannelType(channelType,newMember.generatedMaps[0].idx);
                 if (!channel) {
@@ -303,7 +307,36 @@ export class AuthQlModelService {
 
     }
 
-    async identityVerificationV2(receipt_id: string) {
+    async identityVerificationV2(receipt_id: string)
+    {
+        // Set the config options
+
+        const adminConfig: ServiceAccount = {
+          "projectId": process.env.FIREBASE_PROJECT_ID,
+          "privateKey": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+          "clientEmail": process.env.FIREBASE_CLIENT_EMAIL,
+        };
+        console.log("=>(auth_ql_model.service.ts:319) adminConfig", adminConfig);
+        // Initialize the firebase admin app
+        const fcm = admin.initializeApp({
+          credential: admin.credential.cert(adminConfig),
+          databaseURL: "https://wairi-399502-default-rtdb.firebaseio.com/",
+        });
+        //fcm message
+        const message = {
+            notification: {
+                title: '본인인증',
+                body: '본인인증이 완료되었습니다.',
+            }
+        }
+        console.log("=>(auth_ql_model.service.ts:332) message", message);
+
+        //fcm send
+        const response = await fcm.messaging().sendToDevice('eWGyWqUr71IQ0fVJ-PRtzg:APA91bHsKZ9AUksB-zZuDH6wpRyiTXeCXlb9lPSXpGLpelvegf30pn0-cPYU5Y9rCGhdAVOuKDblcmOB-WnStPZgz5Bq0CdCuRDKDW36TFv2m6XSMLLRxinWAs7eezbzTjjWS-rGvOVW', message);
+        console.log("-> response", response);
+
+        //fcm test
+
         console.log("-> receipt_id", receipt_id);
         Bootpay.setConfiguration({
             application_id: '6143fb797b5ba4002152b6e1',
@@ -313,11 +346,19 @@ export class AuthQlModelService {
         try {
             await Bootpay.getAccessToken()
             const data = await Bootpay.certificate(receipt_id)
-            console.log(data)
-            return {
-                message: '본인인증 성공',
-                data: data,
+            if(data){
+                let checkUnique = await this.memberService.checkUnique(data.authenticate_data.unique);
+                if(checkUnique){
+                    throw new HttpException('이미 등록된 본인인증 정보입니다.', 404);
+                }
+                return {
+                    message: '본인인증 성공',
+                    data: data,
+                }
+            }else{
+                throw new HttpException('본인인증 실패', 404);
             }
+
         } catch (e) {
             console.log(e)
         }

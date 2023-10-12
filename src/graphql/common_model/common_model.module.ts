@@ -1,13 +1,20 @@
 import {Module} from '@nestjs/common';
 import {CommonModelService} from './common_model.service';
+import {MembersService} from "../member_model/member.service";
 import {CommonModelResolver} from './common_model.resolver';
 import {TypeOrmModule} from "@nestjs/typeorm";
+import {Member} from "../../../entity/entities/Member";
+import {MemberChannel} from "../../../entity/entities/MemberChannel";
+import {CampaignReview} from "../../../entity/entities/CampaignReview";
+import {Config} from "aws-sdk";
+import {JwtService} from "@nestjs/jwt";
+
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([]),
+        TypeOrmModule.forFeature([Member, MemberChannel, CampaignReview,Config]),
     ],
-    providers: [CommonModelResolver, CommonModelService]
+    providers: [CommonModelResolver, CommonModelService, MembersService, JwtService]
 })
 export class CommonModelModule {
 }

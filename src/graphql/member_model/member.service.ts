@@ -268,4 +268,28 @@ export class MembersService {
             .andWhere('idx = :idx', {idx: data.channelIdx})
             .execute();
     }
+
+    async createMemberChannel(channelData: {
+        type: any;
+        url?: string;
+        average_visitor?: number;
+        subscriber?: number;
+        content_count?: number;
+        followers?: number;
+        follow?: number;
+        memberIdx?: any;
+        link?: any;
+        regdate?: any;
+        level?: any; }){
+
+        console.log("-> channelData", channelData);
+    }
+
+    async checkUnique(unique: any) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('ci = :unique', {unique: unique})
+            .getRawOne();
+    }
 }

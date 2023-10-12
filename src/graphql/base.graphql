@@ -12,6 +12,12 @@ input ReceiverInput {
     phone: String
 }
 
+input FirebaseInput {
+    token: String
+    title: String
+    body: String
+}
+
 type AlimtalkResponse {
     code: Int
     msg: String
@@ -35,4 +41,5 @@ type Query{
 
 type Mutation {
     sendAlimtalk(receiverInput:ReceiverInput!, templateCode:String): AlimtalkResponse
+    firebaseTest(firebaseInput:FirebaseInput): String
 }

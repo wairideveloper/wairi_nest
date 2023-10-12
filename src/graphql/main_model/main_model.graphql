@@ -23,6 +23,7 @@ type Category{
 type Product{
     idx: Int
     name: String
+    status: Int
     price: Int
     discount: Int
     image: String
