@@ -30,6 +30,9 @@ type Product{
     regdate: String
     ordering: Int
     link: String
+    lowestPriceOrig: Int
+    lowestPriceDeposit: Int
+    lowestSchedulePriceDeposit: Int
     category: [Category]
     campaignItem: [CampaignItem]
 }

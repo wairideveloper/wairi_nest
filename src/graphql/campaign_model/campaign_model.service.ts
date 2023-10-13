@@ -38,10 +38,24 @@ export class CampaignService {
             if(sort == 'recent'){
                 campaign = await this.campaignRepository
                     .createQueryBuilder('campaign')
-                    .select('*')
+                    .leftJoin('campaign.campaignItem', 'campaignItem')
+                    .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                    .select([
+                        'campaign.idx as idx',
+                        'campaign.name as name',
+                        'campaign.status as status',
+                        'campaign.regdate as regdate',
+                        'campaign.weight as weight',
+                        'campaign.cateIdx as cateIdx',
+                        'campaign.cateAreaIdx as cateAreaIdx',
+                        'min(campaignItem.priceOrig) as lowestPriceOrig',
+                        'min(campaignItem.priceDeposit) as lowestPriceDeposit',
+                        'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit'
+                    ])
                     .where("campaign.status = 200")
-                    .orderBy("regdate", 'DESC')
-                    .orderBy('weight', 'DESC')
+                    .orderBy("campaign.regdate", 'DESC')
+                    .orderBy('campaign.weight', 'DESC')
+                    .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
             }else{
