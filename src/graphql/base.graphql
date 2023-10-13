@@ -35,11 +35,17 @@ type RecommendedSearchWordsResponse{
     searchWord: [SearchWord]
 }
 
+type FirebaseResponse {
+    code: Int
+    msg: String
+    name: String
+}
+
 type Query{
     getRecommendedSearchWords(type:String, limit:Int): [SearchWord]!
 }
 
 type Mutation {
     sendAlimtalk(receiverInput:ReceiverInput!, templateCode:String): AlimtalkResponse
-    firebaseTest(firebaseInput:FirebaseInput): String
+    firebaseTest(firebaseInput:FirebaseInput): FirebaseResponse
 }

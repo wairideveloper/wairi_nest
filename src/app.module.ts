@@ -113,7 +113,8 @@ import { FirebaseModule } from './graphql/firebase/firebase.module';
                 BoardModelModule,
                 PaymentModelModule,
                 Madein20ModelModule,
-                CommonModelModule
+                CommonModelModule,
+                FirebaseModule
             ],
             typePaths: ['./**/*.graphql'],
             definitions: {

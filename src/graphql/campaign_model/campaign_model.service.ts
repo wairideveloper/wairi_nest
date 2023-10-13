@@ -5,6 +5,8 @@ import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
+import {CateArea} from "../../../entity/entities/CateArea";
+import {Cate} from "../../../entity/entities/Cate";
 
 @Injectable()
 export class CampaignService {
@@ -17,6 +19,11 @@ export class CampaignService {
         private campaignItemScheduleRepository: Repository<CampaignItemSchedule>,
         @InjectRepository(CampaignSubmit)
         private campaignSubmitRepository: Repository<CampaignSubmit>,
+        @InjectRepository(CateArea)
+        private cateAreaRepository: Repository<CateArea>,
+        @InjectRepository(Cate)
+        private cateRepository: Repository<Cate>,
+
     ) {
     }
 
@@ -71,6 +78,16 @@ export class CampaignService {
                 .select('*')
                 .getRawMany()
 
+            const cate = await this.cateRepository
+                .createQueryBuilder('cate')
+                .select('*')
+                .getRawMany()
+
+            const cateArea = await this.cateAreaRepository
+                .createQueryBuilder('cateArea')
+                .select('*')
+                .getRawMany()
+
             let result = [];
             campaign.forEach((item, index) => {
                 result.push({
@@ -84,9 +101,20 @@ export class CampaignService {
                                 return campaignItemScheduleItem.campaignItemIdx == campaignItemItem.idx
                             })
                         }
+                    }),
+                    category: cate.filter((cateItem, cateIndex) => {
+                        return cateItem.idx == item.cateIdx
+                    }).map((cateItem, cateIndex) => {
+                      return {
+                            ...cateItem,
+                            cateArea: cateArea.filter((cateAreaItem, cateAreaIndex) => {
+                                   return cateAreaItem.idx == item.cateAreaIdx
+                            })
+                      }
                     })
                 })
             })
+            console.log("=>(campaign_model.service.ts:115) result", result);
             return result;
         } catch (error) {
             throw error;

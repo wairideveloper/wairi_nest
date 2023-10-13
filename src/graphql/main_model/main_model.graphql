@@ -30,11 +30,12 @@ type Product{
     regdate: String
     ordering: Int
     link: String
-    category: Category
+    category: [Category]
     campaignItem: [CampaignItem]
 }
 
 type CampaignItem{
+    idx: Int
     name: String
     priceOrig: Int
 }
