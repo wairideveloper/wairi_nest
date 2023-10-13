@@ -37,7 +37,30 @@ type Product{
 type CampaignItem{
     idx: Int
     name: String
+    startDate: String
+    endDate: String
     priceOrig: Int
+    priceDeposit: Int
+    info: String
+    infoGuide: String
+    channels: String
+    dc11: Int
+    dc12: Int
+    dc21: Int
+    dc22: Int
+    regdate: String
+    itemDiscount: Int
+    itemDiscountText: String
+    campaignItemSchedule: [CampaignItemSchedules]
+}
+
+type CampaignItemSchedules{
+    idx: Int
+    date: String
+    itemIdx: Int
+    status: Int
+    stock: Int
+    priceDeposit: Int
 }
 
 type MainPage {

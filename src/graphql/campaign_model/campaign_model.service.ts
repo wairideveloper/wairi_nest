@@ -98,7 +98,8 @@ export class CampaignService {
                         return {
                             ...campaignItemItem,
                             campaignItemSchedule: campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
-                                return campaignItemScheduleItem.campaignItemIdx == campaignItemItem.idx
+
+                                return campaignItemScheduleItem.itemIdx == campaignItemItem.idx
                             })
                         }
                     }),
