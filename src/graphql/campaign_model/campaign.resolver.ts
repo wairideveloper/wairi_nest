@@ -67,7 +67,7 @@ export class CampaignResolver {
     }
 
     @Query()
-    @UseGuards(GqlAuthGuard)
+    // @UseGuards(GqlAuthGuard)
     async getCampaigns(@Args('take', {type: () => Int}) take: number,
                        @Args('page', {type: () => Int}) page: number) {
         try {

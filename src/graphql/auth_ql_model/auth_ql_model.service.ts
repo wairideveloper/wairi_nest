@@ -309,34 +309,6 @@ export class AuthQlModelService {
 
     async identityVerificationV2(receipt_id: string)
     {
-        // Set the config options
-
-        const adminConfig: ServiceAccount = {
-          "projectId": process.env.FIREBASE_PROJECT_ID,
-          "privateKey": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-          "clientEmail": process.env.FIREBASE_CLIENT_EMAIL,
-        };
-        console.log("=>(auth_ql_model.service.ts:319) adminConfig", adminConfig);
-        // Initialize the firebase admin app
-        const fcm = admin.initializeApp({
-          credential: admin.credential.cert(adminConfig),
-          databaseURL: "https://wairi-399502-default-rtdb.firebaseio.com/",
-        });
-        //fcm message
-        const message = {
-            notification: {
-                title: '본인인증',
-                body: '본인인증이 완료되었습니다.',
-            }
-        }
-        console.log("=>(auth_ql_model.service.ts:332) message", message);
-
-        //fcm send
-        const response = await fcm.messaging().sendToDevice('eWGyWqUr71IQ0fVJ-PRtzg:APA91bHsKZ9AUksB-zZuDH6wpRyiTXeCXlb9lPSXpGLpelvegf30pn0-cPYU5Y9rCGhdAVOuKDblcmOB-WnStPZgz5Bq0CdCuRDKDW36TFv2m6XSMLLRxinWAs7eezbzTjjWS-rGvOVW', message);
-        console.log("-> response", response);
-
-        //fcm test
-
         console.log("-> receipt_id", receipt_id);
         Bootpay.setConfiguration({
             application_id: '6143fb797b5ba4002152b6e1',

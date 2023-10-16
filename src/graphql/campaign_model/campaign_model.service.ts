@@ -40,6 +40,7 @@ export class CampaignService {
                     .createQueryBuilder('campaign')
                     .leftJoin('campaign.campaignItem', 'campaignItem')
                     .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                    .leftJoin('campaign.partner', 'partner')
                     .select([
                         'campaign.idx as idx',
                         'campaign.name as name',
@@ -52,9 +53,17 @@ export class CampaignService {
                         'min(campaignItem.priceDeposit) as lowestPriceDeposit',
                         'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit'
                     ])
-                    .where("campaign.status = 200")
-                    .orderBy("campaign.regdate", 'DESC')
+                    // .where("campaign.status = 200")
+                    // .andWhere("campaignItem.remove != 1")
+                    // .orderBy("campaign.regdate", 'DESC')
+                    // .orderBy('campaign.weight', 'DESC')
+                    .where('campaign.remove = :remove', {remove: 0})
+                    .andWhere('campaignItem.remove = :cr', {cr: 0})
+                    .andWhere('campaign.status >= :t', {t: 200})
+                    .andWhere('campaign.status <= :s', {s: 700})
+                    .andWhere('partner.status = :status', {status: 1})
                     .orderBy('campaign.weight', 'DESC')
+                    .addOrderBy('campaign.regdate', 'DESC')
                     .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
@@ -86,6 +95,7 @@ export class CampaignService {
             const campaignItem = await this.campaignItemRepository
                 .createQueryBuilder('campaignItem')
                 .select('*')
+                .where("campaignItem.remove != 1")
                 .getRawMany()
             const campaignItemSchedule = await this.campaignItemScheduleRepository
                 .createQueryBuilder('campaignItemSchedule')

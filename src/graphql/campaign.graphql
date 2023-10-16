@@ -13,7 +13,10 @@ type Campaign {
     lastUpdate: String
     image: String
     weight: Int
+    cateName: String
     lowestPriceOrig: Int
+    lowestPriceDeposit: Int
+    lowestSchedulePriceDeposit: Int
 }
 
 type CampaignDetail{

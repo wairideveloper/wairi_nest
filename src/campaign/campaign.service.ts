@@ -115,10 +115,20 @@ export class CampaignService {
     }
 
     async mainList(options: PaginationOptions) {
+
+        // 	$searchs = [
+        // 			'campaign.status>='=>200,
+        // 			'campaign.status<='=>700,
+        // 			'campaign.cateIdx'=>$cateIdx,
+        // 			'partner.status'=>1,
+        // 			'setCampaignMemberTarget'=>$this->memberType,
+        // 		];
+
         const {take, page} = options;
         const data = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.campaignImage', 'campaignImage')
+            .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
             .leftJoin('campaign.cate', 'cate')
             .leftJoin('campaign.cateArea', 'cateArea')
             .leftJoin('campaign.partner', 'partner')
@@ -126,26 +136,40 @@ export class CampaignService {
                 'campaign.idx as idx',
                 'campaign.name as name',
                 'campaign.weight as weight',
+                // 'min(campaignItem.priceOrig) as lowestPriceOrig',
+                // 'min(campaignItem.calcType1) as lowestPriceCalcType1',
+                // 'min(campaignItem.calcType2) as lowestPriceCalcType2',
+                // 'min(campaignItem.sellType) as lowestPriceSellType',
                 'min(campaignItem.priceOrig) as lowestPriceOrig',
-                'min(campaignItem.calcType1) as lowestPriceCalcType1',
-                'min(campaignItem.calcType2) as lowestPriceCalcType2',
-                'min(campaignItem.sellType) as lowestPriceSellType',
+                'min(campaignItem.priceDeposit) as lowestPriceDeposit',
+                'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit',
                 '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
                 'cate.name as cateName',
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
-                'partner.corpName as partnerName',
+                // 'partner.corpName as partnerName',
             ])
             .where('campaign.remove = :remove', {remove: 0})
-            .orderBy('campaign.idx', 'DESC')
-            .addOrderBy('campaign.weight', 'DESC')
+            // .andWhere('campaignItem.remove = :remove', {remove: 0})
+            .andWhere('campaign.status >= :t', {t: 200})
+            .andWhere('campaign.status <= :s', {s: 700})
+            .andWhere('partner.status = :status', {status: 1})
+            .orderBy('campaign.weight', 'DESC')
+            .addOrderBy('campaign.regdate', 'DESC')
             .groupBy('campaign.idx')
             .offset(take * (page - 1))
             .limit(take)
             .getRawMany();
 
         const total = await this.campaignRepository.createQueryBuilder('campaign')
-            .where('campaign.remove = :remove', {remove: 0}).getCount()
+            .leftJoin('campaign.campaignItem', 'campaignItem')
+            .leftJoin('campaign.partner', 'partner')
+            .where('campaign.remove = :remove', {remove: 0})
+            // .andWhere('campaignItem.remove = :remove', {remove: 0})
+            .andWhere('campaign.status >= :t', {t: 200})
+            .andWhere('campaign.status <= :s', {s: 700})
+            .andWhere('partner.status = :status', {status: 1})
+            .getCount()
 
         let totalPage = Math.ceil(total / take);
         if (page > totalPage) {
