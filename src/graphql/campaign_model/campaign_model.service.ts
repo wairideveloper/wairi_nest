@@ -49,9 +49,9 @@ export class CampaignService {
                         'campaign.weight as weight',
                         'campaign.cateIdx as cateIdx',
                         'campaign.cateAreaIdx as cateAreaIdx',
-                        'min(campaignItem.priceOrig) as lowestPriceOrig',
-                        'min(campaignItem.priceDeposit) as lowestPriceDeposit',
-                        'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit'
+                        'IFNULL(min(campaignItem.priceOrig),0) as lowestPriceOrig',
+                        'IFNULL(min(campaignItem.priceDeposit),0) as lowestPriceDeposit',
+                        'IFNULL(min(campaignItemSchedule.priceDeposit), 0) as lowestSchedulePriceDeposit'
                     ])
                     // .where("campaign.status = 200")
                     // .andWhere("campaignItem.remove != 1")
