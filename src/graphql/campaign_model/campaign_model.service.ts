@@ -55,8 +55,7 @@ export class CampaignService {
                     ])
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
-                    .andWhere('campaign.status >= :t', {t: 200})
-                    .andWhere('campaign.status <= :s', {s: 700})
+                    .andWhere('campaign.status = 200')
                     .andWhere('partner.status = :status', {status: 1})
                     .orderBy('campaign.weight', 'DESC')
                     .addOrderBy('campaign.regdate', 'DESC')
@@ -79,12 +78,30 @@ export class CampaignService {
 
                 campaign = await this.campaignRepository
                     .createQueryBuilder('campaign')
-                    .select('*')
+                    .select([
+                        'campaign.idx as idx',
+                        'campaign.name as name',
+                        'campaign.status as status',
+                        'campaign.regdate as regdate',
+                        'campaign.weight as weight',
+                        'campaign.cateIdx as cateIdx',
+                        'campaign.cateAreaIdx as cateAreaIdx',
+                        'IFNULL(min(campaignItem.priceOrig),0) as lowestPriceOrig',
+                        'IFNULL(min(campaignItem.priceDeposit),0) as lowestPriceDeposit',
+                        'IFNULL(min(campaignItemSchedule.priceDeposit), 0) as lowestSchedulePriceDeposit'
+                    ])
                     .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
-                    .where("campaign.status = 200")
-                    .andWhere('campaign.remove = :remove', {remove: 0})
+                    .leftJoin('campaign.campaignItem', 'campaignItem')
+                    .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                    .leftJoin('campaign.partner', 'partner')
+                    .where('campaign.remove = :remove', {remove: 0})
+                    .andWhere('campaignItem.remove = :cr', {cr: 0})
+                    .andWhere('campaign.status = 200')
+                    .andWhere('partner.status = :status', {status: 1})
+                    .andWhere('campaignItem.endDate > UNIX_TIMESTAMP(NOW())')
                     .orderBy("submitCount", 'DESC')
                     .addOrderBy('weight', 'DESC')
+                    .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
             }
