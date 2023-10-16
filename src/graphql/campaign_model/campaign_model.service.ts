@@ -53,10 +53,6 @@ export class CampaignService {
                         'IFNULL(min(campaignItem.priceDeposit),0) as lowestPriceDeposit',
                         'IFNULL(min(campaignItemSchedule.priceDeposit), 0) as lowestSchedulePriceDeposit'
                     ])
-                    // .where("campaign.status = 200")
-                    // .andWhere("campaignItem.remove != 1")
-                    // .orderBy("campaign.regdate", 'DESC')
-                    // .orderBy('campaign.weight', 'DESC')
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
                     .andWhere('campaign.status >= :t', {t: 200})
@@ -86,8 +82,9 @@ export class CampaignService {
                     .select('*')
                     .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
                     .where("campaign.status = 200")
+                    .andWhere('campaign.remove = :remove', {remove: 0})
                     .orderBy("submitCount", 'DESC')
-                    .orderBy('weight', 'DESC')
+                    .addOrderBy('weight', 'DESC')
                     .limit(8)
                     .getRawMany()
             }
