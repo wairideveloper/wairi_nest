@@ -33,6 +33,7 @@ type Product{
     lowestPriceOrig: Int
     discountPercentage: Int
     lowestPriceDeposit: Int
+    discountPrice: Int
     lowestSchedulePriceDeposit: Int
     category: [Category]
     campaignItem: [CampaignItem]

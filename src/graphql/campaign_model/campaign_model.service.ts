@@ -168,6 +168,7 @@ export class CampaignService {
                     if(item.idx == campaignItemLowestPriceItem.campaignIdx){
                         item.lowestPriceOrig = campaignItemLowestPriceItem.lowestPrice;
                         item.discountPercentage = campaignItemLowestPriceItem.dc11;
+                        item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
                     }
                 })
                 result.push({
