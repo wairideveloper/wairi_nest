@@ -27,6 +27,7 @@ type Product{
     price: Int
     discount: Int
     image: String
+    image2: String
     regdate: String
     ordering: Int
     link: String

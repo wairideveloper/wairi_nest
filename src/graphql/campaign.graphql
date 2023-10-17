@@ -15,8 +15,8 @@ type Campaign {
     weight: Int
     cateName: String
     lowestPriceOrig: Int
-    lowestPriceDeposit: Int
-    lowestSchedulePriceDeposit: Int
+    discountPercentage: Int
+    discountPrice: Int
 }
 
 type CampaignDetail{

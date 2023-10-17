@@ -137,13 +137,9 @@ export class CampaignService {
                 'campaign.name as name',
                 'campaign.weight as weight',
                 // 'min(campaignItem.priceOrig) as lowestPriceOrig',
-                // 'min(campaignItem.calcType1) as lowestPriceCalcType1',
-                // 'min(campaignItem.calcType2) as lowestPriceCalcType2',
-                // 'min(campaignItem.sellType) as lowestPriceSellType',
-                'min(campaignItem.priceOrig) as lowestPriceOrig',
-                'min(campaignItem.priceDeposit) as lowestPriceDeposit',
-                'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit',
-                '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
+                // 'min(campaignItem.priceDeposit) as lowestPriceDeposit',
+                // 'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit',
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 'cate.name as cateName',
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
@@ -160,6 +156,50 @@ export class CampaignService {
             .offset(take * (page - 1))
             .limit(take)
             .getRawMany();
+
+        const campaignItemLowestPrice = await this.campaignRepository
+            .createQueryBuilder('c')
+            .select('c.idx', 'campaignIdx')
+            .addSelect('c.name', 'campaignName')
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('priceOrig')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = c.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('priceOrig', 'ASC')
+                        .limit(1),
+                'lowestPrice'
+            )
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('dc11')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = c.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('dc11', 'ASC')
+                        .limit(1),
+                'dc11'
+            )
+            .where('c.status = 200')
+            .andWhere('c.remove = 0')
+            .orderBy('c.weight', 'DESC')
+            .addOrderBy('c.regdate', 'DESC')
+            .getRawMany();
+
+        let result =[];
+        data.forEach((item) => {
+            campaignItemLowestPrice.forEach((item2) => {
+                if(item.idx == item2.campaignIdx){
+                    item.lowestPriceOrig = item2.lowestPrice;
+                    item.discountPercentage = item2.dc11;
+                    item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+                    result.push(item);
+                }
+            })
+        });
 
         const total = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
@@ -366,6 +406,10 @@ export class CampaignService {
                     'partner.corpName as partnerName',
                 ])
                 .where('campaign.idx = :idx', {idx: idx})
+                .andWhere('campaign.remove = :remove', {remove: 0})
+                .andWhere('campaignItem.remove = :cr', {cr: 0})
+                .andWhere('campaign.status = 200')
+                .andWhere('partner.status = :status', {status: 1})
                 .getRawOne();
 
             return data;
@@ -399,6 +443,7 @@ export class CampaignService {
                 .andWhere(`campaignItemSchedule.date >= UNIX_TIMESTAMP('${start_day}')`)
                 .andWhere(`campaignItemSchedule.date <= UNIX_TIMESTAMP('${end_day}')`)
                 .getRawMany();
+            console.log("=>(campaign.service.ts:446) start_day", start_day);
             console.log("-> data", data);
             return data;
         } catch (error) {

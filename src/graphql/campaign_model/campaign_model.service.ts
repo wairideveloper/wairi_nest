@@ -50,6 +50,7 @@ export class CampaignService {
                         'campaign.cateIdx as cateIdx',
                         'campaign.cateAreaIdx as cateAreaIdx',
                         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                        '(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1) as image2',
                     ])
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
