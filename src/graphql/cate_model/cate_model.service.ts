@@ -21,6 +21,7 @@ export class CateModelService {
             const cate = await this.cateRepository
                 .createQueryBuilder('cate')
                 .select('*')
+                .addSelect('(SELECT COUNT(0)FROM campaign join campaignItem on campaign.idx = campaignItem.campaignIdx WHERE campaign.cateIdx = cate.idx AND (campaign.regDate + 86400 * 7) >= UNIX_TIMESTAMP() AND campaign.status = 200 AND campaign.remove = 0) AS newItem ')
                 .orderBy('cate.ordering', 'ASC')
                 .getRawMany()
             const cateArea = await this.cateAreaRepository

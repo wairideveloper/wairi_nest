@@ -139,7 +139,6 @@ export class CampaignService {
                 .orderBy('c.weight', 'DESC')
                 .addOrderBy('c.regdate', 'DESC')
                 .getRawMany();
-            console.log("=>(campaign_model.service.ts:153) campaignItemLowestPrice", campaignItemLowestPrice);
 
             const campaignItemSchedule = await this.campaignItemScheduleRepository
                 .createQueryBuilder('campaignItemSchedule')

@@ -2,6 +2,7 @@ type Cate{
   idx: Int
   name: String
   icon: String
+  newItem: Int
   ordering: Int
   memberType: Int
   signinRequired: Int
