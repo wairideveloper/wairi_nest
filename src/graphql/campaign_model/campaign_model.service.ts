@@ -49,10 +49,7 @@ export class CampaignService {
                         'campaign.weight as weight',
                         'campaign.cateIdx as cateIdx',
                         'campaign.cateAreaIdx as cateAreaIdx',
-                        // 'campaignItem.dc11 as dc11',
-                        'IFNULL(min(campaignItem.priceOrig),0) as lowestPriceOrig',
-                        'IFNULL(min(campaignItem.priceDeposit),0) as lowestPriceDeposit',
-                        'IFNULL(min(campaignItemSchedule.priceDeposit), 0) as lowestSchedulePriceDeposit'
+                        'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                     ])
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
@@ -87,9 +84,7 @@ export class CampaignService {
                         'campaign.weight as weight',
                         'campaign.cateIdx as cateIdx',
                         'campaign.cateAreaIdx as cateAreaIdx',
-                        'IFNULL(min(campaignItem.priceOrig),0) as lowestPriceOrig',
-                        'IFNULL(min(campaignItem.priceDeposit),0) as lowestPriceDeposit',
-                        'IFNULL(min(campaignItemSchedule.priceDeposit), 0) as lowestSchedulePriceDeposit'
+                        'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                     ])
                     .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
                     .leftJoin('campaign.campaignItem', 'campaignItem')

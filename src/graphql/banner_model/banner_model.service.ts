@@ -15,6 +15,7 @@ export class BannerModelService {
     async getBanner() {
         try{
             const data = await this.bannerRepository.find()
+            console.log("=>(banner_model.service.ts:18) data", data);
             return data;
         }catch (error) {
             throw error;

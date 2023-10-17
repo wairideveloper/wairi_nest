@@ -22,4 +22,10 @@ export class Banner {
 
   @Column("int", { name: "ordering" })
   ordering: number;
+
+  @Column("varchar", { name: "link" })
+  link: string;
+
+  @Column("varchar", { name: "native_link" })
+  native_link: string;
 }
