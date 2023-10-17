@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {Repository, SelectQueryBuilder} from "typeorm";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
@@ -49,6 +49,7 @@ export class CampaignService {
                         'campaign.weight as weight',
                         'campaign.cateIdx as cateIdx',
                         'campaign.cateAreaIdx as cateAreaIdx',
+                        // 'campaignItem.dc11 as dc11',
                         'IFNULL(min(campaignItem.priceOrig),0) as lowestPriceOrig',
                         'IFNULL(min(campaignItem.priceDeposit),0) as lowestPriceDeposit',
                         'IFNULL(min(campaignItemSchedule.priceDeposit), 0) as lowestSchedulePriceDeposit'
@@ -111,10 +112,45 @@ export class CampaignService {
                 .select('*')
                 .where("campaignItem.remove != 1")
                 .getRawMany()
+
+            const campaignItemLowestPrice = await this.campaignRepository
+                .createQueryBuilder('c')
+                .select('c.idx', 'campaignIdx')
+                .addSelect('c.name', 'campaignName')
+                .addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('priceOrig')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = c.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('priceOrig', 'ASC')
+                            .limit(1),
+                    'lowestPrice'
+                )
+                .addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('dc11')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = c.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('dc11', 'ASC')
+                            .limit(1),
+                    'dc11'
+                )
+                .where('c.status = 200')
+                .andWhere('c.remove = 0')
+                .orderBy('c.weight', 'DESC')
+                .addOrderBy('c.regdate', 'DESC')
+                .getRawMany();
+            console.log("=>(campaign_model.service.ts:153) campaignItemLowestPrice", campaignItemLowestPrice);
+
             const campaignItemSchedule = await this.campaignItemScheduleRepository
                 .createQueryBuilder('campaignItemSchedule')
                 .select('*')
                 .getRawMany()
+
 
             const cate = await this.cateRepository
                 .createQueryBuilder('cate')
@@ -128,6 +164,12 @@ export class CampaignService {
 
             let result = [];
             campaign.forEach((item, index) => {
+                campaignItemLowestPrice.forEach((campaignItemLowestPriceItem, campaignItemLowestPriceIndex) => {
+                    if(item.idx == campaignItemLowestPriceItem.campaignIdx){
+                        item.lowestPriceOrig = campaignItemLowestPriceItem.lowestPrice;
+                        item.discountPercentage = campaignItemLowestPriceItem.dc11;
+                    }
+                })
                 result.push({
                     ...item,
                     campaignItem: campaignItem.filter((campaignItemItem, campaignItemIndex) => {
@@ -153,7 +195,6 @@ export class CampaignService {
                     })
                 })
             })
-            console.log("=>(campaign_model.service.ts:115) result", result);
             return result;
         } catch (error) {
             throw error;

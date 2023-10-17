@@ -31,6 +31,7 @@ type Product{
     ordering: Int
     link: String
     lowestPriceOrig: Int
+    discountPercentage: Int
     lowestPriceDeposit: Int
     lowestSchedulePriceDeposit: Int
     category: [Category]
