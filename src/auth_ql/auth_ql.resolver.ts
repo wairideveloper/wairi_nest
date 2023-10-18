@@ -39,7 +39,7 @@ export class AuthQlResolver {
     async findAll(@Args('id', {type: () => Int}) id: number) {
         try {
             console.log(id)
-            let data = await this.campaignsService.findOne(id);
+            let data = await this.campaignsService.detailCampaign(id);
             //json 형식으로 변환
 
             console.log(data)

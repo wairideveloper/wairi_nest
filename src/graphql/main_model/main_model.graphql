@@ -47,14 +47,17 @@ type CampaignItem{
     endDate: String
     priceOrig: Int
     priceDeposit: Int
+    lowestPrice: Int
     info: String
     infoGuide: String
-    channels: String
+    channels: [String]
+    application_period: String
     dc11: Int
     dc12: Int
     dc21: Int
     dc22: Int
     regdate: String
+    notWeekends: Int
     itemDiscount: Int
     itemDiscountText: String
     campaignItemSchedule: [CampaignItemSchedules]
@@ -63,6 +66,7 @@ type CampaignItem{
 type CampaignItemSchedules{
     idx: Int
     date: String
+    formattedDate: String
     itemIdx: Int
     status: Int
     stock: Int

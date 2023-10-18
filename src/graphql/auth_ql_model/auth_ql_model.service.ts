@@ -30,6 +30,7 @@ export class AuthQlModelService {
     async login(id: string, password: string) {
         try {
             const member = await this.memberService.findById(id);
+            console.log("=>(auth_ql_model.service.ts:33) member", member);
             if (!member) {
                 throw new HttpException('회원정보 없음', 404);
             }
@@ -93,7 +94,6 @@ export class AuthQlModelService {
     }
 
     async signup(data: any) {
-        console.log("=>(auth_ql_model.service.ts:94) data", data);
         //transaction 처리
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
@@ -101,6 +101,7 @@ export class AuthQlModelService {
 
         try {
             const member = await this.memberService.findById(data.id);
+            console.log("=>(auth_ql_model.service.ts:104) member", member);
             if (member) {
                 throw new HttpException('이미 회원정보가 있습니다.', HttpStatus.CONFLICT);
             }
@@ -113,8 +114,8 @@ export class AuthQlModelService {
                 nickname: data.nickname,
                 email: AES_ENCRYPT(data.email),
                 phone: AES_ENCRYPT(data.phone),
-                ci: data.unique,
-                di: data.di,
+                ci: data.unique ? data.unique : "",
+                di: data.di ? data.di : "",
                 birth: data.birth ? data.birth : 0,
                 gender: data.gender ? (data.gender == 1 ? 'm' : 'f') : "",
                 refererRoot: data.refererRoot ? data.refererRoot : 0,
@@ -129,7 +130,6 @@ export class AuthQlModelService {
             }
 
             const newMember = await this.memberService.create(data);
-            console.log("-> newMember", newMember);
             const channelType = data.channelType;
             const link = data.link;
 
@@ -167,6 +167,10 @@ export class AuthQlModelService {
                     expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
                     secret: process.env.JWT_SECRET
                 });
+                // let identityVerification = 'N';
+                // if(member.ci) {
+                //     identityVerification = 'Y';
+                // }
 
                 await queryRunner.commitTransaction();
 
@@ -174,6 +178,7 @@ export class AuthQlModelService {
                     message: '회원가입 성공',
                     access_token: access_token,
                     refresh_token: refresh_token,
+                    // identityVerification: identityVerification,
                     data: result,
                 };
             }else {

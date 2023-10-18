@@ -16,6 +16,8 @@ type Member {
     regdate: String
     lastSignin: String
     lastUpdate: String
+    ci: String
+    di: String
     memberChannel: [MemberChannel]
     campaignReview: [CampaignReview]
 }

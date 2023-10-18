@@ -72,7 +72,7 @@ export class CampaignItem {
     infoRefund2: string;
 
     @Column("varchar", {name: "channels", length: 200})
-    channels: string;
+    channels: any[];
 
     @Column("int", {name: "onlyMemberType2"})
     onlyMemberType2: number;

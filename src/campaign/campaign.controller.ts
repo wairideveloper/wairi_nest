@@ -31,17 +31,17 @@ export class CampaignController {
         @Query('page') page: number,
         @Query('take') take: number,
     ) {
-        try {
-            const list = await this.campaignService.mainList({take, page});
-            res.status(HttpStatus.OK).json(list);
-        } catch (error) {
-            throw new HttpException({
-                status: error.status,
-                message: error
-            }, HttpStatus.FORBIDDEN, {
-                cause: error
-            });
-        }
+        // try {
+        //     const list = await this.campaignService.mainList({take, page});
+        //     res.status(HttpStatus.OK).json(list);
+        // } catch (error) {
+        //     throw new HttpException({
+        //         status: error.status,
+        //         message: error
+        //     }, HttpStatus.FORBIDDEN, {
+        //         cause: error
+        //     });
+        // }
     }
 
     @Get(':id')
@@ -51,7 +51,7 @@ export class CampaignController {
         @Param('id') id: string) {
         try {
             const userInfo: any = verifyToken(req);
-            const campaign = await this.campaignService.findOne(+id);
+            const campaign = await this.campaignService.detailCampaign(+id);
             const referer = req.headers.referer ? req.headers.referer : "";
             const refererHost = referer.split('/')[2]? referer.split('/')[2] : "";
             const serverHost = req.headers.host; // req.headers.origin

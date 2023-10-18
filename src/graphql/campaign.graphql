@@ -10,10 +10,14 @@ type Campaign {
     level: Int
     status: Int
     regdate: String
+    info: String
     lastUpdate: String
     image: String
     weight: Int
     cateName: String
+    cateIdx: Int
+    cateAreaName: String
+    cateAreaIdx: Int
     lowestPriceOrig: Int
     discountPercentage: Int
     discountPrice: Int
@@ -32,7 +36,7 @@ type  Campaigns implements Pagination {
     next: Int
     previous: Int
     currentPage: Int
-    data: [Campaign!]!
+    products: [Campaign!]!
 }
 
 type CampaignReview {
@@ -124,12 +128,17 @@ type SetCampaignFavResponse{
 extend type Query {
     #  getAllMember(skip: Int, take: Int!,title:String): [Member]
     getCampaign(id: Int!): Campaign!
-    getCampaigns(take: Int!,page:Int!): Campaigns!
+    #캠페인 리스트
+    getCampaigns(take: Int!,page:Int!,cate:Int,cateArea:Int): Campaigns!
+    #캠페인 상세
     getDetailCampaign(idx: Int!): CampaignDetail!
+
     getCampaignItem(idx:Int!): [CampaignItem]!
     getItemSchedule(idx:Int!, start_day:String, end_day:String): [CampaignItemSchedule]!
     getActiveItemSchedule(idx:Int!, start_day:String, end_day:String): [CampaignItemSchedule]!
     getCampaignRecent(memberIdx:Int!,page:Int,take:Int): CampaignRecents!
+
+    #캠페인 검색
     search(keyword: String!): Campaigns!
 
     login(idx:Int!): returnLogin!

@@ -114,7 +114,7 @@ export class CampaignService {
         });
     }
 
-    async mainList(options: PaginationOptions) {
+    async mainList(take, page, cate, cateArea) {
 
         // 	$searchs = [
         // 			'campaign.status>='=>200,
@@ -124,8 +124,8 @@ export class CampaignService {
         // 			'setCampaignMemberTarget'=>$this->memberType,
         // 		];
 
-        const {take, page} = options;
-        const data = await this.campaignRepository.createQueryBuilder('campaign')
+        // const {take, page} = options;
+        const query = this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
@@ -143,6 +143,7 @@ export class CampaignService {
                 'cate.name as cateName',
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
+                'cateArea.idx as cateAreaIdx',
                 // 'partner.corpName as partnerName',
             ])
             .where('campaign.remove = :remove', {remove: 0})
@@ -155,7 +156,15 @@ export class CampaignService {
             .groupBy('campaign.idx')
             .offset(take * (page - 1))
             .limit(take)
-            .getRawMany();
+
+        if (cate) {
+            query.andWhere('campaign.cateIdx = :cate', {cate: cate})
+        }
+        if (cateArea) {
+            query.andWhere('campaign.cateAreaIdx = :cateArea', {cateArea: cateArea})
+        }
+
+        const data = await query.getRawMany();
 
         const campaignItemLowestPrice = await this.campaignRepository
             .createQueryBuilder('c')
@@ -189,10 +198,10 @@ export class CampaignService {
             .addOrderBy('c.regdate', 'DESC')
             .getRawMany();
 
-        let result =[];
+        let result = [];
         data.forEach((item) => {
             campaignItemLowestPrice.forEach((item2) => {
-                if(item.idx == item2.campaignIdx){
+                if (item.idx == item2.campaignIdx) {
                     item.lowestPriceOrig = item2.lowestPrice;
                     item.discountPercentage = item2.dc11;
                     item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
@@ -201,7 +210,7 @@ export class CampaignService {
             })
         });
 
-        const total = await this.campaignRepository.createQueryBuilder('campaign')
+        const totalQuery = this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.partner', 'partner')
             .where('campaign.remove = :remove', {remove: 0})
@@ -209,7 +218,13 @@ export class CampaignService {
             .andWhere('campaign.status >= :t', {t: 200})
             .andWhere('campaign.status <= :s', {s: 700})
             .andWhere('partner.status = :status', {status: 1})
-            .getCount()
+        if (cate) {
+            totalQuery.andWhere('campaign.cateIdx = :cate', {cate: cate})
+        }
+        if (cateArea) {
+            totalQuery.andWhere('campaign.cateAreaIdx = :cateArea', {cateArea: cateArea})
+        }
+        const total = await totalQuery.getCount()
 
         let totalPage = Math.ceil(total / take);
         if (page > totalPage) {
@@ -225,14 +240,63 @@ export class CampaignService {
         });
     }
 
-    async findOne(id: number) {
-        console.log("-> id", id);
-
-        const campaign = await this.getCampaign(id);
+    async detailCampaign(id: number) {
+        const campaign = await this.getDetailCampaign(id);
         // return campaign;
         const campaignItem = await this.getCampaignItem(id);
+        //campaignItem 배열 리스트에서 Idx 값 추출
+        const campaignItemIdx = campaignItem.map((item) => {
+            return item.idx;
+        })
 
+        const campaignItemSchedule = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
+            .select(['*', 'DATE_FORMAT(FROM_UNIXTIME(campaignItemSchedule.date), "%Y-%m-%d") AS formattedDate'])
+            .where('campaignItemSchedule.itemIdx IN (:...idx)', {idx: campaignItemIdx})
+            .andWhere('campaignItemSchedule.date >= :now', {now: getUnixTimeStamp()})
+            .getRawMany();
 
+        campaignItem.forEach((item) => {
+            let channelNames = [];
+            // @ts-ignore
+            let jsonChannel = JSON.parse(item.channels);
+
+            // 1.블로그 2.youtube 3.인스타그램 4.틱톡 5.티스토리 9.기타
+            jsonChannel.forEach((item2) => {
+                switch (item2) {
+                    case "1":
+                        channelNames.push("블로그");
+                        break;
+                    case "2":
+                        channelNames.push("유튜브");
+                        break;
+                    case "3":
+                        channelNames.push("인스타그램");
+                        break;
+                    case "4":
+                        channelNames.push("틱톡");
+                        break;
+                    case "5":
+                        channelNames.push("티스토리");
+                        break;
+                    case "9":
+                        channelNames.push("기타");
+                        break;
+
+                }
+            })
+            item.channels = channelNames
+
+            //campaignItemSchedule 값 추가
+            item.campaignItemSchedule = campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+                return campaignItemScheduleItem.itemIdx == item.idx;
+            }).map((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+                return {
+                    ...campaignItemScheduleItem,
+                    active: moment.unix(campaignItemScheduleItem.date).format('YYYY-MM-DD'),
+                }
+            })
+
+        })
         const campaignImages = await this.getCampaignImages(id);
         const campaignCate = await this.getCampaignCate(id);
         const campaignCateArea = await this.getCampaignCateArea(id);
@@ -262,6 +326,7 @@ export class CampaignService {
                     'campaign.name as name',
                     'CONVERT(campaign.name USING utf8) AS name',
                     'campaign.weight as weight',
+                    'campaign.info as info',
                     'campaign.partnerIdx as partnerIdx',
                     '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
                 ]
@@ -271,12 +336,34 @@ export class CampaignService {
     }
 
     async getCampaignItem(id: number) {
-        return await this.campaignItemRepository.createQueryBuilder('campaignItem')
-            .leftJoinAndSelect('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+        let result = await this.campaignItemRepository.createQueryBuilder('campaignItem')
+            .select([
+                'campaignItem.*',
+                    `(SELECT 
+                    IF(
+                        schedule.priceDeposit > 0, 
+                        schedule.priceDeposit, 
+                        ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2)
+                    ) 
+                        FROM campaignItemSchedule schedule 
+                        JOIN campaignItem ON schedule.itemIdx = campaignItem.idx 
+                        WHERE campaignItem.campaignIdx = ${id}
+                        AND schedule.stock > 0 
+                        AND campaignItem.remove = 0 
+                        AND schedule.date >= UNIX_TIMESTAMP(CURDATE()) 
+                        ORDER BY price 
+                        LIMIT 1
+                    ) as lowestPrice`,
+
+                ]
+            )
+            .addSelect('CONCAT(DATE(FROM_UNIXTIME(startDate)), " ~ ", DATE(FROM_UNIXTIME(endDate))) AS application_period')
             .where('campaignItem.campaignIdx = :idx', {idx: id})
             .andWhere('campaignItem.remove = :remove', {remove: 0})
-            .orderBy('campaignItem.priceOrig', 'DESC')
-            .getMany()
+            .orderBy('campaignItem.ordering', 'ASC')
+            .getRawMany()
+
+        return result;
     }
 
     async getCampaignImages(id: number) {
@@ -385,34 +472,80 @@ export class CampaignService {
 
     async getDetailCampaign(idx: number) {
         try {
-            let data = await this.campaignRepository.createQueryBuilder('campaign')
+            let query = this.campaignRepository.createQueryBuilder('campaign')
                 .leftJoin('campaign.campaignItem', 'campaignItem')
                 .leftJoin('campaign.campaignImage', 'campaignImage')
                 .leftJoin('campaign.cate', 'cate')
                 .leftJoin('campaign.cateArea', 'cateArea')
                 .leftJoin('campaign.partner', 'partner')
-                .select([
-                    'campaign.idx as idx',
-                    'campaign.name as name',
-                    'campaign.weight as weight',
-                    'min(campaignItem.priceOrig) as lowestPriceOrig',
-                    'min(campaignItem.calcType1) as lowestPriceCalcType1',
-                    'min(campaignItem.calcType2) as lowestPriceCalcType2',
-                    'min(campaignItem.sellType) as lowestPriceSellType',
-                    '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
-                    'cate.name as cateName',
-                    'cate.idx as cateIdx',
-                    'cateArea.name as cateAreaName',
-                    'partner.corpName as partnerName',
-                ])
-                .where('campaign.idx = :idx', {idx: idx})
+            query.select([
+                'campaign.idx as idx',
+                'campaign.name as name',
+                'campaign.weight as weight',
+                'campaign.info as info',
+                `(SELECT 
+                    IF(
+                        schedule.priceDeposit > 0, 
+                        schedule.priceDeposit, 
+                        ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2)
+                    ) 
+                        FROM campaignItemSchedule schedule 
+                        JOIN campaignItem ON schedule.itemIdx = campaignItem.idx 
+                        WHERE campaignItem.campaignIdx = campaign.idx 
+                        AND schedule.stock > 0 
+                        AND campaignItem.remove = 0 
+                        AND schedule.date >= UNIX_TIMESTAMP(CURDATE()) 
+                        ORDER BY price 
+                        LIMIT 1
+                    ) as lowestPrice`,
+                'cate.name as cateName',
+                'cate.idx as cateIdx',
+                'cateArea.name as cateAreaName',
+                'cateArea.idx as cateAreaIdx',
+                'partner.corpName as partnerName',
+            ]);
+
+            query.where('campaign.idx = :idx', {idx: idx})
                 .andWhere('campaign.remove = :remove', {remove: 0})
                 .andWhere('campaignItem.remove = :cr', {cr: 0})
                 .andWhere('campaign.status = 200')
-                .andWhere('partner.status = :status', {status: 1})
-                .getRawOne();
+                .andWhere('partner.status = :status', {status: 1});
 
-            return data;
+            const result = await query.getRawOne();
+
+            return result;
+            // let data = await this.campaignRepository.createQueryBuilder('campaign')
+            //     .leftJoin('campaign.campaignItem', 'campaignItem')
+            //     .leftJoin('campaign.campaignImage', 'campaignImage')
+            //     .leftJoin('campaign.cate', 'cate')
+            //     .leftJoin('campaign.cateArea', 'cateArea')
+            //     .leftJoin('campaign.partner', 'partner')
+            //     .select([
+            //         'campaign.idx as idx',
+            //         'campaign.name as name',
+            //         'campaign.weight as weight',
+            //         'campaign.info as info',
+            //         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            //         'cate.name as cateName',
+            //         'cate.idx as cateIdx',
+            //         'cateArea.name as cateAreaName',
+            //         'cateArea.idx as cateAreaIdx',
+            //         'partner.corpName as partnerName',
+            //     ])
+            //     .addSelect(
+            //         (subQuery) =>
+            //             subQuery
+            //     )
+            //     .where('campaign.idx = :idx', {idx: idx})
+            //     .andWhere('campaign.remove = :remove', {remove: 0})
+            //     .andWhere('campaignItem.remove = :cr', {cr: 0})
+            //     .andWhere('campaign.status = 200')
+            //     .andWhere('partner.status = :status', {status: 1})
+            //     .getRawOne();
+            //
+            // // const result = await this.getLowestPrice(data);
+            //
+            // return data;
         } catch (error) {
             console.log(error)
             throw error;
@@ -540,7 +673,7 @@ export class CampaignService {
     }
 
     async setCampaignFav(memberIdx: number, campaignIdx: number) {
-        try{
+        try {
             const regdate = getUnixTimeStamp();
             const ymd = getYmd();
 
@@ -551,14 +684,14 @@ export class CampaignService {
 
             return await this.campaignFavRepository.save(fav)
 
-        }catch (error){
+        } catch (error) {
             console.log(error)
             throw error;
         }
     }
 
-    async getRecommendedSearchWords(type:string, limit:number = 5) {
-        try{
+    async getRecommendedSearchWords(type: string, limit: number = 5) {
+        try {
             const weight = await this.campaignRepository.createQueryBuilder('campaign')
                 .leftJoin('campaign.cate', 'cate')
                 .leftJoin('campaign.cateArea', 'cateArea')
@@ -594,16 +727,65 @@ export class CampaignService {
                 .limit(limit)
                 .getRawMany();
 
-            if(type == 'weight'){
+            if (type == 'weight') {
                 return weight;
-            }else if(type == 'submit'){
+            } else if (type == 'submit') {
                 return submit;
-            }else{
+            } else {
                 return [];
             }
-        }catch (error){
+        } catch (error) {
             console.log(error)
             throw error;
         }
+    }
+
+    async getLowestPrice(data) {
+        console.log('========' + data.isArray)
+        const campaignItemLowestPrice = await this.campaignRepository
+            .createQueryBuilder('c')
+            .select('c.idx', 'campaignIdx')
+            .addSelect('c.name', 'campaignName')
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('priceOrig')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = c.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('priceOrig', 'ASC')
+                        .limit(1),
+                'lowestPrice'
+            )
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('dc11')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = c.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('dc11', 'ASC')
+                        .limit(1),
+                'dc11'
+            )
+            .where('c.status = 200')
+            .andWhere('c.remove = 0')
+            .orderBy('c.weight', 'DESC')
+            .addOrderBy('c.regdate', 'DESC')
+            .getRawMany();
+
+        let result = [];
+        data.forEach((item) => {
+            campaignItemLowestPrice.forEach((item2) => {
+                if (item.idx == item2.campaignIdx) {
+                    item.lowestPriceOrig = item2.lowestPrice;
+                    item.discountPercentage = item2.dc11;
+                    item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+                    result.push(item);
+                }
+            })
+        });
+
+        return result;
     }
 }

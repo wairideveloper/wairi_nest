@@ -18,15 +18,16 @@ export class CampaignResolver {
     async getRecommendedSearchWords(
         @Args('type', {type: () => String}) type: string,
         @Args('limit', {type: () => Int}) limit: number,
-    ){
-            try{
-            let data = await this.campaignsService.getRecommendedSearchWords(type,limit);
+    ) {
+        try {
+            let data = await this.campaignsService.getRecommendedSearchWords(type, limit);
             console.log("-> data", data);
             return data;
-        }catch (error){
+        } catch (error) {
             console.log(error)
             throw error;
-        } }
+        }
+    }
 
     @Query()
     async search(@Args('keyword', {type: () => String}) keyword: string) {
@@ -51,7 +52,7 @@ export class CampaignResolver {
     @UseGuards(GqlAuthGuard)
     async getCampaign(@Args('id', {type: () => Int}) id: number) {
         try {
-            let data = await this.campaignsService.findOne(id);
+            let data = await this.campaignsService.detailCampaign(id);
             //json 형식으로 변환
 
             console.log(data)
@@ -68,18 +69,16 @@ export class CampaignResolver {
 
     @Query()
     // @UseGuards(GqlAuthGuard)
-    async getCampaigns(@Args('take', {type: () => Int}) take: number,
-                       @Args('page', {type: () => Int}) page: number) {
-        try {
-            console.log(take, page)
-            const list = await this.campaignsService.mainList({take, page});
-            //json 형식으로 변환
+    async getCampaigns(
+        @Args('take', {type: () => Int}) take: number,
+        @Args('page', {type: () => Int}) page: number,
+        @Args('cate', {type: () => Int}) cate?: number,
+        @Args('cateArea', {type: () => Int}) cateArea?: number,
 
-            console.log(list)
-            // console.log(bufferToString(data))
-            // data.forEach((element) => {
-            //     bufferToString(element);
-            // });
+    ) {
+        try {
+            console.log(take, page, cate, cateArea)
+            const list = await this.campaignsService.mainList(take, page, cate, cateArea);
             return list
         } catch (error) {
             console.log(error)
@@ -90,10 +89,7 @@ export class CampaignResolver {
     @Query()
     async getDetailCampaign(@Args('idx', {type: () => Int}) idx: number) {
         try {
-            console.log(idx)
-            let data = await this.campaignsService.findOne(idx);
-            //json 형식으로 변환
-            console.log(data)
+            let data = await this.campaignsService.detailCampaign(idx);
             return data
         } catch (error) {
             console.log(error)
@@ -105,7 +101,7 @@ export class CampaignResolver {
     async getCampaignItem(@Args('idx', {type: () => Int}) idx: number) {
         try {
             console.log(idx)
-            let data = await this.campaignsService.findOne(idx);
+            let data = await this.campaignsService.detailCampaign(idx);
             //json 형식으로 변환
             console.log(data.campaignItem)
             return data.campaignItem
@@ -196,8 +192,8 @@ export class CampaignResolver {
 
     @Mutation()
     @UseGuards(GqlAuthGuard)
-    async setCampaignFav(@Args('favInput',) favInput: FavInput){
-        try{
+    async setCampaignFav(@Args('favInput',) favInput: FavInput) {
+        try {
             let result = {
                 idx: null,
                 memberIdx: null,
@@ -215,7 +211,7 @@ export class CampaignResolver {
 
             console.log("-> result", result);
             return result;
-        }catch (error){
+        } catch (error) {
             console.log(error)
             throw error;
         }

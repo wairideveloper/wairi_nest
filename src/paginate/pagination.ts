@@ -1,7 +1,7 @@
 import {PaginationResult} from './pagination.result';
 
 export class Pagination<PaginationEntity> {
-    public data: PaginationEntity[];
+    public products: PaginationEntity[];
     public dataPerPage: number;
     public totalPage: number;
     public total: number;
@@ -10,7 +10,7 @@ export class Pagination<PaginationEntity> {
     public currentPage: number;
 
     constructor(paginationResult: PaginationResult<PaginationEntity>) {
-        this.data = paginationResult.data;
+        this.products = paginationResult.data;
         this.dataPerPage = paginationResult.data.length;
         this.totalPage = Math.ceil(paginationResult.total / paginationResult.data.length);
         this.total = paginationResult.total;
