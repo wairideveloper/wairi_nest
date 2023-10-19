@@ -203,3 +203,21 @@ export const changeInterestsText = (interests: number) => {
             return '기타';
     }
 }
+
+export const changeInterestsIndex = (interests: string) => {
+    // 1:여행 2:푸드 3:운동/레저 4:뷰티 5:패션 99:기타
+    switch (interests) {
+        case '여행':
+            return 1;
+        case '푸드':
+            return 2;
+        case '운동/레저':
+            return 3;
+        case '뷰티':
+            return 4;
+        case '패션':
+            return 5;
+        case '기타':
+            return 99;
+    }
+}

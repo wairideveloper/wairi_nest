@@ -56,7 +56,7 @@ type setMemberChannelResponse {
 input CreateMemberChannelInput {
     type: Int!
     link: String!
-    interests: Int
+    interests: String
     channelName: String
 }
 

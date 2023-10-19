@@ -4,7 +4,7 @@ import {MembersService} from "./member.service";
 import {UseGuards, Req, HttpException} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {
-    bufferToString,
+    bufferToString, changeInterestsIndex,
     changeInterestsText,
     FROM_UNIXTIME,
     FROM_UNIXTIME_JS,
@@ -19,7 +19,7 @@ import {LoginInput} from "../auth_ql_model/dto/loginInput";
 class CeateMemberChannelInput {
     type: number;
     link: string;
-    interests: number;
+    interests: string;
     channelName?: string;
 }
 
@@ -27,7 +27,7 @@ class UpdateMemberChannelInput {
     idx: number;
     type: number;
     link: string;
-    interests: number;
+    interests: string;
     channelName?: string;
 }
 
@@ -114,7 +114,7 @@ export class MemberResolver {
                 memberIdx: authUser.idx,
                 type: createMemberChannelInput.type,
                 link: createMemberChannelInput.link,
-                interests: createMemberChannelInput.interests,
+                interests: changeInterestsIndex(createMemberChannelInput.interests),
                 channelName: ""
             }
             if(createMemberChannelInput.type == 9){
