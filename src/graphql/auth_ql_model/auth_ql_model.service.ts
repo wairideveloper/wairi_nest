@@ -6,7 +6,15 @@ import {compareSync} from "bcrypt";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
 import {SignupInput} from "./dto/signupInput";
-import {AES_DECRYPT, AES_ENCRYPT, FROM_UNIXTIME, FROM_UNIXTIME_JS, getNowUnix, hashPassword} from "../../util/common";
+import {
+    AES_DECRYPT,
+    AES_ENCRYPT,
+    changeInterestsText,
+    FROM_UNIXTIME,
+    FROM_UNIXTIME_JS,
+    getNowUnix,
+    hashPassword
+} from "../../util/common";
 import {RestClient} from "@bootpay/server-rest-client";
 import {Bootpay} from '@bootpay/backend-js'
 import {InjectRepository} from "@nestjs/typeorm";
@@ -55,27 +63,17 @@ export class AuthQlModelService {
                 console.log("-> member.idx", member.idx);
                 let memberChannel = await this.memberService.findChannel(member.idx);
                 //array memberChannel.regdate 변환
-                let result = {
-                    idx:null,
-                    type: null,
-                    typeText: null,
-                    link: null,
-                    regdate: null,
-                    date: null,
-                    level: null,
-                    filename: null,
-                    origName: null,
-                    average_visitor: null,
-                    subscriber: null,
-                    content_count: null,
-                    followers: null,
-                    follow: null,
-                }
-                memberChannel.map((item,    index) => {
+                memberChannel = memberChannel.map((item, index) => {
                     memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();
+                    memberChannel[index].interests = changeInterestsText(item.interests);
                     return memberChannel[index];
-                });
-                console.log("-> memberChannel", memberChannel);
+                })
+                // memberChannel.map((item,    index) => {
+                //     memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();
+                //     memberChannel[index].interests = changeInterestsText(item.interests);
+                //     return memberChannel[index];
+                // });
+                // console.log("-> memberChannel", memberChannel);
 
                 member.memberChannel = memberChannel;
                 return {

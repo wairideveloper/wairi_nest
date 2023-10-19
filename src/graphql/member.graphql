@@ -30,6 +30,7 @@ type MemberChannel {
     regdate: String
     date: String
     level: Int
+    interests: String
     filename: String
     origName: String
     average_visitor: Int

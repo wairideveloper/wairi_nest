@@ -24,6 +24,6 @@ export class MemberChannel {
   level: number;
 
   @Column("int", { name: "interests" })
-  interests: number;
+  interests: any;
     date: string;
 }

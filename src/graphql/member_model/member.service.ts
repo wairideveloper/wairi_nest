@@ -216,7 +216,7 @@ export class MembersService {
         memberIdx: number;
         link: string;
         type: number;
-        interests: number;
+        interests: any;
         channelName?: string;
     }) {
         return await this.memberChannelRepository
@@ -314,7 +314,7 @@ export class MembersService {
         link: string;
         channelName: string;
         type: number;
-        interests: number
+        interests: any
     }) {
         console.log("=>(member.service.ts:320) channelName", data.channelName);
         return await this.memberChannelRepository
