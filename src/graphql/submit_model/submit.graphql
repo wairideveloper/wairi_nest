@@ -1,0 +1,20 @@
+input CreateCampaignSubmitInput{
+    campaignIdx: Int!
+    itemIdx: Int!
+    nop: Int!
+    startDate: Int!
+    endDate: Int!
+    price: Int!
+    type: Int!
+    subContent: String!
+}
+
+type CampaignSubmitResponse{
+    code: Int!
+    message: String!
+}
+
+
+extend type Mutation{
+    createCampaignSubmit(createCampaignSubmitInput: CreateCampaignSubmitInput): CampaignSubmitResponse!
+}

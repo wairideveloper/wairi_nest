@@ -264,7 +264,7 @@ export class CampaignService {
             jsonChannel.forEach((item2) => {
                 switch (item2) {
                     case "1":
-                        channelNames.push("블로그");
+                        channelNames.push("네이버 블로그");
                         break;
                     case "2":
                         channelNames.push("유튜브");
