@@ -498,6 +498,7 @@ export class CampaignService {
                         ORDER BY price 
                         LIMIT 1
                     ) as lowestPrice`,
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 'cate.name as cateName',
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',

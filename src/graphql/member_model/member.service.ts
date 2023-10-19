@@ -212,7 +212,13 @@ export class MembersService {
         return await this.configRepository.find({where: [{cfgKey: 'subscription_path'}]})
     }
 
-    async setMemberChannel(data: {memberIdx: number; link: string; type: number}) {
+    async setMemberChannel(data: {
+        memberIdx: number;
+        link: string;
+        type: number;
+        interests: number;
+        channelName?: string;
+    }) {
         return await this.memberChannelRepository
             .createQueryBuilder()
             .insert()
@@ -221,7 +227,8 @@ export class MembersService {
                 memberIdx: data.memberIdx,
                 link: data.link,
                 type: data.type,
-                typeText: "",
+                interests: data.interests,
+                typeText: data.channelName,
                 regdate: getNowUnix(),
                 level: 0
             })
@@ -291,5 +298,47 @@ export class MembersService {
             .select('*')
             .where('ci = :unique', {unique: unique})
             .getRawOne();
+    }
+
+    async getMemberChannel(channelIdx: number) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('idx = :idx', {idx: channelIdx})
+            .getRawOne();
+    }
+
+    async updateMemberChannel(data: {
+        idx: number;
+        memberIdx: number;
+        link: string;
+        channelName: string;
+        type: number;
+        interests: number
+    }) {
+        console.log("=>(member.service.ts:320) channelName", data.channelName);
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .update()
+            .set({
+                link: data.link,
+                type: data.type,
+                interests: data.interests,
+                typeText: data.channelName,
+                regdate: getNowUnix(),
+                level: 0
+            })
+            .where('idx = :idx', {idx: data.idx})
+            .andWhere('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+            .execute();
+    }
+
+    async getMemberChannelAll(idx: number) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('memberIdx = :memberIdx', {memberIdx: idx})
+            .orderBy('type', 'ASC')
+            .getRawMany();
     }
 }

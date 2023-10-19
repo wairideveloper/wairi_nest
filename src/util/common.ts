@@ -185,3 +185,21 @@ export const getBootpayStatusText = (status: number) => {
             return '현금영수증 별도 발행시 현금영수증 발행 취소가 완료된 상태';
     }
 }
+
+export const changeInterestsText = (interests: number) => {
+    // 1:여행 2:푸드 3:운동/레저 4:뷰티 5:패션 99:기타
+    switch (interests) {
+        case 1:
+            return '여행';
+        case 2:
+            return '푸드';
+        case 3:
+            return '운동/레저';
+        case 4:
+            return '뷰티';
+        case 5:
+            return '패션';
+        case 99:
+            return '기타';
+    }
+}

@@ -1,17 +1,42 @@
-import {Args, Int, Query, Resolver} from '@nestjs/graphql';
+import {Args, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {MembersService} from "./member.service";
 
 import {UseGuards, Req, HttpException} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
-import {bufferToString} from "../../util/common";
+import {
+    bufferToString,
+    changeInterestsText,
+    FROM_UNIXTIME,
+    FROM_UNIXTIME_JS,
+    getUnixTimeStamp
+} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {validate} from "class-validator";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
+import {LoginInput} from "../auth_ql_model/dto/loginInput";
+
+class CeateMemberChannelInput {
+    type: number;
+    link: string;
+    interests: number;
+    channelName?: string;
+}
+
+class UpdateMemberChannelInput {
+    idx: number;
+    type: number;
+    link: string;
+    interests: number;
+    channelName?: string;
+}
+
 
 @Resolver('Member')
 export class MemberResolver {
-    constructor(private readonly membersService: MembersService) {
+    constructor(
+        private readonly membersService: MembersService
+    ) {
         console.log('MemberResolver')
     }
 
@@ -79,40 +104,100 @@ export class MemberResolver {
         }
     }
 
-    @Query((returns) => Member)
+    @Mutation((returns) => Member)
     @UseGuards(GqlAuthGuard)
-    async setMemberChannel(@AuthUser() authUser: Member,
-                           @Args('memberIdx', {type: () => Int}) memberIdx: number,
-                           @Args('type', {type: () => Int}) type: number,
-                           @Args('link', {type: () => String}) link: string,
+    async createMemberChannel(@AuthUser() authUser: Member,
+                           @Args('createMemberChannelInput',) createMemberChannelInput: CeateMemberChannelInput
     ) {
         try {
-            const data = {
+            let data = {
                 memberIdx: authUser.idx,
-                type: type,
-                link: link
+                type: createMemberChannelInput.type,
+                link: createMemberChannelInput.link,
+                interests: createMemberChannelInput.interests,
+                channelName: ""
+            }
+            if(createMemberChannelInput.type == 9){
+                data['channelName'] = createMemberChannelInput.channelName;
             }
 
-            const channel = await this.membersService.setMemberChannel(data);
-            const channelIdx = channel.raw.insertId;
+            const createChannel = await this.membersService.setMemberChannel(data);
+            const channelIdx = createChannel.raw.insertId;
+            if(channelIdx == undefined){
+                return {
+                    code: 500,
+                    message: '채널 등록 실패',
+                }
+            }
+            const getChannel = await this.membersService.getMemberChannel(channelIdx);
+            console.log("=>(member.resolver.ts:116) getChannel", getChannel);
             return {
                 code: 200,
                 message: '채널 등록 성공',
                 idx: channelIdx,
-                type: type,
-                link: link
+                type: getChannel.type,
+                link: getChannel.link,
+                interests: changeInterestsText(getChannel.interests),
+                channelName: getChannel.channelName,
+                regdate: FROM_UNIXTIME_JS(getChannel.regdate),
+                level: getChannel.level,
             }
         } catch (error) {
             throw new HttpException(error.message, 500);
         }
     }
 
-    @Query((returns) => Member)
+    @Mutation((returns) => Member)
+    @UseGuards(GqlAuthGuard)
+    async updateMemberChannel(@AuthUser() authUser: Member,
+                                @Args('updateMemberChannelInput',) updateMemberChannelInput: UpdateMemberChannelInput
+    ) {
+        try {
+            let data = {
+                idx: updateMemberChannelInput.idx,
+                memberIdx: authUser.idx,
+                type: updateMemberChannelInput.type,
+                link: updateMemberChannelInput.link,
+                interests: updateMemberChannelInput.interests,
+                channelName: ""
+            }
+            if(updateMemberChannelInput.type == 9){
+                data['channelName'] = updateMemberChannelInput.channelName;
+            }
+
+            const channel = await this.membersService.updateMemberChannel(data);
+            if(channel.affected > 0){
+                const getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
+                return {
+                    code: 200,
+                    message: '채널 수정 성공',
+                    idx: updateMemberChannelInput.idx,
+                    type: getChannel.type,
+                    link: getChannel.link,
+                    interests: changeInterestsText(getChannel.interests),
+                    channelName: getChannel.typeText,
+                    regdate: FROM_UNIXTIME_JS(getChannel.regdate),
+                    level: getChannel.level,
+                }
+            }else{
+                return {
+                    code: 500,
+                    message: '채널 수정 실패',
+                    idx: updateMemberChannelInput.idx
+                }
+            }
+        } catch (error) {
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Mutation((returns) => Member)
     @UseGuards(GqlAuthGuard)
     async deleteMemberChannel(@AuthUser() authUser: Member,
                               @Args('channelIdx', {type: () => Int}) channelIdx: number,
     ) {
         try {
+            console.log("=>(member.resolver.ts:140) channelIdx", channelIdx);
             const data = {
                 memberIdx: authUser.idx,
                 channelIdx: channelIdx
@@ -133,6 +218,25 @@ export class MemberResolver {
                 }
             }
         }catch (error) {
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getMemberChannel(@AuthUser() authUser: Member){
+        try{
+            const data = await this.membersService.getMemberChannelAll(authUser.idx);
+            data.forEach((element, index) => {
+                if (element.regdate) {
+                    //time -> datetime 형식으로 변환
+                    data[index].regdate = FROM_UNIXTIME_JS(element.regdate);
+                }
+                data[index].interests = changeInterestsText(element.interests);
+            })
+            return data;
+
+        } catch (error) {
             throw new HttpException(error.message, 500);
         }
     }

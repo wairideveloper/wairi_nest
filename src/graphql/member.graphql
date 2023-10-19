@@ -46,13 +46,46 @@ type setMemberChannelResponse {
     type: Int
     typeText: String
     link: String
+    interests: String
+    channelName: String
+    regdate: String
+    level: Int
 }
 
+input CreateMemberChannelInput {
+    type: Int!
+    link: String!
+    interests: Int
+    channelName: String
+}
+
+input UpdateMemberChannelInput {
+    idx: Int!
+    type: Int!
+    link: String!
+    interests: Int
+    channelName: String
+}
+
+type Channel{
+    idx: Int
+    type: Int
+    typeText: String
+    link: String
+    regdate: String
+    interests: String
+}
 
 extend type Query {
     getAllMember(skip: Int, take: Int!,title:String): [Member]
     getMember(id: Int!): Member
     getMemberByEmail(email: String!): Member
-    setMemberChannel(type: Int!, link: String!):setMemberChannelResponse
+    getMemberChannel:[Channel]
+}
+
+extend type Mutation {
+    #채널등록
+    createMemberChannel(createMemberChannelInput: CreateMemberChannelInput):setMemberChannelResponse
+    updateMemberChannel(updateMemberChannelInput: UpdateMemberChannelInput):setMemberChannelResponse
     deleteMemberChannel(channelIdx: Int!):setMemberChannelResponse
 }
