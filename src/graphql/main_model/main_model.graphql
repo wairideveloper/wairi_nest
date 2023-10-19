@@ -45,6 +45,7 @@ type CampaignItem{
     name: String
     startDate: String
     endDate: String
+    image: String
     priceOrig: Int
     priceDeposit: Int
     lowestPrice: Int
@@ -61,6 +62,11 @@ type CampaignItem{
     itemDiscount: Int
     itemDiscountText: String
     campaignItemSchedule: [CampaignItemSchedules]
+}
+
+type ChannelText{
+    idx: Int
+    name: String
 }
 
 type CampaignItemSchedules{

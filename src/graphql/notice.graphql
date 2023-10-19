@@ -12,6 +12,7 @@ type BoardArticles implements Pagination {
     next: Int
     previous: Int
     currentPage: Int
+    products: [BoardArticle]
     data: [BoardArticle]
 }
 

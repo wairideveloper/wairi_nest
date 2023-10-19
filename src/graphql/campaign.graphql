@@ -7,6 +7,9 @@ type Campaign {
     number: String
     email: String
     phone: String
+    tel: String
+    addr1: String
+    addr2: String
     level: Int
     status: Int
     regdate: String

@@ -354,7 +354,7 @@ export class CampaignService {
                         ORDER BY price 
                         LIMIT 1
                     ) as lowestPrice`,
-
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
                 ]
             )
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(startDate)), " ~ ", DATE(FROM_UNIXTIME(endDate))) AS application_period')
@@ -483,6 +483,9 @@ export class CampaignService {
                 'campaign.name as name',
                 'campaign.weight as weight',
                 'campaign.info as info',
+                'campaign.tel as tel',
+                'campaign.addr1 as addr1',
+                'campaign.addr2 as addr2',
                 `(SELECT 
                     IF(
                         schedule.priceDeposit > 0, 

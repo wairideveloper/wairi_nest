@@ -68,13 +68,6 @@ export class AuthQlModelService {
                     memberChannel[index].interests = changeInterestsText(item.interests);
                     return memberChannel[index];
                 })
-                // memberChannel.map((item,    index) => {
-                //     memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();
-                //     memberChannel[index].interests = changeInterestsText(item.interests);
-                //     return memberChannel[index];
-                // });
-                // console.log("-> memberChannel", memberChannel);
-
                 member.memberChannel = memberChannel;
                 return {
                     message: '로그인 성공',

@@ -26,6 +26,7 @@ export class BoardModelService {
                 .select('*')
                 .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
                 .where('boardArticles.boardIdx = :type', {type: type})
+                .orderBy('boardArticles.idx', 'DESC')
                 .offset(take * (page - 1))
                 .limit(take)
                 .getRawMany();
