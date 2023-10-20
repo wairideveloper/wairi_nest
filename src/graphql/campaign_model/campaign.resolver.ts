@@ -217,7 +217,19 @@ export class CampaignResolver {
         }
     }
 
-
+    @Query()
+    async getCampaignSchedule(
+        @Args('idx', {type: () => Int}) idx: number,
+    ) {
+        try {
+            const data = await this.campaignsService.getCampaignSchedule(idx);
+            console.log("=>(campaign.resolver.ts:226) data", data);
+            return data
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
 }
 
 

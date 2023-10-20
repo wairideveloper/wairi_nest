@@ -16,7 +16,7 @@ import {CampaignRecent} from "../../entity/entities/CampaignRecent";
 import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
 import {CampaignSubmit} from "../../entity/entities/CampaignSubmit";
 import {CampaignFav} from "../../entity/entities/CampaignFav";
-import {FROM_UNIXTIME, getUnixTimeStamp, getYmd} from "../util/common"
+import {FROM_UNIXDATE, FROM_UNIXTIME, getUnixTimeStamp, getYmd} from "../util/common"
 import * as moment from 'moment';
 
 @Injectable()
@@ -791,5 +791,28 @@ export class CampaignService {
         });
 
         return result;
+    }
+
+    async getCampaignSchedule(idx: number) {
+        let data = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
+            .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
+            .leftJoin('campaignItem.campaign', 'campaign')
+            .select([
+                'campaignItem.idx as idx',
+                'campaignItem.priceOrig as priceOrig',
+                'campaignItem.dc11 as dc11',
+                'campaignItemSchedule.stock as stock',
+                'campaignItemSchedule.priceDeposit as priceDeposit',
+            ])
+            .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
+            .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
+            .addSelect(`(${FROM_UNIXDATE('campaignItemSchedule.date')})`, 'date')
+            .where('campaignItem.remove = :remove', {remove: 0})
+            .andWhere('campaignItemSchedule.date >= UNIX_TIMESTAMP(CURDATE())')
+            .andWhere('campaign.idx = :idx', {idx: idx})
+            .orderBy('campaignItem.ordering', 'ASC')
+            .getRawMany();
+
+        return data;
     }
 }

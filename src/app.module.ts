@@ -57,6 +57,7 @@ import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 // import {GraphQLUpload} from "graphql-upload";
 import { FirebaseModule } from './graphql/firebase/firebase.module';
 import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
+import { ReviewModelModule } from './graphql/review_model/review_model.module';
 
 @Module({
     imports: [
@@ -116,7 +117,8 @@ import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
                 Madein20ModelModule,
                 CommonModelModule,
                 FirebaseModule,
-                SubmitModelModule
+                SubmitModelModule,
+                ReviewModelModule
             ],
             typePaths: ['./**/*.graphql'],
             definitions: {
@@ -172,7 +174,8 @@ import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
         Madein20ModelModule,
         CommonModelModule,
         FirebaseModule,
-        SubmitModelModule
+        SubmitModelModule,
+        ReviewModelModule
 
     ],
     controllers: [AppController],

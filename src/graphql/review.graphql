@@ -1,0 +1,31 @@
+type Review{
+    idx: Int!
+    memberIdx: Int!
+    itemIdx: Int!
+    itemName: String!
+    submitIdx: Int!
+    rate: Int!
+    image: String!
+    content: String!
+    content_a: String!
+
+    regdate: String!
+    regdate_a: String!
+
+    name: String
+    images: [String]
+}
+
+type Reviews implements Pagination {
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+    data: [Review!]!
+}
+
+extend type Query {
+    getReviews(idx:Int! take: Int!,page:Int!): Reviews
+}

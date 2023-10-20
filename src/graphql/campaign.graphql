@@ -141,6 +141,8 @@ extend type Query {
     getActiveItemSchedule(idx:Int!, start_day:String, end_day:String): [CampaignItemSchedule]!
     getCampaignRecent(memberIdx:Int!,page:Int,take:Int): CampaignRecents!
 
+    getCampaignSchedule(idx:Int!): [CampaignItemSchedule]!
+
     #캠페인 검색
     search(keyword: String!): Campaigns!
 

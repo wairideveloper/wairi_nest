@@ -61,6 +61,8 @@ type CampaignItem{
     notWeekends: Int
     itemDiscount: Int
     itemDiscountText: String
+    limitSleep: Int
+    limitSubmit: Int
     campaignItemSchedule: [CampaignItemSchedules]
 }
 
