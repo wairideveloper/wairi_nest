@@ -798,11 +798,13 @@ export class CampaignService {
             .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
             .leftJoin('campaignItem.campaign', 'campaign')
             .select([
-                'campaignItem.idx as idx',
+                'campaignItemSchedule.idx as idx',
+                'campaignItem.idx as itemIdx',
                 'campaignItem.priceOrig as priceOrig',
                 'campaignItem.dc11 as dc11',
                 'campaignItemSchedule.stock as stock',
                 'campaignItemSchedule.priceDeposit as priceDeposit',
+                'campaignItemSchedule.date as unixDate',
             ])
             .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
             .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
@@ -813,6 +815,36 @@ export class CampaignService {
             .orderBy('campaignItem.ordering', 'ASC')
             .getRawMany();
 
-        return data;
+        //data 에서 신청 가능 date 값만 추출
+        let date = data.map((item) => {
+            return item.date;
+        })
+        date = date.filter((item, index) => {
+            return date.indexOf(item) === index;
+        })
+        date.sort((a, b) => {
+            // @ts-ignore
+            return moment(a) - moment(b);
+        })
+
+
+
+        let items = [];
+        date.forEach((item, index) => {
+            //date 값에 해당하는 campaignItemSchedule 값 추가
+            let itemSchedule = data.filter((item2) => {
+                return item2.date == item;
+            })
+            items.push({
+                date: item,
+                itemSchedule: itemSchedule
+            })
+        })
+console.log("=>(campaign.service.ts:844) items", items);
+
+        return {
+            active: date,
+            items
+        };
     }
 }

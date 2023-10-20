@@ -62,6 +62,7 @@ type returnLogin{
 
 type CampaignItemSchedule{
     idx: Int
+    itemIdx: Int
     name: String
     priceOrig: Int
     priceDeposit: Int
@@ -70,6 +71,7 @@ type CampaignItemSchedule{
     endDay: String
     date: String
     active: String
+    dc11: Int
 }
 
 type CampaignRecent{
@@ -128,6 +130,16 @@ type SetCampaignFavResponse{
     campaignIdx: Int
 }
 
+type CampaignSchedule{
+    active: [String]
+    items: [ItemScedule]!
+}
+
+type ItemScedule{
+    date: String
+    itemSchedule: [CampaignItemSchedule]!
+}
+
 extend type Query {
     #  getAllMember(skip: Int, take: Int!,title:String): [Member]
     getCampaign(id: Int!): Campaign!
@@ -141,7 +153,7 @@ extend type Query {
     getActiveItemSchedule(idx:Int!, start_day:String, end_day:String): [CampaignItemSchedule]!
     getCampaignRecent(memberIdx:Int!,page:Int,take:Int): CampaignRecents!
 
-    getCampaignSchedule(idx:Int!): [CampaignItemSchedule]!
+    getCampaignSchedule(idx:Int!): CampaignSchedule!
 
     #캠페인 검색
     search(keyword: String!): Campaigns!
