@@ -72,6 +72,8 @@ type CampaignItemSchedule{
     date: String
     active: String
     dc11: Int
+    minDays: Int
+    maxDays: Int
 }
 
 type CampaignRecent{

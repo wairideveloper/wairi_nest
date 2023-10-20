@@ -802,6 +802,9 @@ export class CampaignService {
                 'campaignItem.idx as itemIdx',
                 'campaignItem.priceOrig as priceOrig',
                 'campaignItem.dc11 as dc11',
+                'campaignItem.maxDays as maxDays',
+                'campaignItem.minDays as minDays',
+
                 'campaignItemSchedule.stock as stock',
                 'campaignItemSchedule.priceDeposit as priceDeposit',
                 'campaignItemSchedule.date as unixDate',
@@ -840,7 +843,6 @@ export class CampaignService {
                 itemSchedule: itemSchedule
             })
         })
-console.log("=>(campaign.service.ts:844) items", items);
 
         return {
             active: date,
