@@ -230,6 +230,20 @@ export class CampaignResolver {
             throw error;
         }
     }
+
+    @Query()
+    async getCampaignItemSchedule(
+        @Args('idx', {type: () => Int}) idx: number,
+    ){
+        try{
+            let data = await this.campaignsService.getCampaignItemSchedule(idx);
+            console.log("=>(campaign.resolver.ts:240) data", data);
+            return data;
+        }catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
 }
 
 

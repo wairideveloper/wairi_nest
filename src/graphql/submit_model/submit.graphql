@@ -2,10 +2,11 @@ input CreateCampaignSubmitInput{
     campaignIdx: Int!
     itemIdx: Int!
     nop: Int!
-    startDate: Int!
-    endDate: Int!
+    startDate: String!
+    endDate: String!
     price: Int!
     type: Int!
+    submitChannel: Int!
     subContent: String!
 }
 

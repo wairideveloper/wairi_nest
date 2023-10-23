@@ -123,6 +123,7 @@ export class MemberResolver {
 
             const createChannel = await this.membersService.setMemberChannel(data);
             const channelIdx = createChannel.raw.insertId;
+            console.log("=>(member.resolver.ts:126) channelIdx", channelIdx);
             if(channelIdx == undefined){
                 return {
                     code: 500,
@@ -138,7 +139,7 @@ export class MemberResolver {
                 type: getChannel.type,
                 link: getChannel.link,
                 interests: changeInterestsText(getChannel.interests),
-                channelName: getChannel.channelName,
+                channelName: getChannel.typeText,
                 regdate: FROM_UNIXTIME_JS(getChannel.regdate),
                 level: getChannel.level,
             }
@@ -233,6 +234,7 @@ export class MemberResolver {
                     data[index].regdate = FROM_UNIXTIME_JS(element.regdate);
                 }
                 data[index].interests = changeInterestsText(element.interests);
+                data[index].channelName = element.typeText;
             })
             return data;
 

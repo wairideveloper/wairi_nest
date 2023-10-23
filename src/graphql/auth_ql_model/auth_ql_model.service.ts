@@ -303,9 +303,8 @@ export class AuthQlModelService {
 
     }
 
-    async identityVerificationV2(receipt_id: string)
+    async identityVerificationV2(receipt_id: string, memberIdx: number)
     {
-        console.log("-> receipt_id", receipt_id);
         Bootpay.setConfiguration({
             application_id: '6143fb797b5ba4002152b6e1',
             private_key: 'RQ/RYIauHAVJZ8jkKggH6o3EIKKNnviRcGXN4hPNjiM='
@@ -314,11 +313,19 @@ export class AuthQlModelService {
         try {
             await Bootpay.getAccessToken()
             const data = await Bootpay.certificate(receipt_id)
+            console.log("=>(auth_ql_model.service.ts:316) data", data);
+            console.log(data.authenticate_data['di'])
             if(data){
                 let checkUnique = await this.memberService.checkUnique(data.authenticate_data.unique);
                 if(checkUnique){
                     throw new HttpException('이미 등록된 본인인증 정보입니다.', 404);
                 }
+
+                const update = await this.memberService.updateUnique(
+                    memberIdx,
+                    data.authenticate_data.unique,
+                    data.authenticate_data['di']);
+
                 return {
                     message: '본인인증 성공',
                     data: data,
@@ -440,4 +447,33 @@ export class AuthQlModelService {
         })
         return pathText;
     }
+
+    async reVerifyPhoneV2(receipt_id: string, memberIdx: number) {
+        Bootpay.setConfiguration({
+            application_id: '6143fb797b5ba4002152b6e1',
+            private_key: 'RQ/RYIauHAVJZ8jkKggH6o3EIKKNnviRcGXN4hPNjiM='
+        })
+        try {
+            await Bootpay.getAccessToken()
+            const data = await Bootpay.certificate(receipt_id)
+            console.log(data.authenticate_data)
+            if(data){
+                let checkUnique = await this.memberService.checkUnique(data.authenticate_data.unique);
+                // if(checkUnique){
+                //     throw new HttpException('이미 등록된 본인인증 정보입니다.', 404);
+                // }
+                const update = await this.memberService.reVerifyPhoneV2(memberIdx, data.authenticate_data.unique);
+                return {
+                    message: '본인인증 성공',
+                    data: data,
+                }
+            }else{
+                throw new HttpException('본인인증 실패', 404);
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
 }

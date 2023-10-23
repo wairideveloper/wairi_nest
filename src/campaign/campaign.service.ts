@@ -849,4 +849,55 @@ export class CampaignService {
             items
         };
     }
+
+    async getCampaignItemSchedule(idx: number) {
+        console.log("=>(campaign.service.ts:854) idx", idx);
+        let data = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
+            .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
+            .select([
+                'campaignItemSchedule.idx as idx',
+                'campaignItem.idx as itemIdx',
+                'campaignItem.priceOrig as priceOrig',
+                'campaignItem.dc11 as dc11',
+                'campaignItem.maxDays as maxDays',
+                'campaignItem.minDays as minDays',
+            ])
+            .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
+            .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
+            .addSelect(`(${FROM_UNIXDATE('campaignItemSchedule.date')})`, 'date')
+            .where('campaignItem.remove = :remove', {remove: 0})
+            .andWhere('campaignItemSchedule.date >= UNIX_TIMESTAMP(CURDATE())')
+            .andWhere('campaignItemSchedule.itemIdx = :idx', {idx: idx})
+            .orderBy('campaignItem.ordering', 'ASC')
+            .getRawMany();
+        console.log("=>(campaign.service.ts:870) data", data);
+
+        //data 에서 신청 가능 date 값만 추출
+        let date = data.map((item) => {
+            return item.date;
+        })
+        date = date.filter((item, index) => {
+            return date.indexOf(item) === index;
+        })
+        date.sort((a, b) => {
+            // @ts-ignore
+            return moment(a) - moment(b);
+        })
+
+        return {
+            active: date,
+            data
+        };
+    }
+
+    async getCampaignItemByIdx(idx: number) {
+        return await this.campaignItemRepository.createQueryBuilder('campaignItem')
+            .leftJoin('campaignItem.campaign', 'campaign')
+            .select('*')
+            .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
+            .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
+            .where('campaignItem.remove = :remove', {remove: 0})
+            .andWhere('campaignItem.idx = :idx', {idx: idx})
+            .getRawOne();
+    }
 }

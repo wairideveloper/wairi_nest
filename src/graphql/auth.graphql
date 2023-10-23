@@ -176,6 +176,8 @@ type SubscriptionPath {
 extend type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
     identityVerificationV2(receipt_id : String!): identityVerificationV2Response
+    reVerifyPhoneV2(receipt_id : String!): identityVerificationV2Response
+
     findId(phone : String!, username : String!): Member
     getMemberInfo(id: String!): Member
     getSnsChannel : [SnsChannel]

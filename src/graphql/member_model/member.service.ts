@@ -341,4 +341,23 @@ export class MembersService {
             .orderBy('type', 'ASC')
             .getRawMany();
     }
+
+    async updateUnique(idx, ci: string ,di: string) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .update()
+            .set({ci: ci})
+            .set({di: di})
+            .where('idx = :idx', {idx: idx})
+            .execute();
+    }
+
+    async reVerifyPhoneV2(memberIdx: any, unique: string) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .update()
+            .set({ci: unique})
+            .where('idx = :idx', {idx: memberIdx})
+            .execute();
+    }
 }

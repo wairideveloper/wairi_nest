@@ -95,9 +95,22 @@ export const getUnixTimeStamp = () => {
     return moment().unix();
 }
 
+//현재시간 유닉스 타임스템프 3일 후
+export const getUnixTimeStampAfter3Days = () => {
+    return moment().add(3, 'days').unix();
+}
+
+// Asia/Seoul 'YYYY-MM-DD'을 9시간 더한 유닉스 타임 스템프 변환
+export const getUnixTimeStampByDate = (date: string) => {
+    return moment(date).add(9, 'hours').unix();
+}
 //ymd 형식으로 변환
 export const getYmd = () => {
     return moment().format('YYYYMMDD');
+}
+
+export const getymd = () => {
+    return moment().format('YYMMDD');
 }
 
 //jwt 토큰 확인 referer
@@ -228,4 +241,43 @@ export const changeInterestsIndex = (interests: string) => {
         case '기타':
             return 99;
     }
+}
+
+export const genSid = (submitIdx) => {
+    // 231016428844579 앞 6자리 ymd + 9자리 랜덤
+    const ymd = getymd();
+    const random = Math.floor(Math.random() * 1000000000) + 1;
+    const sid = ymd + random;
+    return sid;
+}
+
+export const _getChannelName = (channels: number) => {
+    let channelNames = [];
+    // @ts-ignore
+    let jsonChannel = JSON.parse(channels);
+    // 1.블로그 2.youtube 3.인스타그램 4.틱톡 5.티스토리 9.기타
+    jsonChannel.forEach((item) => {
+        switch (item) {
+            case "1":
+                channelNames.push("네이버 블로그");
+                break;
+            case "2":
+                channelNames.push("유튜브");
+                break;
+            case "3":
+                channelNames.push("인스타그램");
+                break;
+            case "4":
+                channelNames.push("틱톡");
+                break;
+            case "5":
+                channelNames.push("티스토리");
+                break;
+            case "9":
+                channelNames.push("기타");
+                break;
+
+        }
+    })
+    return channelNames;
 }

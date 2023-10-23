@@ -6,8 +6,11 @@ import {LoginInput} from "./dto/loginInput";
 import {SignupInput} from "./dto/signupInput";
 import {PartnerSignupInput} from "./dto/partnerSignupInput";
 import {ChangePasswordInput} from "./dto/changePasswordInput";
-import {Logger} from '@nestjs/common';
+import {Logger, UseGuards} from '@nestjs/common';
 import {customLogger} from "../../util/common";
+import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
+import {AuthUser} from "../../auth/auth-user.decorator";
+import {Member} from "../../../entity/entities/Member";
 @Resolver('AuthQlModel')
 export class AuthQlModelResolver {
     private readonly logger = new Logger();
@@ -98,9 +101,27 @@ export class AuthQlModelResolver {
     }
 
     @Query(() => String)
-    async identityVerificationV2(@Args({name: 'receipt_id', type: () => String}) receipt_id: string) {
+    @UseGuards(GqlAuthGuard)
+    async identityVerificationV2(
+        @Args({name: 'receipt_id', type: () => String}) receipt_id: string,
+        @AuthUser() authUser: Member) {
         try {
-            return await this.authQlModelService.identityVerificationV2(receipt_id);
+            console.log("=>(auth_ql_model.resolver.ts:110) authUser", authUser);
+            return await this.authQlModelService.identityVerificationV2(receipt_id, authUser.idx);
+        } catch (error) {
+            customLogger(this.logger, receipt_id, error);
+            throw error;
+        }
+    }
+
+    @Query(() => String)
+    @UseGuards(GqlAuthGuard)
+    async reVerifyPhoneV2(
+        @Args({name: 'receipt_id', type: () => String}) receipt_id: string,
+        @AuthUser() authUser: Member
+    ){
+        try {
+            return await this.authQlModelService.reVerifyPhoneV2(receipt_id, authUser.idx);
         } catch (error) {
             customLogger(this.logger, receipt_id, error);
             throw error;

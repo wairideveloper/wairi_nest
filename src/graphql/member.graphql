@@ -75,6 +75,8 @@ type Channel{
     link: String
     regdate: String
     interests: String
+    level: Int
+    channelName: String
 }
 
 extend type Query {

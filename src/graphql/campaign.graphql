@@ -157,6 +157,8 @@ extend type Query {
 
     getCampaignSchedule(idx:Int!): CampaignSchedule!
 
+    getCampaignItemSchedule(idx:Int!): CampaignItemSchedule
+
     #캠페인 검색
     search(keyword: String!): Campaigns!
 
