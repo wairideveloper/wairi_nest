@@ -11,46 +11,46 @@ export class SignupInput {
     @IsNotEmpty({message:'비밀번호를 입력해주세요'})
     password: string;
 
-    @Field()
-    @IsNotEmpty({message:'닉네임을 입력해주세요'})
-    nickname: string;
+    // @Field()
+    // @IsNotEmpty({message:'닉네임을 입력해주세요'})
+    // nickname: string;
 
-    @Field()
-    @IsNotEmpty({message:'핸드폰번호를 입력해주세요'})
-    @IsPhoneNumber('KR', {message:'핸드폰번호 형식이 잘못 되었습니다.'})
-    phone: string;
-
+    // @Field()
+    // @IsNotEmpty({message:'핸드폰번호를 입력해주세요'})
+    // @IsPhoneNumber('KR', {message:'핸드폰번호 형식이 잘못 되었습니다.'})
+    // phone: string;
+    //
     @Field()
     @IsNotEmpty({message:'이메일을 입력해주세요'})
     @IsEmail( {}, {message:'이메일 형식이 잘못 되었습니다.'})
     email: string;
-
-    @Field()
-    receipt_id: string;
-
-    @Field()
-    name: string;
+    //
+    // @Field()
+    // receipt_id: string;
+    //
+    // @Field()
+    // name: string;
 
     @Field()
     type: number;
 
-    @Field()
-    unique: string;
-
-    @Field()
-    di: string;
-
-    @Field()
-    birth: number;
-
-    @Field()
-    gender: number;
-
-    @Field()
-    channelType: number;
-
-    @Field()
-    link: string;
+    // @Field()
+    // unique: string;
+    //
+    // @Field()
+    // di: string;
+    //
+    // @Field()
+    // birth: number;
+    //
+    // @Field()
+    // gender: number;
+    //
+    // @Field()
+    // channelType: number;
+    //
+    // @Field()
+    // link: string;
 
     @Field()
     refererRoot: number;

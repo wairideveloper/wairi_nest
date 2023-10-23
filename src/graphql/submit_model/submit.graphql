@@ -7,12 +7,14 @@ input CreateCampaignSubmitInput{
     price: Int!
     type: Int!
     submitChannel: Int!
-    subContent: String!
+    subContent2: String!
 }
 
 type CampaignSubmitResponse{
     code: Int!
     message: String!
+    campaignIdx: Int
+    nop: Int
 }
 
 

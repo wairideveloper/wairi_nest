@@ -39,8 +39,6 @@ export class SubmitModelResolver {
         @Args('createCampaignSubmitInput') createCampaignSubmitInput: CreateCampaignSubmitInput,
         @AuthUser() authUser: Member,
     ) {
-        console.log("=>(submit_model.resolver.ts:37) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
-
         let checked = true;
         let sid = 0;
         while (checked) {
@@ -54,13 +52,11 @@ export class SubmitModelResolver {
         const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
         const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
 
-        campaignItem.calcType1
+        console.log("=>(submit_model.resolver.ts:56) campaignItem", campaignItem.calcType1);
+        console.log("=>(submit_model.resolver.ts:56) campaignItem", campaignItem.calcType2);
 
         //일자별
-
-
         campaignItem.channelNames = _getChannelName(campaignItem.channels);
-
         //입력 날짜
         const regdate = getUnixTimeStamp();
         const autoCancelDate = getUnixTimeStampAfter3Days(); // 3일 후
@@ -69,9 +65,6 @@ export class SubmitModelResolver {
         const endDate = getUnixTimeStampByDate(createCampaignSubmitInput.endDate);
 console.log("=>(submit_model.resolver.ts:66) ", startDate);
 console.log("=>(submit_model.resolver.ts:66) ", endDate);
-        return sid;
-
-
         let inputData = {
             campaignIdx: createCampaignSubmitInput.campaignIdx,
             itemIdx: createCampaignSubmitInput.itemIdx,
@@ -85,7 +78,13 @@ console.log("=>(submit_model.resolver.ts:66) ", endDate);
             memberIdx: authUser.idx,
             regdate : regdate,
             autoCancelDate: autoCancelDate,
+            campaignName: campaign.name,
+            itemName: campaignItem.name,
         }
+        console.log('==========> 🤩 : ' + inputData);
+        console.log(inputData);
+        return inputData;
+
         let data = await this.submitModelService.createCampaignSubmit(inputData);
         console.log("=>(submit_model.resolver.ts:41) data", data);
         return data;

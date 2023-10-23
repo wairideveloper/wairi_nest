@@ -24,17 +24,17 @@ input SignupInput {
     type: Int
     id: String
     password: String
-    nickname: String
-    phone: String
+#    nickname: String
+#    phone: String
     email: String
-    receipt_id: String
-    name: String
-    unique: String
-    di: String
-    birth: Int
-    gender: Int
-    channelType: Int
-    link: String
+#    receipt_id: String
+#    name: String
+#    unique: String
+#    di: String
+#    birth: Int
+#    gender: Int
+#    channelType: Int
+#    link: String
     refererRoot: Int
     refererRootInput: String
     agree: Int

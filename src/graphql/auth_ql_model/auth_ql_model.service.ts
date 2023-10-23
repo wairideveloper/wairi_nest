@@ -101,18 +101,18 @@ export class AuthQlModelService {
                 type: data.type,
                 id: `"${data.id}"`,
                 passwd: `"${await hashPassword(data.password)}"`, // 비밀번호 암호화
-                name: AES_ENCRYPT(data.name),
-                nickname: data.nickname,
+                // name: AES_ENCRYPT(data.name),
+                // nickname: data.nickname,
                 email: AES_ENCRYPT(data.email),
-                phone: AES_ENCRYPT(data.phone),
-                ci: data.unique ? data.unique : null,
-                di: data.di ? data.di : null,
-                birth: data.birth ? data.birth : 0,
-                gender: data.gender ? (data.gender == 1 ? 'm' : 'f') : "",
+                // phone: AES_ENCRYPT(data.phone),
+                // ci: data.unique ? data.unique : null,
+                // di: data.di ? data.di : null,
+                // birth: data.birth ? data.birth : 0,
+                // gender: data.gender ? (data.gender == 1 ? 'm' : 'f') : "",
                 refererRoot: data.refererRoot ? data.refererRoot : 0,
                 refererRootInput: data.refererRootInput ? data.refererRootInput : "",
-                channelType: data.channelType,
-                link: data.link,
+                // channelType: data.channelType,
+                // link: data.link,
                 agree: data.agree,
                 level: 1,
                 status: 4,
@@ -126,22 +126,22 @@ export class AuthQlModelService {
 
             //채널정보가 있을경우
             //Todo: 회원가입 입력관련 체크
-            if (channelType && link) {
-                const channel = await this.memberService.checkChannelType(channelType,newMember.generatedMaps[0].idx);
-                if (!channel) {
-                    const channelData = {
-                        memberIdx: newMember.generatedMaps[0].idx,
-                        type: channelType,
-                        link: link,
-                        regdate: getNowUnix(),
-                        level: 0,
-                    }
-                    const newChannel = await this.memberService.createChannel(channelData);
-                    console.log("-> newChannel", newChannel);
-                }else{
-                    throw new HttpException('이미 채널정보가 있습니다.', HttpStatus.CONFLICT);
-                }
-            }
+            // if (channelType && link) {
+            //     const channel = await this.memberService.checkChannelType(channelType,newMember.generatedMaps[0].idx);
+            //     if (!channel) {
+            //         const channelData = {
+            //             memberIdx: newMember.generatedMaps[0].idx,
+            //             type: channelType,
+            //             link: link,
+            //             regdate: getNowUnix(),
+            //             level: 0,
+            //         }
+            //         const newChannel = await this.memberService.createChannel(channelData);
+            //         console.log("-> newChannel", newChannel);
+            //     }else{
+            //         throw new HttpException('이미 채널정보가 있습니다.', HttpStatus.CONFLICT);
+            //     }
+            // }
 
             if (newMember) {
                 const result = await this.memberService.findById(newMember.generatedMaps[0].id);
