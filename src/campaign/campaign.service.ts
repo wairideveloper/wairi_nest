@@ -893,7 +893,7 @@ export class CampaignService {
     async getCampaignItemByIdx(idx: number) {
         return await this.campaignItemRepository.createQueryBuilder('campaignItem')
             .leftJoin('campaignItem.campaign', 'campaign')
-            .select('*')
+            .select('campaignItem.*')
             .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
             .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
             .where('campaignItem.remove = :remove', {remove: 0})

@@ -145,6 +145,7 @@ export class AuthQlModelService {
 
             if (newMember) {
                 const result = await this.memberService.findById(newMember.generatedMaps[0].id);
+                console.log("=>(auth_ql_model.service.ts:148) result", result);
                 const payload = {
                     idx: result.idx,
                     username: result.name,

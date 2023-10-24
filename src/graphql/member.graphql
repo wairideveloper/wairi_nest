@@ -6,7 +6,7 @@ type Member {
     idx: Int!
     id: String!
     type: Int
-    name: String!
+    name: String
     nickname: String
     number: String
     email: String

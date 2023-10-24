@@ -22,7 +22,7 @@ class CreateCampaignSubmitInput {
     price: number;
     type: number;
     submitChannel: number;
-    subContent: string;
+    subContent2: string;
 }
 
 @Resolver('SubmitModel')
@@ -57,27 +57,23 @@ export class SubmitModelResolver {
 
         //일자별
         campaignItem.channelNames = _getChannelName(campaignItem.channels);
-        //입력 날짜
-        const regdate = getUnixTimeStamp();
-        const autoCancelDate = getUnixTimeStampAfter3Days(); // 3일 후
 
         const startDate = getUnixTimeStampByDate(createCampaignSubmitInput.startDate);
         const endDate = getUnixTimeStampByDate(createCampaignSubmitInput.endDate);
-console.log("=>(submit_model.resolver.ts:66) ", startDate);
-console.log("=>(submit_model.resolver.ts:66) ", endDate);
+
         let inputData = {
             campaignIdx: createCampaignSubmitInput.campaignIdx,
             itemIdx: createCampaignSubmitInput.itemIdx,
             nop: createCampaignSubmitInput.nop,
-            startDate: createCampaignSubmitInput.startDate,
-            endDate: createCampaignSubmitInput.endDate,
+            startDate: startDate,
+            endDate: endDate,
             price: createCampaignSubmitInput.price,
             type: createCampaignSubmitInput.type,
             submitChannel: createCampaignSubmitInput.submitChannel,
-            subContent: createCampaignSubmitInput.subContent,
+            subContent: createCampaignSubmitInput.subContent2,
             memberIdx: authUser.idx,
-            regdate : regdate,
-            autoCancelDate: autoCancelDate,
+            regdate : getUnixTimeStamp(),
+            autoCancelDate: getUnixTimeStampAfter3Days(), // 3일 후 자동 취소
             campaignName: campaign.name,
             itemName: campaignItem.name,
         }
