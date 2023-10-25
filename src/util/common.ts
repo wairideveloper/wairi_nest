@@ -248,7 +248,10 @@ export const genSid = (submitIdx) => {
     const ymd = getymd();
     const random = Math.floor(Math.random() * 1000000000) + 1;
     const sid = ymd + random;
+
+    // numbber type
     return sid;
+    // return Number(sid);
 }
 
 export const _getChannelName = (channels: number) => {
@@ -280,4 +283,31 @@ export const _getChannelName = (channels: number) => {
         }
     })
     return channelNames;
+}
+
+export const switchSubmitStatusText = (status) => {
+    switch (status){
+        case 100:
+            return status = '승인 대기';
+        case 200:
+            return status = '결제 대기';
+        case 300:
+            return status = '이용 전';
+        case 310:
+            return status = '승인 전';
+        case 320:
+            return status = '이용 전';
+        case 400:
+            return status = '이용 완료';
+        case 500:
+            return status = '포스팅 검수';
+        case 700:
+            return status = '포스팅 완료';
+        case 950:
+            return status = '취소 대기';
+        case 900:
+            return status = '신청 취소';
+        case -1:
+            return status = '승인 거절';
+    }
 }

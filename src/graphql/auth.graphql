@@ -58,7 +58,7 @@ input ChangePasswordInput{
     password: String!
 }
 
-input ChannelInput{
+input ChannelInput1{
     channelType: Int
     link: String
     refererRoot: Int

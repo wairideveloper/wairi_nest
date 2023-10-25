@@ -1,5 +1,6 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Campaign} from "./Campaign";
+import {CampaignItem} from "./CampaignItem";
 
 @Entity("campaignSubmit", {schema: "wairi"})
 export class CampaignSubmit {
@@ -164,4 +165,8 @@ export class CampaignSubmit {
 
     @ManyToOne(() => Campaign, (campaign) => campaign.idx)
     campaign: Campaign;
+
+    @ManyToOne(()=>CampaignItem, (campaignItem)=>campaignItem.idx)
+    @JoinColumn({name: "itemIdx"})
+    campaignItem: CampaignItem;
 }

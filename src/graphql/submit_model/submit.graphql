@@ -8,6 +8,7 @@ input CreateCampaignSubmitInput{
     type: Int!
     submitChannel: Int!
     subContent2: String!
+    agreeContent: String
 }
 
 type CampaignSubmitResponse{
@@ -17,7 +18,42 @@ type CampaignSubmitResponse{
     nop: Int
 }
 
+type CampaignSubmit{
+    idx: Int!
+    sid: String!
+    status: String!
+    campaignIdx: Int!
+    itemIdx: Int!
+    nop: Int!
+    startDate: String!
+    endDate: String!
+    price: Int!
+    type: Int!
+    submitChannel: Int!
+    subContent2: String!
+    agreeContent: String
+    campaignName: String
+    itemName: String
+    image: String
+    application_period: String
+}
+
+type Submits implements Pagination {
+    dataPerPage: Int
+    totalPage: Int
+    total: Int
+    next: Int
+    previous: Int
+    currentPage: Int
+    data: [CampaignSubmit!]!
+}
+
+extend type Query {
+    getSubmitList(take: Int!,page:Int!): Submits
+    getSubmitDetail(sid: String!): CampaignSubmit
+}
 
 extend type Mutation{
     createCampaignSubmit(createCampaignSubmitInput: CreateCampaignSubmitInput): CampaignSubmitResponse!
+    cancellationRequest(sid: String!, reason: String): CampaignSubmitResponse!
 }

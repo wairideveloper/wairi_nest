@@ -8,7 +8,7 @@ input ChannelInput {
 }
 
 extend type Mutation {
-    signupUploadFile(file: Upload!,
+    signupUploadFile(file: [Upload],
         originalname: String,
         type: Int,
         url:String,
