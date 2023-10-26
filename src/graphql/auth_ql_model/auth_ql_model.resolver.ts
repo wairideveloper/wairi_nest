@@ -11,6 +11,13 @@ import {customLogger} from "../../util/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
+
+class ChangeMemberInfoInput {
+    nickname: string;
+    phone: string;
+    email: string;
+}
+
 @Resolver('AuthQlModel')
 export class AuthQlModelResolver {
     private readonly logger = new Logger();
@@ -58,6 +65,26 @@ export class AuthQlModelResolver {
         }
     }
 
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async changeMemberInfo(
+        @Args('changeMemberInfoInput') changeMemberInfoInput: ChangeMemberInfoInput,
+        @AuthUser() authUser: Member
+    ) {
+        try {
+            const data = {
+                memberIdx: authUser.idx,
+                nickname: changeMemberInfoInput.nickname,
+                phone: changeMemberInfoInput.phone,
+                email: changeMemberInfoInput.email,
+            }
+            return await this.authQlModelService.changeMemberInfo(data);
+        } catch (error) {
+            customLogger(this.logger, changeMemberInfoInput, error);
+            throw error;
+        }
+    }
+
     @Mutation(() => SignupResponse)
     async partnerSignup(@Args('partnerSignupInput') partnerSignupInput: PartnerSignupInput) {
         try {
@@ -74,7 +101,7 @@ export class AuthQlModelResolver {
             }
             return await this.authQlModelService.partnerSignup(data);
 
-        }catch (error) {
+        } catch (error) {
             customLogger(this.logger, partnerSignupInput, error);
             throw error;
         }
@@ -119,7 +146,7 @@ export class AuthQlModelResolver {
     async reVerifyPhoneV2(
         @Args({name: 'receipt_id', type: () => String}) receipt_id: string,
         @AuthUser() authUser: Member
-    ){
+    ) {
         try {
             return await this.authQlModelService.reVerifyPhoneV2(receipt_id, authUser.idx);
         } catch (error) {
@@ -157,7 +184,7 @@ export class AuthQlModelResolver {
                 phone: changePasswordInput.phone,
             }
             return await this.authQlModelService.changePassword(data);
-        }   catch (error) {
+        } catch (error) {
             customLogger(this.logger, changePasswordInput, error);
             throw error;
         }

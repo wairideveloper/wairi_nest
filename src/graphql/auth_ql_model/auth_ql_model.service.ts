@@ -477,4 +477,21 @@ export class AuthQlModelService {
         }
     }
 
+    async changeMemberInfo(data: {memberIdx: number; phone: string; nickname: string; email: string}) {
+        try {
+            const member = await this.memberService.findOne(data.memberIdx);
+            console.log("-> nickname", data.nickname);
+            if(!member){
+                throw new HttpException('회원정보가 없습니다.', 404);
+            }
+            const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
+            // const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
+            // console.log("-> update", update);
+            // if (update) {
+            //     return member
+            // }
+        } catch (error) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
 }

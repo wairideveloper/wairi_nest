@@ -2,9 +2,9 @@ import {Injectable} from '@nestjs/common';
 import {Member} from '../../../entity/entities/Member';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME, getNowUnix} from "../../util/common";
+import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME, getNowUnix, AES_ENCRYPT2} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
-import { SignupInput } from '../auth_ql_model/dto/signupInput';
+import {SignupInput} from '../auth_ql_model/dto/signupInput';
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
@@ -23,7 +23,7 @@ export class MembersService {
     ) {
     }
 
-    async findAlltest(skip,take) {
+    async findAlltest(skip, take) {
         return await this.memberRepository
             .createQueryBuilder()
             .select('*')
@@ -39,7 +39,7 @@ export class MembersService {
 
     //회원 생성
     async create(data: any) {
-        try{
+        try {
             const user = await this.memberRepository
 
                 .createQueryBuilder()
@@ -86,12 +86,12 @@ export class MembersService {
                 // console.log("-> user", user);
                 .execute();
             return user;
-        }catch (error) {
+        } catch (error) {
             throw error;
         }
     }
 
-    async findAll(skip,take) {
+    async findAll(skip, take) {
         return await this.memberRepository
             .createQueryBuilder()
             .select('*')
@@ -248,7 +248,7 @@ export class MembersService {
         return await this.memberChannelRepository
             .createQueryBuilder()
             .insert()
-            .into(MemberChannel,[
+            .into(MemberChannel, [
                 'memberIdx',
                 'type',
                 'typeText',
@@ -287,7 +287,8 @@ export class MembersService {
         memberIdx?: any;
         link?: any;
         regdate?: any;
-        level?: any; }){
+        level?: any;
+    }) {
 
         console.log("-> channelData", channelData);
     }
@@ -342,7 +343,7 @@ export class MembersService {
             .getRawMany();
     }
 
-    async updateUnique(idx, ci: string ,di: string) {
+    async updateUnique(idx, ci: string, di: string) {
         return await this.memberRepository
             .createQueryBuilder()
             .update()
@@ -358,6 +359,31 @@ export class MembersService {
             .update()
             .set({ci: unique})
             .where('idx = :idx', {idx: memberIdx})
+            .execute();
+    }
+
+    async updateMemberInfo(idx, nickname: string, email: string) {
+        let query = this.memberRepository
+            .createQueryBuilder()
+            .update();
+
+        //nickname 이 있으면 nickname 을 업데이트
+        //email 이 있으면 email 을 업데이트
+        // 둘다 있으면 둘다 업데이트
+        if (nickname && email) {
+            console.log("=>(member.service.ts:375");
+            query.set({nickname: nickname})
+                .set({email: email})
+        } else if (nickname) {
+            console.log("=>(member.service.ts:379");
+            query.set({nickname: nickname})
+        } else if (email) {
+            console.log("=>(member.service.ts:382");
+            query.set({email: email})
+        }
+
+        return await query
+            .where('idx = :idx', {idx: idx})
             .execute();
     }
 }

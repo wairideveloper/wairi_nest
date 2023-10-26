@@ -50,6 +50,11 @@ export const getImgTag = (content: string) => {
     return imgTag;
 }
 
+// AES_ENCRYPT 함수를 SQL 쿼리로 사용하기 위해 수정
+export const AES_ENCRYPT2 = (column: string) => {
+    return `AES_ENCRYPT("${column}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`;
+}
+
 //AES_ENCRYPT 암호화
 export const AES_ENCRYPT = (column: string) => {
     return `HEX(AES_ENCRYPT("${column}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`;
