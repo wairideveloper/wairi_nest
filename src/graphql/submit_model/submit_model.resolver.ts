@@ -20,7 +20,7 @@ class CreateCampaignSubmitInput {
     startDate: string;
     endDate: string;
     price: number;
-    type: number;
+    // type: number;
     submitChannel: number;
     subContent2: string;
     agreeContent: string;
@@ -79,7 +79,7 @@ export class SubmitModelResolver {
                 startDate: startDate,
                 endDate: endDate,
                 price: createCampaignSubmitInput.price,
-                type: createCampaignSubmitInput.type,
+                // type: createCampaignSubmitInput.type,
                 submitChannel: createCampaignSubmitInput.submitChannel,
                 subContent2: createCampaignSubmitInput.subContent2,
                 memberIdx: authUser.idx,
