@@ -486,6 +486,8 @@ export class CampaignService {
                 'campaign.tel as tel',
                 'campaign.addr1 as addr1',
                 'campaign.addr2 as addr2',
+                'campaign.addrLat as addrLat',
+                'campaign.addrLng as addrLng',
                 `(SELECT 
                     IF(
                         schedule.priceDeposit > 0, 
@@ -516,6 +518,7 @@ export class CampaignService {
                 .andWhere('partner.status = :status', {status: 1});
 
             const result = await query.getRawOne();
+            console.log("=>(campaign.service.ts:521) result", result);
 
             return result;
             // let data = await this.campaignRepository.createQueryBuilder('campaign')

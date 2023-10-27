@@ -65,6 +65,7 @@ type CampaignItem{
     limitSubmit: Int
     minDays: Int
     maxDays: Int
+    minSubmit: Int
     campaignItemSchedule: [CampaignItemSchedules]
 }
 

@@ -10,15 +10,23 @@ export class PaymentModelService {
         })
     }
 
-    async confirmPayment(receipt_id) {
+    async confirmPayment(confirmPaymentInput) {
         try {
+            const {receipt_id, itemIdx, price, nop} = confirmPaymentInput
+            //stock 확인
+
+
+
             await Bootpay.getAccessToken()
             const response = await Bootpay.confirmPayment(receipt_id)
-            console.log("-> response", response);
+            if(response.status === 1){
+                console.log("-> response", response.status);
+
+            }
             return response
         } catch (e) {
             // 발급 실패시 오류
-            console.log(e)
+            throw e
         }
     }
 

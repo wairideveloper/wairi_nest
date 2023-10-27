@@ -57,9 +57,21 @@ type Vbank_data {
     cash_receipt_no: String
 }
 
+input ConfirmPaymentInput {
+    sid: String!
+    receipt_id: String!
+    itemIdx: Int
+    price: Int
+    nop: Int
+}
+
 extend type Query {
 #    부트페이 토큰 발급
     confirmPayment(receipt_id:String): ConfirmResponse
 #    결제 취소
     cancelPayment(receipt_id:String): ConfirmResponse
+}
+
+extend type Mutation {
+    confirmPayment(confirmPaymentInput:ConfirmPaymentInput): ConfirmResponse
 }

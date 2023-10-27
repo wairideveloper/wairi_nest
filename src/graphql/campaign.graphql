@@ -24,6 +24,8 @@ type Campaign {
     lowestPriceOrig: Int
     discountPercentage: Int
     discountPrice: Int
+    addrLat: Float
+    addrLng: Float
 }
 
 type CampaignDetail{
