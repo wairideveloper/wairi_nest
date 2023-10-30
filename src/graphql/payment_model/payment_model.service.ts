@@ -10,15 +10,13 @@ export class PaymentModelService {
         })
     }
 
-    async confirmPayment(confirmPaymentInput) {
+    async confirmPayment(confirmPaymentInput, memberIdx) {
         try {
-            const {receipt_id, itemIdx, price, nop} = confirmPaymentInput
-            //stock 확인
-
-
+            const {sid, receipt_id, itemIdx, price, nop} = confirmPaymentInput
 
             await Bootpay.getAccessToken()
             const response = await Bootpay.confirmPayment(receipt_id)
+            console.log("=>(payment_model.service.ts:19) response", response);
             if(response.status === 1){
                 console.log("-> response", response.status);
 

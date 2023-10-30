@@ -1,10 +1,11 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
+import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {Brackets, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
 import {getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
-
+import {Connection} from "typeorm";
 @Injectable()
 export class SubmitModelService {
     /*
@@ -23,6 +24,9 @@ export class SubmitModelService {
     constructor(
         @InjectRepository(CampaignSubmit)
         private campaignSubmitRepository: Repository<CampaignSubmit>,
+        @InjectRepository(CampaignItemSchedule)
+        private campaignItemScheduleRepository: Repository<CampaignItemSchedule>,
+        private connection: Connection
     ) {
     }
     async createCampaignSubmit(inputData: any) {
@@ -175,7 +179,54 @@ export class SubmitModelService {
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .execute();
 
+        return data;
+    }
+
+    async getSubmitBySid(sid: string) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .select('*')
+            .where("campaignSubmit.sid = :sid", {sid: sid})
+            .andWhere('campaignSubmit.status = 100')
+            .getRawOne();
 
         return data;
+    }
+
+    async getCampaignItemSchduleByItemIdxAndRangeDate(itemIdx, startDate, endDate) {
+        let data = await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
+            .select('*')
+            .where("campaignItemSchedule.itemIdx = :itemIdx", { itemIdx: itemIdx })
+            .andWhere(new Brackets(qb => {
+                qb.where("campaignItemSchedule.date >= :startDate", { startDate: startDate })
+                    .andWhere("campaignItemSchedule.date <= :endDate", { endDate: endDate });
+            }))
+            .getRawMany();
+
+        return data;
+
+    }
+
+    async updateCampaignItemSchduleStock(idx, nop) {
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            let data = await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
+                .update(CampaignItemSchedule)
+                .set({
+                    stock: () => `stock - ${nop}`,
+                })
+                .where("campaignItemSchedule.idx = :idx", {idx: idx})
+                .execute();
+
+
+
+            await queryRunner.commitTransaction();
+
+        }catch (err) {
+            await queryRunner.rollbackTransaction();
+            throw err;
+        }
     }
 }

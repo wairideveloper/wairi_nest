@@ -1,4 +1,6 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {CateArea} from "./CateArea";
+import {Campaign} from "./Campaign";
 
 @Index("memberIdx", ["memberIdx"], {})
 @Entity("campaignFav", { schema: "wairi" })
@@ -14,4 +16,9 @@ export class CampaignFav {
 
   @Column("int", { name: "regdate" })
   regdate: number;
+
+  //campaign entity와 1:1 관계
+    @OneToOne(() => Campaign, (campaign) => campaign.campaignFav)
+    @JoinColumn([{ name: "campaignIdx", referencedColumnName: "idx" }])
+    campaign: Campaign;
 }

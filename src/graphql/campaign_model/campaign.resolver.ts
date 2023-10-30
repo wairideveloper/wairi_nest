@@ -8,6 +8,8 @@ import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
 import {LoginInput} from "../auth_ql_model/dto/loginInput";
 import {FavInput} from "./dto/favInput";
+import {AuthUser} from "../../auth/auth-user.decorator";
+import {Member} from "../../../entity/entities/Member";
 
 @Resolver('Campaign')
 export class CampaignResolver {
@@ -79,6 +81,24 @@ export class CampaignResolver {
         try {
             console.log(take, page, cate, cateArea)
             const list = await this.campaignsService.mainList(take, page, cate, cateArea);
+            return list
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getFavCampaigns(
+        @Args('take', {type: () => Int}) take: number,
+        @Args('page', {type: () => Int}) page: number,
+        @AuthUser() authUser: Member,
+    ) {
+        try {
+            const list = await this.campaignsService.favList(take, page, authUser.idx);
+            //json 형식으로 변환
+            console.log(list)
             return list
         } catch (error) {
             console.log(error)
@@ -192,25 +212,56 @@ export class CampaignResolver {
 
     @Mutation()
     @UseGuards(GqlAuthGuard)
-    async setCampaignFav(@Args('favInput',) favInput: FavInput) {
+    async setCampaignFav(
+        @Args('favInput',) favInput: FavInput,
+        @AuthUser() authUser: Member,
+    ) {
         try {
             let result = {
                 idx: null,
                 memberIdx: null,
                 campaignIdx: null,
                 regdate: null,
-
             };
-            const response = await this.campaignsService.setCampaignFav(favInput.memberIdx, favInput.campaignIdx);
+            const response = await this.campaignsService.setCampaignFav(authUser.idx, favInput.campaignIdx);
 
             result.idx = response.idx;
             result.memberIdx = response.memberIdx;
             result.campaignIdx = response.campaignIdx;
             result.regdate = FROM_UNIXTIME_JS(response.regdate);
 
-
             console.log("-> result", result);
             return result;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async delCampaignFav(
+        @Args('favInput',) favInput: FavInput,
+        @AuthUser() authUser: Member,
+    ) {
+        console.log("=>(campaign.resolver.ts:230) authUser", authUser);
+        try {
+            let result = {
+                idx: null,
+                memberIdx: null,
+                campaignIdx: null,
+                regdate: null,
+            };
+            const response = await this.campaignsService.delCampaignFav(authUser.idx, favInput.campaignIdx);
+
+            if(response.affected === 0){
+                throw new Error("삭제 실패");
+            }
+
+            return {
+                code: 200,
+                message: "삭제 성공"
+            }
         } catch (error) {
             console.log(error)
             throw error;

@@ -903,4 +903,117 @@ export class CampaignService {
             .andWhere('campaignItem.idx = :idx', {idx: idx})
             .getRawOne();
     }
+
+    async delCampaignFav(idx: number, campaignIdx: number) {
+        try {
+            return await this.campaignFavRepository.createQueryBuilder('campaignFav')
+                .delete()
+                .where('campaignFav.memberIdx = :idx', {idx: idx})
+                .andWhere('campaignFav.campaignIdx = :campaignIdx', {campaignIdx: campaignIdx})
+                .execute();
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    async favList(take: number, page: number, idx: number) {
+        try {
+            let data = await this.campaignFavRepository.createQueryBuilder('campaignFav')
+                .leftJoin('campaignFav.campaign', 'campaign')
+                .leftJoin('campaign.campaignItem', 'campaignItem')
+                .leftJoin('campaign.campaignImage', 'campaignImage')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .leftJoin('campaign.partner', 'partner')
+                .select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.weight as weight',
+                    'min(campaignItem.priceOrig) as lowestPriceOrig',
+                    'min(campaignItem.calcType1) as lowestPriceCalcType1',
+                    'min(campaignItem.calcType2) as lowestPriceCalcType2',
+                    'min(campaignItem.sellType) as lowestPriceSellType',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                    'cate.name as cateName',
+                    'cate.idx as cateIdx',
+                    'cateArea.name as cateAreaName',
+                    'partner.corpName as partnerName',
+                ])
+                .where('campaignFav.memberIdx = :idx', {idx: idx})
+                .andWhere('campaign.remove = :remove', {remove: 0})
+                .orderBy('campaignFav.regdate', 'DESC')
+                .groupBy('campaign.idx')
+                .offset(take * (page - 1))
+                .limit(take)
+                .getRawMany();
+
+            const campaignItemLowestPrice = await this.campaignRepository
+                .createQueryBuilder('c')
+                .select('c.idx', 'campaignIdx')
+                .addSelect('c.name', 'campaignName')
+                .addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('priceOrig')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = c.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('priceOrig', 'ASC')
+                            .limit(1),
+                    'lowestPrice'
+                )
+                .addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('dc11')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = c.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('dc11', 'ASC')
+                            .limit(1),
+                    'dc11'
+                )
+                .where('c.status = 200')
+                .andWhere('c.remove = 0')
+                .orderBy('c.weight', 'DESC')
+                .addOrderBy('c.regdate', 'DESC')
+                .getRawMany();
+
+            let result = [];
+            data.forEach((item) => {
+                campaignItemLowestPrice.forEach((item2) => {
+                    if (item.idx == item2.campaignIdx) {
+                        item.lowestPriceOrig = item2.lowestPrice;
+                        item.discountPercentage = item2.dc11;
+                        item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+                        result.push(item);
+                    }
+                })
+            });
+
+            const total = await this.campaignFavRepository.createQueryBuilder('campaignFav')
+                .leftJoin('campaignFav.campaign', 'campaign')
+                .where('campaignFav.memberIdx = :idx', {idx: idx})
+                .andWhere('campaign.remove = :remove', {remove: 0})
+                .getCount()
+
+            let totalPage = Math.ceil(total / take);
+            console.log("=>(campaign.service.ts:959) totalPage", totalPage);
+            if (page > totalPage) {
+                throw new NotFoundException();
+            }
+            const currentPage = page;
+
+            return new Pagination({
+                data,
+                total,
+                totalPage,
+                currentPage
+            });
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
 }

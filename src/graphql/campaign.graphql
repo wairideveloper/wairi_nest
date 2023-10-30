@@ -124,7 +124,7 @@ type CampaignFavs implements Pagination {
 }
 
 input FavInput{
-    memberIdx: Int!
+#    memberIdx: Int!
     campaignIdx: Int!
 }
 
@@ -132,6 +132,11 @@ type SetCampaignFavResponse{
     idx: Int
     regdate: String
     campaignIdx: Int
+}
+
+type DelCampaignFavResponse{
+    code: Int
+    message: String
 }
 
 type CampaignSchedule{
@@ -149,6 +154,10 @@ extend type Query {
     getCampaign(id: Int!): Campaign!
     #캠페인 리스트
     getCampaigns(take: Int!,page:Int!,cate:Int,cateArea:Int): Campaigns!
+
+    #관심 캠페인 리스트
+    getFavCampaigns(take: Int!,page:Int!,cate:Int,cateArea:Int): Campaigns!
+
     #캠페인 상세
     getDetailCampaign(idx: Int!): CampaignDetail!
 
@@ -169,4 +178,5 @@ extend type Query {
 
 extend type Mutation{
     setCampaignFav(favInput: FavInput): SetCampaignFavResponse!
+    delCampaignFav(favInput: FavInput): DelCampaignFavResponse!
 }

@@ -7,6 +7,7 @@ import {Partner} from "./Partner";
 import {CampaignReview} from "./CampaignReview";
 import {CampaignRecent} from "./CampaignRecent";
 import {CampaignSubmit} from "./CampaignSubmit";
+import {CampaignFav} from "./CampaignFav";
 
 @Entity("campaign", {schema: "wairi", engine: 'InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' })
 export class Campaign {
@@ -178,4 +179,9 @@ export class Campaign {
 
     @OneToOne(() => CampaignReview, campaignReview => campaignReview.campaign)
     campaignReview: CampaignReview;
+
+    // campaignFav entity와 1:1 관계
+    @OneToOne(() => CampaignReview, campaignReview => campaignReview.campaign)
+    @JoinColumn([{ name: "campaignIdx", referencedColumnName: "idx" }])
+    campaignFav: CampaignFav;
 }
