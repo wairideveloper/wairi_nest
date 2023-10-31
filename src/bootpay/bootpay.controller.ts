@@ -5,9 +5,15 @@ import { BootpayService } from './bootpay.service';
 export class BootpayController {
   constructor(private readonly bootpayService: BootpayService) {}
 
-  @Get('vBankPayment')
+  @Post('vBankPayment')
   vBankPayment(@Body() body) {
     console.log("-> vBankPayment")
     return 'This action adds a new bootpay'
+  }
+
+  @Get('vBankPayment')
+  vBankPayment2(@Body() body) {
+    console.log("-> vBankPayment222")
+    return 'This action adds a new bootpay222'
   }
 }
