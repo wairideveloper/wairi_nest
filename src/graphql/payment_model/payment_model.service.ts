@@ -83,6 +83,10 @@ export class PaymentModelService {
                 .values(insertData)
                 .execute();
 
+            if (payment) {
+                return payment;
+            }
+
         }catch (e) {
             console.log(e)
         }

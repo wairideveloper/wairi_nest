@@ -54,12 +54,17 @@ export class PaymentModelResolver {
             //가상계좌
             if(response.method_symbol === 'vbank'){
                 //payment insert
-                await this.paymentModelService.insertVbankPayment(response, submitItem.idx, 12328);
-                return {
-                    status: response.status,
-                    code: 200,
-                    message: "가상계좌 발급이 완료되었습니다.",
-                    data: response
+                const vbankData = await this.paymentModelService.insertVbankPayment(response, submitItem.idx, 12328);
+
+                if(vbankData) {
+                    return {
+                        status: response.status,
+                        code: 200,
+                        message: "가상계좌 발급이 완료되었습니다.",
+                        data: response
+                    }
+                }else{
+                    throw new HttpException("가상계좌 발급이 실패하였습니다.", 404);
                 }
             }
 
