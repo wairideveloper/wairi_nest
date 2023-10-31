@@ -5,7 +5,7 @@ import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
-import {getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
+import {FROM_UNIXTIME, getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
 import {Connection} from "typeorm";
 import { ReceiptResponseParameters } from '@bootpay/backend-js/lib/response';
 
@@ -131,13 +131,13 @@ export class SubmitModelService {
                 "campaignSubmit.campaignIdx as campaignIdx",
                 "campaignSubmit.itemIdx as itemIdx",
                 "campaignSubmit.nop as nop",
+                "campaignSubmit.payTotal as payTotal",
                 "campaignSubmit.startDate as startDate",
                 "campaignSubmit.endDate as endDate",
                 "campaignSubmit.submitChannel as submitChannel",
                 "campaignSubmit.subContent2 as subContent2",
                 "campaignSubmit.memberIdx as memberIdx",
                 "campaignSubmit.regdate as regdate",
-                "campaignSubmit.autoCancelDate as autoCancelDate",
                 "campaignSubmit.campaignName as campaignName",
                 "campaignSubmit.itemName as itemName",
                 "campaignSubmit.payItem as payItem",
@@ -145,10 +145,12 @@ export class SubmitModelService {
                 "campaignSubmit.agreeContent as agreeContent",
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
             ])
+            .addSelect(`(${FROM_UNIXTIME('campaignSubmit.autoCancelDate')})`, 'autoCancelDate')
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')
             .where("campaignSubmit.sid = :sid", {sid: sid})
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
+        console.log("=>(submit_model.service.ts:153) data", data);
 
         if (data) {
             // data.status = switchSubmitStatusText(data.status);

@@ -141,7 +141,7 @@ export class SubmitModelResolver {
         @AuthUser() authUser: Member,
     ){
         try{
-            let data = await this.submitModelService.getSubmitDetail(sid, 11242);
+            let data = await this.submitModelService.getSubmitDetail(sid, 12328);
             return data;
         }catch (error) {
             console.log(error)

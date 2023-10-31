@@ -28,6 +28,7 @@ type CampaignSubmit{
     startDate: String!
     endDate: String!
     price: Int!
+    payTotal: Int!
     type: Int!
     submitChannel: Int!
     subContent2: String!
@@ -39,6 +40,7 @@ type CampaignSubmit{
     cateIdx: Int
     cancelReason: String
     denyReason: String
+    autoCancelDate: String
 }
 
 type Submits implements Pagination {
@@ -59,4 +61,5 @@ extend type Query {
 extend type Mutation{
     createCampaignSubmit(createCampaignSubmitInput: CreateCampaignSubmitInput): CampaignSubmitResponse!
     cancellationRequest(sid: String!, reason: String): CampaignSubmitResponse!
+    draftRegistration(sid: String!, reason: String): CampaignSubmitResponse!
 }
