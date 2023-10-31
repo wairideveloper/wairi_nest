@@ -78,7 +78,7 @@ export class PaymentModelResolver {
 
                 //재고 차감
                 if(itemSchduleIdx.length > 0){
-                    await this.submitModelService.updateCampaignItemSchduleStock(
+                   const result = await this.submitModelService.updateCampaignItemSchduleStock(
                         itemSchduleIdx,
                         submitItem.nop,
                         confirmPaymentInput.sid,
@@ -90,8 +90,10 @@ export class PaymentModelResolver {
             }
 
             return {
+                status: response.status,
                 code: 200,
-                message: "재고가 충분합니다."
+                message: getBootpayStatusText(response.status),
+                data: response
             }
         } catch (error) {
             throw new HttpException(error.message, error.error_code);

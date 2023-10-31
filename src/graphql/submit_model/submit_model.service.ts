@@ -219,9 +219,6 @@ export class SubmitModelService {
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
-console.log("=>(submit_model.service.ts:217) itemSchduleIdx", itemSchduleIdx);
-console.log("=>(submit_model.service.ts:217) nop", nop);
-console.log("=>(submit_model.service.ts:217) sid", sid);
 console.log("=>(submit_model.service.ts:217) response", response);
 
         try {
@@ -267,6 +264,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
 
             await queryRunner.commitTransaction();
 
+            return true;
         }catch (err) {
             await queryRunner.rollbackTransaction();
             throw err;
