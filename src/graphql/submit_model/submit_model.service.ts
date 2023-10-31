@@ -58,7 +58,9 @@ export class SubmitModelService {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             // .leftJoin("campaignSubmit.campaign", "campaign")
             .leftJoin("campaignSubmit.campaignItem", "campaignItem")
+            .leftJoin('campaign', 'campaign', 'campaign.idx = campaignItem.campaignIdx')
             .select([
+                "campaign.cate as cate",
                 "campaignSubmit.idx as idx",
                 "campaignSubmit.sid as sid",
                 "campaignSubmit.status as status",
@@ -80,6 +82,8 @@ export class SubmitModelService {
                 "campaignSubmit.payItem as payItem",
                 "campaignSubmit.payTotal as payTotal",
                 "campaignSubmit.agreeContent as agreeContent",
+                "campaignSubmit.denyReason as denyReason",
+                "campaignSubmit.cancelReason as cancelReason",
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
             ])
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')

@@ -36,6 +36,9 @@ type CampaignSubmit{
     itemName: String
     image: String
     application_period: String
+    cate: String
+    cancelReason: String
+    denyReason: String
 }
 
 type Submits implements Pagination {
