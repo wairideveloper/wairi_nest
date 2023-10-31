@@ -26,6 +26,16 @@ class CreateCampaignSubmitInput {
     agreeContent: string;
 }
 
+class DraftRegistrationInput {
+    sid: string;
+    postRemarks: string;
+}
+
+class DraftCompleteInput {
+    sid: string;
+    url: string;
+}
+
 @Resolver('SubmitModel')
 export class SubmitModelResolver {
     constructor(
@@ -125,7 +135,7 @@ export class SubmitModelResolver {
         @AuthUser() authUser: Member,
     ){
         try{
-            let data = await this.submitModelService.getSubmitList(11242, take, page);
+            let data = await this.submitModelService.getSubmitList(authUser.idx, take, page);
             return data;
         }catch(error){
             console.log(error)
@@ -176,4 +186,101 @@ export class SubmitModelResolver {
             throw error;
         }
     }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async draftRegistration(
+        @Args('draftRegistrationInput') draftRegistrationInput: DraftRegistrationInput,
+        @AuthUser() authUser: Member,
+    ){
+       try{
+              let data = await this.submitModelService.draftRegistration(
+                  draftRegistrationInput.sid, draftRegistrationInput.postRemarks, 12328);
+              console.log("=>(submit_model.resolver.ts:194) data", data);
+              if (data.affected === 1) {
+                return {
+                     code: 200,
+                     message: '초안 등록이 완료되었습니다.',
+                }
+              } else {
+                return {
+                     code: 400,
+                     message: '초안 등록이 실패하였습니다.',
+                }
+              }
+       }catch (error) {
+           console.log(error)
+           throw error;
+       }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getDraftDetail(
+        @Args('sid') sid: string,
+        @AuthUser() authUser: Member,
+    ){
+        try{
+            let data = await this.submitModelService.getDraftDetail(sid, 12328);
+            console.log("=>(submit_model.resolver.ts:220) data", data);
+            return data;
+        }catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async updateDraftRegistration(
+        @Args('draftRegistrationInput') draftRegistrationInput: DraftRegistrationInput,
+        @AuthUser() authUser: Member,
+    ){
+        try{
+            let data = await this.submitModelService.updateDraftRegistration(
+                draftRegistrationInput.sid, draftRegistrationInput.postRemarks, 12328);
+            console.log("=>(submit_model.resolver.ts:220) data", data);
+            if (data.affected === 1) {
+                return {
+                    code: 200,
+                    message: '초안 수정이 완료되었습니다.',
+                }
+            } else {
+                return {
+                    code: 400,
+                    message: '초안 수정이 실패하였습니다.',
+                }
+            }
+        }catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async completeDraftRegistration(
+        @Args('draftCompleteInput') draftCompleteInput: DraftCompleteInput,
+        @AuthUser() authUser: Member,
+    ){
+        try{
+            let data = await this.submitModelService.completeDraftRegistration(
+                draftCompleteInput.sid, draftCompleteInput.url, 12328);
+            if (data.affected === 1) {
+                return {
+                    code: 200,
+                    message: '초안 수정이 완료되었습니다.',
+                }
+            } else {
+                return {
+                    code: 400,
+                    message: '초안 수정이 실패하였습니다.',
+                }
+            }
+        }catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
 }

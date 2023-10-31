@@ -276,4 +276,90 @@ console.log("=>(submit_model.service.ts:217) response", response);
             throw err;
         }
     }
+
+    async draftRegistration(sid: string, postRemarks: string, memberIdx: number) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .update(CampaignSubmit)
+            .set({
+                status: 500,
+                postRemarks: postRemarks,
+                statusDate500: getUnixTimeStamp()
+            })
+            .where("campaignSubmit.sid = :sid", {sid: sid})
+            .andWhere('campaignSubmit.status = 400')
+            .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            .execute();
+
+        return data;
+    }
+
+    async getDraftDetail(sid: string, memberIdx: number) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .leftJoin("campaignSubmit.campaignItem", "campaignItem")
+            .select([
+                "campaignSubmit.idx as idx",
+                "campaignSubmit.sid as sid",
+                "campaignSubmit.status as status",
+                "campaignSubmit.memberType as memberType",
+                "campaignSubmit.memberType2 as memberType2",
+                "campaignSubmit.nights as nights",
+                "campaignSubmit.campaignIdx as campaignIdx",
+                "campaignSubmit.itemIdx as itemIdx",
+                "campaignSubmit.nop as nop",
+                "campaignSubmit.payTotal as payTotal",
+                "campaignSubmit.postRemarks as postRemarks",
+                "campaignSubmit.startDate as startDate",
+                "campaignSubmit.endDate as endDate",
+                "campaignSubmit.submitChannel as submitChannel",
+                "campaignSubmit.subContent2 as subContent2",
+                "campaignSubmit.memberIdx as memberIdx",
+                "campaignSubmit.regdate as regdate",
+                "campaignSubmit.campaignName as campaignName",
+                "campaignSubmit.itemName as itemName",
+                "campaignSubmit.payItem as payItem",
+                "campaignSubmit.payTotal as payTotal",
+                "campaignSubmit.agreeContent as agreeContent",
+                "campaignSubmit.postRemarks as postRemarks",
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
+            ])
+            .addSelect(`(${FROM_UNIXTIME('campaignSubmit.autoCancelDate')})`, 'autoCancelDate')
+            .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')
+            .where("campaignSubmit.sid = :sid", {sid: sid})
+            .andWhere('campaignSubmit.status = 500')
+            .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            .getRawOne();
+
+        return data;
+    }
+
+    async updateDraftRegistration(sid: string, postRemarks: string, memberIdx: number) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .update(CampaignSubmit)
+            .set({
+                postRemarks: postRemarks,
+            })
+            .where("campaignSubmit.sid = :sid", {sid: sid})
+            .andWhere('campaignSubmit.status = 500')
+            .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            .execute();
+
+        return data;
+
+    }
+
+    async completeDraftRegistration(sid: string, url: string, memberIdx: number) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .update(CampaignSubmit)
+            .set({
+                status: 700,
+                postUrl: url,
+                // statusDate700: getUnixTimeStamp()
+            })
+            .where("campaignSubmit.sid = :sid", {sid: sid})
+            .andWhere('campaignSubmit.status = 500')
+            .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            .execute();
+
+        return data;
+    }
 }

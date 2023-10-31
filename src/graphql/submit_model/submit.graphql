@@ -41,6 +41,7 @@ type CampaignSubmit{
     cancelReason: String
     denyReason: String
     autoCancelDate: String
+    postRemarks: String
 }
 
 type Submits implements Pagination {
@@ -53,13 +54,27 @@ type Submits implements Pagination {
     data: [CampaignSubmit!]!
 }
 
+input DraftRegistrationInput{
+    sid: String!
+    postRemarks: String!
+    url: String
+}
+
+input DraftCompleteInput{
+    sid: String!
+    url: String!
+}
+
 extend type Query {
     getSubmitList(take: Int!,page:Int!): Submits
     getSubmitDetail(sid: String!): CampaignSubmit
+    getDraftDetail(sid: String!): CampaignSubmit
 }
 
 extend type Mutation{
     createCampaignSubmit(createCampaignSubmitInput: CreateCampaignSubmitInput): CampaignSubmitResponse!
     cancellationRequest(sid: String!, reason: String): CampaignSubmitResponse!
-    draftRegistration(sid: String!, reason: String): CampaignSubmitResponse!
+    draftRegistration(draftRegistrationInput: DraftRegistrationInput): CampaignSubmitResponse!
+    updateDraftRegistration(draftRegistrationInput: DraftRegistrationInput): CampaignSubmitResponse!
+    completeDraftRegistration(draftCompleteInput: DraftCompleteInput): CampaignSubmitResponse!
 }
