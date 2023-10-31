@@ -101,9 +101,9 @@ export class SubmitModelService {
         const currentPage = page;
 
         if (data.length > 0) {
-            data.forEach((item) => {
-                item.status = switchSubmitStatusText(item.status);
-            })
+            // data.forEach((item) => {
+            //     item.status = switchSubmitStatusText(item.status);
+            // })
         }
 
         return new Pagination({

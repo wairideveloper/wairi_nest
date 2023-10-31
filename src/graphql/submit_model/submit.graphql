@@ -21,7 +21,7 @@ type CampaignSubmitResponse{
 type CampaignSubmit{
     idx: Int!
     sid: String!
-    status: String!
+    status: Int!
     campaignIdx: Int!
     itemIdx: Int!
     nop: Int!
