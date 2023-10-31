@@ -58,6 +58,8 @@ import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { FirebaseModule } from './graphql/firebase/firebase.module';
 import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
 import { ReviewModelModule } from './graphql/review_model/review_model.module';
+import {Payment} from "../entity/entities/Payment";
+import { BootpayModule } from './bootpay/bootpay.module';
 
 @Module({
     imports: [
@@ -77,7 +79,8 @@ import { ReviewModelModule } from './graphql/review_model/review_model.module';
                 Member, MemberChannel, Campaign, CampaignItem, CampaignImage,
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
-                Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav
+                Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
+                Payment
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',
@@ -175,8 +178,8 @@ import { ReviewModelModule } from './graphql/review_model/review_model.module';
         CommonModelModule,
         FirebaseModule,
         SubmitModelModule,
-        ReviewModelModule
-
+        ReviewModelModule,
+        BootpayModule
     ],
     controllers: [AppController],
     providers: [

@@ -316,3 +316,7 @@ export const switchSubmitStatusText = (status) => {
             return status = '승인 거절';
     }
 }
+
+// export const setPaymentData = (paymentData) => {
+//     if()
+// }

@@ -991,6 +991,7 @@ export class CampaignService {
                     }
                 })
             });
+            console.log("=>(campaign.service.ts:994) data", data);
 
             const total = await this.campaignFavRepository.createQueryBuilder('campaignFav')
                 .leftJoin('campaignFav.campaign', 'campaign')

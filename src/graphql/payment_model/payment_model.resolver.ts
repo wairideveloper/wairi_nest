@@ -31,7 +31,6 @@ export class PaymentModelResolver {
         @AuthUser() authUser: Member
     ) {
         try {
-        console.log("=>(payment_model.resolver.ts:36) confirmPaymentInput.sid", confirmPaymentInput.sid);
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
             if(!submitItem){ //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
@@ -40,10 +39,10 @@ export class PaymentModelResolver {
             const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
                 submitItem.itemIdx, submitItem.startDate, submitItem.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
 
+            let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {
                 // stock 확인 nop > stock
-                console.log("=>(payment_model.resolver.ts:48) item.stock", item.stock);
-                console.log("=>(payment_model.resolver.ts:48) item.submitItem.nop", submitItem.nop);
+                itemSchduleIdx.push(item.idx);
                  if(submitItem.nop > item.stock){
                         throw new HttpException("재고가 부족합니다.", 404);
                  }
@@ -51,20 +50,38 @@ export class PaymentModelResolver {
 
             //재고 체크후 결제 confirm
             const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, 12328);
-            console.log("=>(payment_model.resolver.ts:57) response", response);
+
+            //가상계좌
+            if(response.method_symbol === 'vbank'){
+                //payment insert
+                await this.paymentModelService.insertVbankPayment(response, submitItem.idx, 12328);
+                return {
+                    status: response.status,
+                    code: 200,
+                    message: "가상계좌 발급이 완료되었습니다.",
+                    data: response
+                }
+            }
 
             if(response.status === 1){
                 //submitItem.payTotal == response.data.price;
                 if((submitItem.payTotal * submitItem.nop) != response.price){
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
-                    throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
+                    // throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
 
                 //재고 차감
-                campaignItemSchdule.forEach(async (item) => {
-                    await this.submitModelService.updateCampaignItemSchduleStock(item.idx, submitItem.nop)
-                })
+                if(itemSchduleIdx.length > 0){
+                    await this.submitModelService.updateCampaignItemSchduleStock(
+                        itemSchduleIdx,
+                        submitItem.nop,
+                        confirmPaymentInput.sid,
+                        response,
+                        12328, // memberIdx
+                        submitItem.idx
+                        )
+                }
             }
 
             return {

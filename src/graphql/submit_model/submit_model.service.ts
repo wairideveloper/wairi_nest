@@ -1,11 +1,14 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
+import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
 import {getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
 import {Connection} from "typeorm";
+import { ReceiptResponseParameters } from '@bootpay/backend-js/lib/response';
+
 @Injectable()
 export class SubmitModelService {
     /*
@@ -26,9 +29,12 @@ export class SubmitModelService {
         private campaignSubmitRepository: Repository<CampaignSubmit>,
         @InjectRepository(CampaignItemSchedule)
         private campaignItemScheduleRepository: Repository<CampaignItemSchedule>,
+        @InjectRepository(Payment)
+        private paymentRepository: Repository<Payment>,
         private connection: Connection
     ) {
     }
+
     async createCampaignSubmit(inputData: any) {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .insert()
@@ -94,7 +100,7 @@ export class SubmitModelService {
         }
         const currentPage = page;
 
-        if(data.length > 0) {
+        if (data.length > 0) {
             data.forEach((item) => {
                 item.status = switchSubmitStatusText(item.status);
             })
@@ -140,7 +146,7 @@ export class SubmitModelService {
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
 
-        if(data) {
+        if (data) {
             data.status = switchSubmitStatusText(data.status);
         }
 
@@ -159,7 +165,7 @@ export class SubmitModelService {
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
 
-        if(submit.status < 100 || submit.status > 200) {
+        if (submit.status < 100 || submit.status > 200) {
             return {
                 code: -1,
                 message: '신청을 취소할 수 없는 상태입니다.',
@@ -195,10 +201,10 @@ export class SubmitModelService {
     async getCampaignItemSchduleByItemIdxAndRangeDate(itemIdx, startDate, endDate) {
         let data = await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
             .select('*')
-            .where("campaignItemSchedule.itemIdx = :itemIdx", { itemIdx: itemIdx })
+            .where("campaignItemSchedule.itemIdx = :itemIdx", {itemIdx: itemIdx})
             .andWhere(new Brackets(qb => {
-                qb.where("campaignItemSchedule.date >= :startDate", { startDate: startDate })
-                    .andWhere("campaignItemSchedule.date <= :endDate", { endDate: endDate });
+                qb.where("campaignItemSchedule.date >= :startDate", {startDate: startDate})
+                    .andWhere("campaignItemSchedule.date <= :endDate", {endDate: endDate});
             }))
             .getRawMany();
 
@@ -206,21 +212,58 @@ export class SubmitModelService {
 
     }
 
-    async updateCampaignItemSchduleStock(idx, nop) {
+    async updateCampaignItemSchduleStock(itemSchduleIdx: any[], nop: string,
+                                         sid: string, response: ReceiptResponseParameters,
+                                         memberIdx: number, submitIdx: number
+                                         ) {
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
+console.log("=>(submit_model.service.ts:217) itemSchduleIdx", itemSchduleIdx);
+console.log("=>(submit_model.service.ts:217) nop", nop);
+console.log("=>(submit_model.service.ts:217) sid", sid);
+console.log("=>(submit_model.service.ts:217) response", response);
 
         try {
-            let data = await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
+            let paymentDataInsert = await queryRunner.manager.createQueryBuilder()
+                .insert()
+                .into(Payment)
+                .values({
+                    status: response.status == 1? 200 : 100,
+                    oid: response.order_id,
+                    memberIdx: memberIdx,
+                    submitIdx: submitIdx,
+                    payTotal: response.price,
+                    receiptId: response.receipt_id,
+                    payMethod: response.method_origin_symbol,
+                    regdate: getUnixTimeStamp(),
+                    paydate: getUnixTimeStamp(),
+                    cardName: response.card_data? response.card_data.card_company : '',
+                    cardNum: response.card_data? response.card_data.card_no : '',
+                    vbankCode: response.vbank_data? response.vbank_data.bank_code : '',
+                    vbankNum: response.vbank_data? response.vbank_data.bank_account : '',
+                })
+                .execute();
+            console.log("=>(submit_model.service.ts:256) paymentDataInsert", paymentDataInsert);
+
+            //재고 차감
+            let campaignItemSchduleUpdate = await queryRunner.manager.createQueryBuilder()
                 .update(CampaignItemSchedule)
                 .set({
-                    stock: () => `stock - ${nop}`,
+                    stock: () => "stock - " + nop
                 })
-                .where("campaignItemSchedule.idx = :idx", {idx: idx})
+                .where("idx IN (:...idx)", { idx: itemSchduleIdx })
                 .execute();
 
+            let submitDataUpdate = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+                .update(CampaignSubmit)
+                .set({
+                    status: 300,
+                    paymentIdx: paymentDataInsert.raw.insertId,
 
+                })
+                .where("campaignSubmit.sid = :sid", {sid: sid})
+                .execute();
 
             await queryRunner.commitTransaction();
 
