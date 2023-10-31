@@ -36,7 +36,7 @@ type CampaignSubmit{
     itemName: String
     image: String
     application_period: String
-    cate: String
+    cateIdx: Int
     cancelReason: String
     denyReason: String
 }

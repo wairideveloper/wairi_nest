@@ -60,7 +60,7 @@ export class SubmitModelService {
             .leftJoin("campaignSubmit.campaignItem", "campaignItem")
             .leftJoin('campaign', 'campaign', 'campaign.idx = campaignItem.campaignIdx')
             .select([
-                "campaign.cate as cate",
+                "campaign.cateIdx as cateIdx",
                 "campaignSubmit.idx as idx",
                 "campaignSubmit.sid as sid",
                 "campaignSubmit.status as status",
