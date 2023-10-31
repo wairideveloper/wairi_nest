@@ -11,7 +11,7 @@ export class BootpayController {
     return 'This action adds a new bootpay'
   }
 
-  @Get('vBankPayment')
+  @Get('vBankPayment2')
   vBankPayment2(@Body() body) {
     console.log("-> vBankPayment222")
     return 'This action adds a new bootpay222'
