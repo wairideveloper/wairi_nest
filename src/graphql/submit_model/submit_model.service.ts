@@ -147,7 +147,7 @@ export class SubmitModelService {
             .getRawOne();
 
         if (data) {
-            data.status = switchSubmitStatusText(data.status);
+            // data.status = switchSubmitStatusText(data.status);
         }
 
         return data;
