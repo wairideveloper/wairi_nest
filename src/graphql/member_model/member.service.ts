@@ -354,18 +354,21 @@ export class MembersService {
     }
 
     async updateUnique(idx, ci: string, di: string, phone: string){
+        const data = {
+            ci: ci,
+            di: di,
+            phone: AES_ENCRYPT(phone)
+        }
         return await this.memberRepository
             .createQueryBuilder()
             .update()
             .set({
                 ci: ci,
                 di: di,
-                // string casting
-                phone: AES_ENCRYPT(phone)
+                phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
             })
             .where('idx = :idx', {idx: idx})
             .execute();
-
     }
 
     async reVerifyPhoneV2(memberIdx: any, unique: string) {
