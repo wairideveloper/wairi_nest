@@ -365,7 +365,7 @@ export class MembersService {
             .set({
                 ci: ci,
                 di: di,
-                phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
+                phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`
             })
             .where('idx = :idx', {idx: idx})
             .execute();
