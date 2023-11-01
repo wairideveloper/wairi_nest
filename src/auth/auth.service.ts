@@ -124,9 +124,10 @@ export class AuthService {
     }
 
     async kakaoLogin(user: any) {
-        console.log("-> user", user);
+        console.log("-> 카카오 유저 정보: ", user);
         try {
-            const memberCheck = await this.memberService.findByEmail(user.email);
+            // const memberCheck = await this.memberService.findByEmail(user.email);
+            const memberCheck = await this.memberService.findSocialId(user.email, user.id, 'social_kakao');
             const passwd = await hashPassword(user.id.toString());
 
             if (memberCheck) {
@@ -156,7 +157,7 @@ export class AuthService {
                         type: 1,
                         level: 0,
                         status: 4,
-                        nickname: () => user.profile.displayName == '닉네임을 등록해주세요' ? `"${nickname}"` : `"${user.nickname}"`,
+                        nickname: () => user.profile.displayName == '닉네임을 등록해주세요' ? `"${nickname}"` : `"${user.profile.displayName}"`,
                         email: () => AES_ENCRYPT(user.email),
                         phone: () => user.phone ? AES_ENCRYPT(user.phone) : AES_ENCRYPT(""),
                         name: () => user.name == '닉네임을 등록해주세요' ? AES_ENCRYPT("") : AES_ENCRYPT(user.name),
@@ -182,9 +183,9 @@ export class AuthService {
 
     async naverLogin(user:any) {
         try{
-            const memberCheck = await this.memberService.findByEmail(user.email);
             const passwd = await hashPassword(user.id.toString());
-
+            // const memberCheck = await this.memberService.findByEmail(user.email);
+            const memberCheck = await this.memberService.findSocialId(user.email, user.id, 'social_naver');
             if(memberCheck) {
                 const payload = {
                     idx: memberCheck.idx,
@@ -234,6 +235,66 @@ export class AuthService {
         }
     }
 
+    async googleLogin(user: any) {
+        try {
+            const memberCheck = await this.memberService.findSocialId(user.email, user.id, 'social_google');
+            const passwd = await hashPassword(user.id.toString());
+
+            if (memberCheck) {
+                const hash = memberCheck.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
+                const check: boolean = compareSync(passwd, hash);
+                console.log("=>(auth.service.ts:246) check", check);
+
+                const payload = {
+                    idx: memberCheck.idx,
+                    username: user.displayName,
+                    memberType: 1
+                }
+                const result = await this.jwtResponse(payload, memberCheck);
+                console.log("-> result", result);
+                return result;
+            } else {
+                const now = getNowUnix();
+                // 회원 닉네임 난수 생성
+                const nickname = `user_${Math.floor(Math.random() * 1000000)}`;
+                const memberInsert = await this.memberRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(Member, ['id', 'social_google', 'type', 'level', 'status', 'nickname', 'email',
+                        'phone', 'name', 'passwd', 'regdate',
+                    ])
+                    .values({
+                        id: () => `"${user.id}"`,
+                        social_google: () => `"${user.id}"`,
+                        type: 1,
+                        level: 0,
+                        status: 4,
+                        nickname: () => user.displayName == '닉네임을 등록해주세요' ? `"${nickname}"
+                         ` : `"${user.displayName}"`,
+                        email: () => AES_ENCRYPT(user.email),
+                        phone: () => user.phone ? AES_ENCRYPT(user.phone) : AES_ENCRYPT(""),
+                        name: () => user.name == '닉네임을 등록해주세요' ? AES_ENCRYPT("") : AES_ENCRYPT(user.name),
+                        passwd: () => `"${passwd}"`,
+                        regdate: () => `"${now}"`,
+                    })
+                    .execute();
+                if (memberInsert) {
+                    const member = await this.memberService.findById(user.id);
+                    const payload = {
+                        idx: member.idx,
+                        username: member.name,
+                        memberType: 1
+                    }
+                    const result = await this.jwtResponse(payload, member);
+                    return result;
+                } else {
+
+                }
+            }
+        }catch (error) {
+            console.log(error);
+        }
+    }
 
     async passwordHash(passwd: string) {
         const salt = genSaltSync(5, 'a');

@@ -71,15 +71,12 @@ export class CampaignService {
                 'min(campaignItem.calcType1) as lowestPriceCalcType1',
                 'min(campaignItem.calcType2) as lowestPriceCalcType2',
                 'min(campaignItem.sellType) as lowestPriceSellType',
-                '(SELECT file_name FROM campaignImage WHERE campaignImage.campaignIdx = campaign.idx ORDER BY ordering ASC LIMIT 1) as image',
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 'cate.name as cateName',
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            // .where('campaign.remove = :remove', {remove: 0})
-            // .andWhere('campaign.name like :keyword', {keyword: '%' + keyword + '%'})
-            // .orWhere('campaignItem.name like :keyword', {keyword: '%' + keyword + '%'})
             .where('(campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
                 remove: 0,
                 campaignKeyword: '%' + keyword + '%',
@@ -92,6 +89,20 @@ export class CampaignService {
             .offset(take * (page - 1))
             .limit(take)
             .getRawMany();
+
+        const campaignItemLowestPrice = await this.getCampaignLowestPrice();
+
+        let result = [];
+        data.forEach((item) => {
+            campaignItemLowestPrice.forEach((item2) => {
+                if (item.idx == item2.campaignIdx) {
+                    item.lowestPriceOrig = item2.lowestPrice;
+                    item.discountPercentage = item2.dc11;
+                    item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+                    result.push(item);
+                }
+            })
+        });
 
         const total = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
@@ -166,37 +177,7 @@ export class CampaignService {
 
         const data = await query.getRawMany();
 
-        const campaignItemLowestPrice = await this.campaignRepository
-            .createQueryBuilder('c')
-            .select('c.idx', 'campaignIdx')
-            .addSelect('c.name', 'campaignName')
-            .addSelect(
-                (subQuery) =>
-                    subQuery
-                        .select('priceOrig')
-                        .from('campaignItem', 'ci')
-                        .where('ci.campaignIdx = c.idx')
-                        .andWhere('ci.remove = 0')
-                        .orderBy('priceOrig', 'ASC')
-                        .limit(1),
-                'lowestPrice'
-            )
-            .addSelect(
-                (subQuery) =>
-                    subQuery
-                        .select('dc11')
-                        .from('campaignItem', 'ci')
-                        .where('ci.campaignIdx = c.idx')
-                        .andWhere('ci.remove = 0')
-                        .orderBy('dc11', 'ASC')
-                        .limit(1),
-                'dc11'
-            )
-            .where('c.status = 200')
-            .andWhere('c.remove = 0')
-            .orderBy('c.weight', 'DESC')
-            .addOrderBy('c.regdate', 'DESC')
-            .getRawMany();
+        const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 
         let result = [];
         data.forEach((item) => {
@@ -338,7 +319,7 @@ export class CampaignService {
     async getCampaignItem(id: number) {
         let result = await this.campaignItemRepository.createQueryBuilder('campaignItem')
             .select([
-                'campaignItem.*',
+                    'campaignItem.*',
                     `(SELECT 
                     IF(
                         schedule.priceDeposit > 0, 
@@ -354,7 +335,7 @@ export class CampaignService {
                         ORDER BY price 
                         LIMIT 1
                     ) as lowestPrice`,
-                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
                 ]
             )
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(startDate)), " ~ ", DATE(FROM_UNIXTIME(endDate))) AS application_period')
@@ -521,38 +502,6 @@ export class CampaignService {
             console.log("=>(campaign.service.ts:521) result", result);
 
             return result;
-            // let data = await this.campaignRepository.createQueryBuilder('campaign')
-            //     .leftJoin('campaign.campaignItem', 'campaignItem')
-            //     .leftJoin('campaign.campaignImage', 'campaignImage')
-            //     .leftJoin('campaign.cate', 'cate')
-            //     .leftJoin('campaign.cateArea', 'cateArea')
-            //     .leftJoin('campaign.partner', 'partner')
-            //     .select([
-            //         'campaign.idx as idx',
-            //         'campaign.name as name',
-            //         'campaign.weight as weight',
-            //         'campaign.info as info',
-            //         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-            //         'cate.name as cateName',
-            //         'cate.idx as cateIdx',
-            //         'cateArea.name as cateAreaName',
-            //         'cateArea.idx as cateAreaIdx',
-            //         'partner.corpName as partnerName',
-            //     ])
-            //     .addSelect(
-            //         (subQuery) =>
-            //             subQuery
-            //     )
-            //     .where('campaign.idx = :idx', {idx: idx})
-            //     .andWhere('campaign.remove = :remove', {remove: 0})
-            //     .andWhere('campaignItem.remove = :cr', {cr: 0})
-            //     .andWhere('campaign.status = 200')
-            //     .andWhere('partner.status = :status', {status: 1})
-            //     .getRawOne();
-            //
-            // // const result = await this.getLowestPrice(data);
-            //
-            // return data;
         } catch (error) {
             console.log(error)
             throw error;
@@ -834,7 +783,6 @@ export class CampaignService {
         })
 
 
-
         let items = [];
         date.forEach((item, index) => {
             //date 값에 해당하는 campaignItemSchedule 값 추가
@@ -948,37 +896,7 @@ export class CampaignService {
                 .limit(take)
                 .getRawMany();
 
-            const campaignItemLowestPrice = await this.campaignRepository
-                .createQueryBuilder('c')
-                .select('c.idx', 'campaignIdx')
-                .addSelect('c.name', 'campaignName')
-                .addSelect(
-                    (subQuery) =>
-                        subQuery
-                            .select('priceOrig')
-                            .from('campaignItem', 'ci')
-                            .where('ci.campaignIdx = c.idx')
-                            .andWhere('ci.remove = 0')
-                            .orderBy('priceOrig', 'ASC')
-                            .limit(1),
-                    'lowestPrice'
-                )
-                .addSelect(
-                    (subQuery) =>
-                        subQuery
-                            .select('dc11')
-                            .from('campaignItem', 'ci')
-                            .where('ci.campaignIdx = c.idx')
-                            .andWhere('ci.remove = 0')
-                            .orderBy('dc11', 'ASC')
-                            .limit(1),
-                    'dc11'
-                )
-                .where('c.status = 200')
-                .andWhere('c.remove = 0')
-                .orderBy('c.weight', 'DESC')
-                .addOrderBy('c.regdate', 'DESC')
-                .getRawMany();
+            const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 
             let result = [];
             data.forEach((item) => {
@@ -1016,5 +934,39 @@ export class CampaignService {
             console.log(error)
             throw error;
         }
+    }
+
+    async getCampaignLowestPrice() {
+        return  await this.campaignRepository
+            .createQueryBuilder('c')
+            .select('c.idx', 'campaignIdx')
+            .addSelect('c.name', 'campaignName')
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('priceOrig')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = c.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('priceOrig', 'ASC')
+                        .limit(1),
+                'lowestPrice'
+            )
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('dc11')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = c.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('dc11', 'ASC')
+                        .limit(1),
+                'dc11'
+            )
+            .where('c.status = 200')
+            .andWhere('c.remove = 0')
+            .orderBy('c.weight', 'DESC')
+            .addOrderBy('c.regdate', 'DESC')
+            .getRawMany();
     }
 }

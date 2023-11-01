@@ -70,6 +70,9 @@ export class MembersService {
                 'id',
                 'level',
                 'type',
+                'social_naver',
+                'social_kakao',
+                'social_google',
                 ])
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
@@ -123,5 +126,16 @@ export class MembersService {
                 type: data.type,
             })
             .execute();
+    }
+
+
+    async findSocialId(email, id, socialType) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .where(`${AES_DECRYPT('email')} = :email`, {email: email})
+            .andWhere(`${socialType} = :id`, {id: id})
+            .getRawOne();
+
     }
 }

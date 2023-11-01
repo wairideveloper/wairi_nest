@@ -22,9 +22,9 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, "google") {
         // console.log(profile);
 
         return {
-            name: profile.displayName,
+            id: profile.id,
+            displayName: profile.displayName,
             email: profile.emails[0].value,
-            hashedPassword: "1234",
         };
     }
 }

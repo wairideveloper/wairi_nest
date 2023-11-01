@@ -128,7 +128,7 @@ export class AuthQlModelResolver {
     }
 
     @Query(() => String)
-    @UseGuards(GqlAuthGuard)
+    // @UseGuards(GqlAuthGuard)
     async identityVerificationV2(
         @Args({name: 'receipt_id', type: () => String}) receipt_id: string,
         @AuthUser() authUser: Member) {

@@ -47,14 +47,10 @@ export class AuthController {
     @Get("/kakao/callback")
     @UseGuards(AuthGuard("kakao"))
     async kakaoCallback(@Req() req, @Res() res) {
-        this.authService.OAuthCallback(req.user);
-        let user = JSON.stringify(req.user);
-
         const data = await this.authService.kakaoLogin(req.user);
         console.log("-> data", data);
 
         return data;
-
     }
 
     //-----------------------네이버 로그인-----------------------------//
@@ -93,11 +89,9 @@ export class AuthController {
     @UseGuards(AuthGuard("google"))
     @Get('/google/callback')
     async googleCallback(@Req() req, @Res() res): Promise<any> {
-        const user = req.user;
-        console.log("-> user", user);
-        return res.status(200).json({
-            message: 'User information from Naver',
-            user,
-        });
+        console.log("-> user", req.user);
+        const data = await this.authService.googleLogin(req.user);
+        return data;
+
     }
 }
