@@ -1,15 +1,29 @@
 type banner{
-  idx: Int
-  pageCode: Int
-  code: String
-  image: String
-  name: String
-  regdate: String
-  ordering: Int
-  link: String
-  native_link: String
+    idx: Int
+    pageCode: Int
+    code: String
+    image: String
+    name: String
+    regdate: String
+    ordering: Int
+    link: String
+    native_link: String
+}
+
+type popup{
+    idx: Int
+    page: String
+    memberType: Int
+    device: Int
+    device_pc: Int
+    device_mobile: Int
+    content: String
+    title: String
+    display: Int
+    expiredate: String
 }
 
 extend type Query {
-  getBanner: [banner]
+    getBanner: [banner]
+    getPopup: [popup]
 }

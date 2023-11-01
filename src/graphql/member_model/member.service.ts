@@ -357,10 +357,13 @@ export class MembersService {
         return await this.memberRepository
             .createQueryBuilder()
             .update()
-            .set({ci: ci})
-            .set({di: di})
+            .set({
+                ci: ci,
+                di: di
+            })
             .where('idx = :idx', {idx: idx})
             .execute();
+
     }
 
     async reVerifyPhoneV2(memberIdx: any, unique: string) {

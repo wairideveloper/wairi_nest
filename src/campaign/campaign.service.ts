@@ -464,6 +464,8 @@ export class CampaignService {
                 'campaign.name as name',
                 'campaign.weight as weight',
                 'campaign.info as info',
+                'campaign.production_guide as production_guide',
+                'campaign.caution as caution',
                 'campaign.tel as tel',
                 'campaign.addr1 as addr1',
                 'campaign.addr2 as addr2',

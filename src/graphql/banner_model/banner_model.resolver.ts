@@ -13,4 +13,13 @@ export class BannerModelResolver {
       throw error;
     }
   }
+
+  @Query(() => String)
+  async getPopup() {
+    try{
+      return await this.bannerModelService.getPopup();
+    }catch (error) {
+      throw error;
+    }
+  }
 }

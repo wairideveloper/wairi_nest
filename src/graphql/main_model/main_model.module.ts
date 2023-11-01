@@ -12,12 +12,13 @@ import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
+import {Popup} from "../../../entity/entities/Popup";
 
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Banner, Cate, CateArea, Campaign,
-            CampaignItem,CampaignItemSchedule,CampaignSubmit
+            CampaignItem,CampaignItemSchedule,CampaignSubmit, Popup
         ]),
     ],
     providers: [MainModelResolver, MainModelService, BannerModelService, CateModelService,

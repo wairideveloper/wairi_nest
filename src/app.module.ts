@@ -60,6 +60,7 @@ import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
 import { ReviewModelModule } from './graphql/review_model/review_model.module';
 import {Payment} from "../entity/entities/Payment";
 import { BootpayModule } from './bootpay/bootpay.module';
+import {Popup} from "../entity/entities/Popup";
 
 @Module({
     imports: [
@@ -80,7 +81,7 @@ import { BootpayModule } from './bootpay/bootpay.module';
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
-                Payment
+                Payment, Popup
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',
