@@ -353,13 +353,15 @@ export class MembersService {
             .getRawMany();
     }
 
-    async updateUnique(idx, ci: string, di: string) {
+    async updateUnique(idx, ci: string, di: string, phone: string){
         return await this.memberRepository
             .createQueryBuilder()
             .update()
             .set({
                 ci: ci,
-                di: di
+                di: di,
+                // string casting
+                phone: AES_ENCRYPT(phone)
             })
             .where('idx = :idx', {idx: idx})
             .execute();

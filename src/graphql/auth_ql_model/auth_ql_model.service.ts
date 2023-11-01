@@ -325,7 +325,9 @@ export class AuthQlModelService {
                 const update = await this.memberService.updateUnique(
                     memberIdx,
                     data.authenticate_data.unique,
-                    data.authenticate_data['di']);
+                    data.authenticate_data['di'],
+                    data.authenticate_data.phone
+                    )
 
                 return {
                     message: '본인인증 성공',
@@ -449,11 +451,8 @@ export class AuthQlModelService {
         try {
             //본인인증 후 비밀번호 변경
             const member = await this.memberService.findByPhone(data.phone, data.username);
-            console.log("-> member", member);
             const password = await hashPassword(data.password);
-            console.log("-> password", password);
             const update = await this.memberService.updatePassword(member.idx, password);
-            console.log("-> update", update);
             if (update) {
                 return member
             }
