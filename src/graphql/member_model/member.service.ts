@@ -301,6 +301,16 @@ export class MembersService {
             .getRawOne();
     }
 
+    async checkUniqueFindId(unique: any, phone, name) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('ci = :unique', {unique: unique})
+            .andWhere(`${AES_DECRYPT('name')} = :name`, {name: name})
+            .andWhere(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
+            .getRawOne();
+    }
+
     async getMemberChannel(channelIdx: number) {
         return await this.memberChannelRepository
             .createQueryBuilder()

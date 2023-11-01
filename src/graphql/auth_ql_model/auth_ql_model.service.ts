@@ -340,6 +340,41 @@ export class AuthQlModelService {
         }
     }
 
+    async identityVerificationFindV2(receipt_id: string) {
+        Bootpay.setConfiguration({
+            application_id: '6143fb797b5ba4002152b6e1',
+            private_key: 'RQ/RYIauHAVJZ8jkKggH6o3EIKKNnviRcGXN4hPNjiM='
+        })
+
+        try {
+            await Bootpay.getAccessToken()
+            const data = await Bootpay.certificate(receipt_id)
+            console.log("=>(auth_ql_model.service.ts:352) data", data);
+            if(data){
+                let checkUnique = await this.memberService.checkUniqueFindId(
+                    data.authenticate_data.unique,
+                    data.authenticate_data.phone,
+                    data.authenticate_data.name
+                );
+                console.log("=>(auth_ql_model.service.ts:362) checkUnique", checkUnique);
+                if(checkUnique){
+                    return {
+                        message: '본인인증 성공',
+                        data: checkUnique,
+                    }
+                }else{
+                    throw new HttpException('본인인증 등록된 계정이 없습니다.', 404);
+                }
+
+            }else{
+                throw new HttpException('본인인증 실패', 404);
+            }
+
+        } catch (error) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
+
 
     async identityVerification(receipt_id: string) {
         console.log("-> receipt_id", receipt_id);

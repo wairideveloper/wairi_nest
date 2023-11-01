@@ -128,13 +128,25 @@ export class AuthQlModelResolver {
     }
 
     @Query(() => String)
-    // @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuard)
     async identityVerificationV2(
         @Args({name: 'receipt_id', type: () => String}) receipt_id: string,
         @AuthUser() authUser: Member) {
         try {
             console.log("=>(auth_ql_model.resolver.ts:110) authUser", authUser);
             return await this.authQlModelService.identityVerificationV2(receipt_id, authUser.idx);
+        } catch (error) {
+            customLogger(this.logger, receipt_id, error);
+            throw error;
+        }
+    }
+
+    @Query(() => String)
+    async identityVerificationFindV2(
+        @Args({name: 'receipt_id', type: () => String}) receipt_id: string
+    ){
+        try {
+            return await this.authQlModelService.identityVerificationFindV2(receipt_id);
         } catch (error) {
             customLogger(this.logger, receipt_id, error);
             throw error;
