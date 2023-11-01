@@ -335,8 +335,8 @@ export class AuthQlModelService {
                 throw new HttpException('본인인증 실패', 404);
             }
 
-        } catch (e) {
-            console.log(e)
+        } catch (error) {
+            throw new HttpException(error.message, error.status);
         }
     }
 

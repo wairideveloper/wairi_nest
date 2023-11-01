@@ -26,6 +26,8 @@ type Campaign {
     discountPrice: Int
     addrLat: Float
     addrLng: Float
+    production_guide: String
+    caution: String
 }
 
 type CampaignDetail{
