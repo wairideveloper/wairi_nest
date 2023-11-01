@@ -164,7 +164,7 @@ export class MembersService {
     async findByPhone(phone: string, username: string) {
         return await this.memberRepository
             .createQueryBuilder()
-            .select('idx,type,level,nickname,status,regdate,lastSignin')
+            .select('idx,id,type,level,nickname,status,regdate,lastSignin')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
