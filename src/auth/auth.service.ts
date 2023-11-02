@@ -148,7 +148,7 @@ export class AuthService {
                 const memberInsert = await this.memberRepository
                     .createQueryBuilder()
                     .insert()
-                    .into(Member, ['id', 'social_kakao', 'type', 'level', 'status', 'nickname', 'email',
+                    .into(Member, ['id', 'social_kakao', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
                         'phone', 'name', 'passwd', 'regdate',
                     ])
                     .values({
@@ -157,6 +157,7 @@ export class AuthService {
                         type: 1,
                         level: 0,
                         status: 4,
+                        social_type: 'kakao',
                         nickname: () => user.profile.displayName == '닉네임을 등록해주세요' ? `"${nickname}"` : `"${user.profile.displayName}"`,
                         email: () => AES_ENCRYPT(user.email),
                         phone: () => user.phone ? AES_ENCRYPT(user.phone) : AES_ENCRYPT(""),
@@ -202,7 +203,7 @@ export class AuthService {
                 const memberInsert = await this.memberRepository
                     .createQueryBuilder()
                     .insert()
-                    .into(Member, ['id', 'social_naver', 'type', 'level', 'status', 'nickname', 'email',
+                    .into(Member, ['id', 'social_naver', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
                         'phone', 'name', 'passwd', 'regdate',
                     ])
                     .values({
@@ -211,6 +212,7 @@ export class AuthService {
                         type: 1,
                         level: 0,
                         status: 4,
+                        social_type: 'naver',
                         nickname: () => user.profile.displayName == '닉네임을 등록해주세요' ? `"${nickname}"` : `"${user.profile.displayName}"`,
                         email: () => AES_ENCRYPT(user.email),
                         phone: () => user.phone ? AES_ENCRYPT(user.phone) : AES_ENCRYPT(""),
@@ -260,7 +262,7 @@ export class AuthService {
                 const memberInsert = await this.memberRepository
                     .createQueryBuilder()
                     .insert()
-                    .into(Member, ['id', 'social_google', 'type', 'level', 'status', 'nickname', 'email',
+                    .into(Member, ['id', 'social_google', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
                         'phone', 'name', 'passwd', 'regdate',
                     ])
                     .values({
@@ -269,6 +271,7 @@ export class AuthService {
                         type: 1,
                         level: 0,
                         status: 4,
+                        social_type: 'google',
                         nickname: () => user.displayName == '닉네임을 등록해주세요' ? `"${nickname}"
                          ` : `"${user.displayName}"`,
                         email: () => AES_ENCRYPT(user.email),

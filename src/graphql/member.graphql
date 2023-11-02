@@ -18,6 +18,7 @@ type Member {
     lastUpdate: String
     ci: String
     di: String
+    social_type: String
     memberChannel: [MemberChannel]
     campaignReview: [CampaignReview]
 }
