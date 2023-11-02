@@ -99,6 +99,13 @@ type identityVerificationV2Response{
     data: identityVerificationDataV2
 }
 
+type identityVerificationFindV2Response{
+    status: String!
+    code: String
+    message: String
+    data: Member
+}
+
 type identityVerificationData{
     receipt_id: String
     order_id: String
@@ -182,7 +189,7 @@ input ChangeMemberInfoInput {
 extend type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
     identityVerificationV2(receipt_id : String!): identityVerificationV2Response
-    identityVerificationFindV2(receipt_id : String!): identityVerificationV2Response
+    identityVerificationFindV2(receipt_id : String!): identityVerificationFindV2Response
     reVerifyPhoneV2(receipt_id : String!): identityVerificationV2Response
 
     findId(phone : String!, username : String!): Member

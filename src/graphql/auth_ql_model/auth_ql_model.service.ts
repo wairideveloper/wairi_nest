@@ -361,6 +361,7 @@ export class AuthQlModelService {
                 console.log("=>(auth_ql_model.service.ts:362) checkUnique", checkUnique);
                 if(checkUnique){
                     return {
+                        status: 200,
                         message: '본인인증 성공',
                         data: checkUnique,
                     }
@@ -447,7 +448,6 @@ export class AuthQlModelService {
     }
 
     async changePassword(data: any) {
-        console.log("-> data", data);
         try {
             //본인인증 후 비밀번호 변경
             const member = await this.memberService.findByPhone(data.phone, data.username);

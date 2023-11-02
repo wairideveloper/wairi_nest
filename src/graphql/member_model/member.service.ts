@@ -305,6 +305,8 @@ export class MembersService {
         return await this.memberRepository
             .createQueryBuilder()
             .select('*')
+            .addSelect(`(${AES_DECRYPT('name')})`, 'name')
+            .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .where('ci = :unique', {unique: unique})
             .andWhere(`${AES_DECRYPT('name')} = :name`, {name: name})
             .andWhere(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
@@ -388,16 +390,23 @@ export class MembersService {
         //nickname 이 있으면 nickname 을 업데이트
         //email 이 있으면 email 을 업데이트
         // 둘다 있으면 둘다 업데이트
+        // .set({
+        //     ci: ci,
+        //     di: di,
+        //     phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
+        // })
         if (nickname && email) {
-            console.log("=>(member.service.ts:375");
-            query.set({nickname: nickname})
-                .set({email: email})
+            query.set({
+                nickname: nickname,
+                email: () => `HEX(AES_ENCRYPT("${email}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
+            })
+                // .set({email: email})
         } else if (nickname) {
-            console.log("=>(member.service.ts:379");
             query.set({nickname: nickname})
         } else if (email) {
-            console.log("=>(member.service.ts:382");
-            query.set({email: email})
+            query.set({
+                email: () => `HEX(AES_ENCRYPT("${email}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
+            })
         }
 
         return await query
