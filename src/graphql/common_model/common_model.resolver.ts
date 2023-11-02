@@ -61,4 +61,15 @@ export class CommonModelResolver {
             console.log("-> e", e);
         }
     }
+
+    @Query()
+    async getConfigs(@Args('key', {type: () => String}) key: string) {
+        try {
+            let data = await this.commonModelService.getConfigs(key);
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
 }

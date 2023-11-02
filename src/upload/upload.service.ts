@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as AWS from 'aws-sdk';
+// import * as AWS from 'aws-sdk';
 import * as process from 'process';
 // import {S3} from "aws-sdk";
 import { v4 as uuidv4 } from 'uuid';
@@ -20,13 +20,13 @@ export class UploadService {
 
 
     constructor() {
-        AWS.config.update({
-            region: process.env.AWS_REGION,
-            credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY,
-                secretAccessKey: process.env.AWS_SECRET_KEY,
-            },
-        });
+        // AWS.config.update({
+        //     region: process.env.AWS_REGION,
+        //     credentials: {
+        //         accessKeyId: process.env.AWS_ACCESS_KEY,
+        //         secretAccessKey: process.env.AWS_SECRET_KEY,
+        //     },
+        // });
         // this.s3 = new AWS.S3();
 
         this.s3_V2 = new S3Client({

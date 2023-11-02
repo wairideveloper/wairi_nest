@@ -2,28 +2,34 @@ import {Injectable} from '@nestjs/common';
 import {CreateCommonModelInput} from './dto/create-common_model.input';
 import {UpdateCommonModelInput} from './dto/update-common_model.input';
 import {v4 as uuidv4} from "uuid";
-import {S3} from "aws-sdk";
+// import {S3} from "aws-sdk";
 import * as process from 'process';
 import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {FileUpload} from "graphql-upload/Upload";
 import * as AWS from "aws-sdk";
-import { Stream } from 'stream';
+import {Stream} from 'stream';
+import {Config} from "../../../entity/entities/Config";
+import {Repository} from "typeorm";
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class CommonModelService {
-    private s3: S3;
+    // private s3: S3;
     private s3_V2: S3Client;
 
-    constructor() {
-        AWS.config.update({
-            region: process.env.AWS_REGION,
-            credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY,
-                secretAccessKey: process.env.AWS_SECRET_KEY,
-            },
-        });
-        this.s3 = new AWS.S3();
+    constructor(
+        @InjectRepository(Config)
+        private readonly configRepository: Repository<Config>,
+    ) {
+        // AWS.config.update({
+        //     region: process.env.AWS_REGION,
+        //     credentials: {
+        //         accessKeyId: process.env.AWS_ACCESS_KEY,
+        //         secretAccessKey: process.env.AWS_SECRET_KEY,
+        //     },
+        // });
+        // this.s3 = new AWS.S3();
 
         this.s3_V2 = new S3Client({
             credentials: {
@@ -34,7 +40,7 @@ export class CommonModelService {
         });
     }
 
-    async createChannel(channelData){
+    async createChannel(channelData) {
         console.log("-> channelData", channelData);
         return channelData;
     }
@@ -68,5 +74,22 @@ export class CommonModelService {
             stream.on('end', () => resolve(Buffer.concat(_buf)));
             stream.on('error', (err) => reject(err));
         });
+    }
+
+    async getConfigs(key: string) {
+        try {
+            let query = this.configRepository.createQueryBuilder("config")
+                .select("*");
+            if (key) {
+                query.where("config.cfg_key = :key", {key: key})
+            }
+
+            const data = await query.getRawMany();
+
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
     }
 }

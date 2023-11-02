@@ -7,6 +7,19 @@ input ChannelInput {
     follow: Int!
 }
 
+type Config{
+    idx: Int!
+    title: String!
+    cfg_key: String!
+    cfg_value: String!
+    input_type: String!
+    ordering: Int!
+}
+
+extend type Query {
+    getConfigs(key:String): [Config]
+}
+
 extend type Mutation {
     signupUploadFile(file: [Upload],
         originalname: String,

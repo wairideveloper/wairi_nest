@@ -6,7 +6,8 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {Member} from "../../../entity/entities/Member";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
-import {Config} from "aws-sdk";
+import {Config} from "../../../entity/entities/Config";
+// import {Config} from "aws-sdk";
 import {JwtService} from "@nestjs/jwt";
 
 
