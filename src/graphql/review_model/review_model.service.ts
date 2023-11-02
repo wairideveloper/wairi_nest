@@ -89,4 +89,66 @@ export class ReviewModelService {
             throw error;
         }
     }
+
+    async getReview(idx: number) {
+        try{
+            let data = await this.reviewRepository.createQueryBuilder("campaignReview")
+                .leftJoin("campaignReview.member", "member")
+                .leftJoin("campaignReview.campaignItem", "campaignItem")
+                .select([
+                    "campaignReview.idx as idx",
+                    "campaignItem.idx as itemIdx",
+                    "campaignItem.name as itemName",
+                    "member.idx as memberIdx",
+                    "campaignReview.regdate as regdate",
+                    "campaignReview.regdate_a as regdate_a",
+                    "campaignReview.content as content",
+                    "campaignReview.content_a as content_a",
+                    "campaignReview.rate as rate",
+                    "campaignReview.images as images",
+                ])
+                .addSelect(`(${AES_DECRYPT('member.name')})`, 'memberName')
+                .where("campaignReview.idx = :idx", {idx: idx})
+                .getRawOne();
+
+            if(data.images){
+                let jsonImages = JSON.parse(data.images);
+                let images = [];
+                jsonImages.map((image) => {
+                    //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
+                    if(image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1){
+                        images.push('https://wairi.co.kr/img/review/'+image);
+                    }else{
+                        images.push(image);
+                    }
+                })
+                data.images = images;
+            }
+
+            if(data.memberName){
+                //data name null 이면  전체 * 로 변경 3글자면 2번째 글자 *로 변경 4글자면 2,3번째 글자 *로 변경
+                if (data.memberName === null) {
+                    data.memberName = '***';
+                } else if (data.memberName.length === 3) {
+                    data.memberName = data.memberName.replace(data.memberName.substring(1, 2), '*');
+                } else if (data.memberName.length === 4) {
+                    data.memberName = data.memberName.replace(data.memberName.substring(1, 3), '**');
+                }
+            }
+
+            //regdate unixtime 날짜 형식 변경 xx년 xx월 xx일
+            const date = FROM_UNIXTIME_JS_YY_MM_DD(data.regdate);
+            data.regdate = date;
+
+            if(data.content_a){
+                //regdate_a unixtime 날짜 형식 변경 xx년 xx월 xx일
+                const date_a = FROM_UNIXTIME_JS_YY_MM_DD(data.regdate_a);
+                data.regdate_a = date_a;
+            }
+            return data;
+        }catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
 }

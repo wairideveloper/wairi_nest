@@ -75,7 +75,7 @@ export class AuthQlModelResolver {
             const data = {
                 memberIdx: authUser.idx,
                 nickname: changeMemberInfoInput.nickname,
-                phone: changeMemberInfoInput.phone,
+                // phone: changeMemberInfoInput.phone,
                 email: changeMemberInfoInput.email,
             }
             return await this.authQlModelService.changeMemberInfo(data);

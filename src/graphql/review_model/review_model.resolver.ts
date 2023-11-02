@@ -19,4 +19,18 @@ export class ReviewModelResolver {
       throw error;
     }
   }
+
+  @Query()
+  async getReview(
+      @Args('idx') idx: number,
+  ){
+    try{
+      console.log("=>(review_model.resolver.ts:28) idx", idx);
+      let data = await this.reviewModelService.getReview(idx);
+      return data;
+    }catch(error){
+      console.log(error)
+      throw error;
+    }
+  }
 }

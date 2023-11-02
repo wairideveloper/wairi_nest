@@ -2,18 +2,16 @@ type Review{
     idx: Int!
     memberIdx: Int!
     itemIdx: Int!
-    itemName: String!
     submitIdx: Int!
     rate: Int!
-    image: String!
-    content: String!
-    content_a: String!
-
-    regdate: String!
-    regdate_a: String!
-
-    name: String
+    image: String
+    content: String
+    content_a: String
+    regdate: String
+    regdate_a: String
+    memberName: String
     images: [String]
+    itemName: String
 }
 
 type Reviews implements Pagination {
@@ -28,4 +26,5 @@ type Reviews implements Pagination {
 
 extend type Query {
     getReviews(idx:Int! take: Int!,page:Int!): Reviews
+    getReview(idx:Int!): Review
 }
