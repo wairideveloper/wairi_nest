@@ -8,6 +8,7 @@ import {SignupInput} from '../auth_ql_model/dto/signupInput';
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
+import * as moment from "moment/moment";
 
 @Injectable()
 export class MembersService {
@@ -302,15 +303,21 @@ export class MembersService {
     }
 
     async checkUniqueFindId(unique: any, phone, name) {
-        return await this.memberRepository
+        const data = await this.memberRepository
             .createQueryBuilder()
             .select('*')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
             .where('ci = :unique', {unique: unique})
             .andWhere(`${AES_DECRYPT('name')} = :name`, {name: name})
             .andWhere(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
             .getRawOne();
+
+
+        data.regdate = moment.unix(data.regdate).format('YYYY-MM-DD HH:mm:ss');
+
+        return data
     }
 
     async getMemberChannel(channelIdx: number) {
