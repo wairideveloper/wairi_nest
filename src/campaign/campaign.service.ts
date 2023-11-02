@@ -659,6 +659,7 @@ export class CampaignService {
                     'campaign.weight as count',
                     'cate.name as cateName',
                     'cateArea.name as cateAreaName',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 ])
                 .where('campaign.remove = :remove', {remove: 0})
                 .orderBy('campaign.weight', 'DESC')
@@ -673,6 +674,7 @@ export class CampaignService {
                     'campaign.weight as weight',
                     'cate.name as cateName',
                     'cateArea.name as cateAreaName',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 ])
                 .leftJoin('campaignSubmit.campaign', 'campaign')
                 .leftJoin('campaign.cate', 'cate')

@@ -29,6 +29,7 @@ type SearchWord {
     count: Int
     cateName: String
     cateAreaName: String
+    image: String
 }
 
 type RecommendedSearchWordsResponse{
