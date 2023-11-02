@@ -521,9 +521,9 @@ export class AuthQlModelService {
             const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
             // const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
             // console.log("-> update", update);
-            // if (update) {
-            //     return member
-            // }
+            if (update) {
+                return member
+            }
         } catch (error) {
             throw new HttpException(error.message, error.status);
         }

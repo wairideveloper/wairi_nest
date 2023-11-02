@@ -402,17 +402,19 @@ export class MembersService {
         //     di: di,
         //     phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
         // })
+        console.log("=>(member.service.ts:406) nickname", nickname);
+        console.log("=>(member.service.ts:407) email",email );
         if (nickname && email) {
             query.set({
                 nickname: nickname,
-                email: () => `HEX(AES_ENCRYPT("${email}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
+                email: () => `HEX(AES_ENCRYPT("${email}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`
             })
                 // .set({email: email})
         } else if (nickname) {
             query.set({nickname: nickname})
         } else if (email) {
             query.set({
-                email: () => `HEX(AES_ENCRYPT("${email}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")`
+                email: () => `HEX(AES_ENCRYPT("${email}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`
             })
         }
 
