@@ -190,6 +190,12 @@ input WithdrawalInput {
     reasonForWithdrawal: String
 }
 
+type WithdrawalReason{
+    idx: Int
+    reason: String
+    use_yn: String
+}
+
 extend type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
     identityVerificationV2(receipt_id : String!): identityVerificationV2Response
@@ -204,6 +210,8 @@ extend type Query {
     kakaoSignup(signupInput:SignupInput!): MemberSignupResponse
     naverSignup(signupInput:SignupInput!): MemberSignupResponse
     googleSignup(signupInput:SignupInput!): MemberSignupResponse
+
+    getWithdrawalReasons: [WithdrawalReason]
 }
 extend type Mutation{
     login(loginInput:LoginInput!): LoginResponse

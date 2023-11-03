@@ -229,6 +229,17 @@ export class AuthQlModelResolver {
     }
 
     @Query(() => String)
+    async getWithdrawalReasons(){
+        try {
+            const data = await this.authQlModelService.getWithdrawalReasons();
+            return data;
+        } catch (error) {
+            customLogger(this.logger, '', error);
+            throw error;
+        }
+    }
+
+    @Query(() => String)
     async getSubscriptionPath() {
         try {
             return await this.authQlModelService.getSubscriptionPath();
@@ -252,5 +263,7 @@ export class AuthQlModelResolver {
             throw error;
         }
     }
+
+
 
 }

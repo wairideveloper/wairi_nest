@@ -1,4 +1,4 @@
-import {Injectable, Logger, UnauthorizedException} from '@nestjs/common';
+import {HttpException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {CreateAuthDto} from './dto/create-auth.dto';
 import {UpdateAuthDto} from './dto/update-auth.dto';
 import {InjectRepository} from '@nestjs/typeorm';
@@ -296,6 +296,15 @@ export class AuthService {
             }
         }catch (error) {
             console.log(error);
+        }
+    }
+
+    async appleLogin(user) {
+        try{
+            console.log("=>(auth.service.ts:305) user", user);
+        }catch (error) {
+            console.log(error);
+            throw new HttpException(error.message, error.status)
         }
     }
 

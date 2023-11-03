@@ -2,6 +2,7 @@ import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {LoginInput} from './dto/loginInput';
 import {MembersService} from '../member_model/member.service';
 import {Partner} from "../../../entity/entities/Partner";
+import {Withdrawal} from "../../../entity/entities/Withdrawal";
 import {compareSync} from "bcrypt";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
@@ -29,6 +30,8 @@ export class AuthQlModelService {
     constructor(
         @InjectRepository(Partner)
         private partnerRepository: Repository<Partner>,
+        @InjectRepository(Withdrawal)
+        private withdrawalRepository: Repository<Withdrawal>,
         private readonly memberService: MembersService,
         private readonly jwtService: JwtService,
         private readonly connection: Connection,
@@ -531,5 +534,13 @@ export class AuthQlModelService {
         } catch (error) {
             throw new HttpException(error.message, error.status);
         }
+    }
+
+    async getWithdrawalReasons() {
+        return await this.withdrawalRepository.createQueryBuilder("withdrawal")
+            .select("withdrawal.idx", "idx")
+            .addSelect("withdrawal.reason", "reason")
+            .addSelect("withdrawal.use_yn", "use_yn")
+            .getRawMany();
     }
 }

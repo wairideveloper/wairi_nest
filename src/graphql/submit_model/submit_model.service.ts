@@ -305,6 +305,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
                 "campaignSubmit.nights as nights",
                 "campaignSubmit.campaignIdx as campaignIdx",
                 "campaignSubmit.itemIdx as itemIdx",
+                "campaignSubmit.postUrl as postUrl",
                 "campaignSubmit.nop as nop",
                 "campaignSubmit.payTotal as payTotal",
                 "campaignSubmit.postRemarks as postRemarks",

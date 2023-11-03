@@ -61,6 +61,7 @@ import { ReviewModelModule } from './graphql/review_model/review_model.module';
 import {Payment} from "../entity/entities/Payment";
 import { BootpayModule } from './bootpay/bootpay.module';
 import {Popup} from "../entity/entities/Popup";
+import {Withdrawal} from "../entity/entities/Withdrawal";
 
 @Module({
     imports: [
@@ -81,7 +82,7 @@ import {Popup} from "../entity/entities/Popup";
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
-                Payment, Popup
+                Payment, Popup, Withdrawal
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',

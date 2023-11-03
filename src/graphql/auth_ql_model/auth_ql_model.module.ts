@@ -16,11 +16,12 @@ import {JwtService} from "@nestjs/jwt";
 import {Logger} from "winston";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {Config} from "../../../entity/entities/Config";
+import {Withdrawal} from "../../../entity/entities/Withdrawal";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Member, MemberChannel, Campaign, CampaignItem, CampaignImage, Cate, CateArea
-            , Partner, CampaignReview, CampaignRecent, Config
+            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal
         ]),
     ],
     providers: [AuthQlModelResolver, AuthQlModelService, MembersService, JwtService]

@@ -4,7 +4,7 @@ import {CreateAuthDto} from './dto/create-auth.dto';
 import {UpdateAuthDto} from './dto/update-auth.dto';
 import {AuthGuard} from "@nestjs/passport";
 import {Args} from "@nestjs/graphql";
-
+import { AppleOAuthGuard } from './strategies/apple.strategy';
 interface IOAuthUser {
     user: {
         name: string;
@@ -91,6 +91,15 @@ export class AuthController {
     async googleCallback(@Req() req, @Res() res): Promise<any> {
         console.log("-> user", req.user);
         const data = await this.authService.googleLogin(req.user);
+        return data;
+
+    }
+
+    @UseGuards(AuthGuard("apple"))
+    @Get('/apple/callback')
+    async appleCallback(@Req() req, @Res() res): Promise<any> {
+        console.log("-> user", req.user);
+        const data = await this.authService.appleLogin(req.user);
         return data;
 
     }
