@@ -22,6 +22,13 @@ class WithdrawalInput {
     reasonForWithdrawal: string;
 }
 
+class SocialSignInput {
+    type: string;
+    id: string;
+    email: string;
+    nickname: string;
+}
+
 @Resolver('AuthQlModel')
 export class AuthQlModelResolver {
     private readonly logger = new Logger();
@@ -264,6 +271,23 @@ export class AuthQlModelResolver {
         }
     }
 
+    @Mutation(() => String)
+    async socialSignup(
+        @Args('socialSignInput') socialSignInput: SocialSignInput
+    ){
+        try {
+            const data = {
+                social_type: socialSignInput.type,
+                id: socialSignInput.id,
+                email: socialSignInput.email,
+                nickname: socialSignInput.nickname,
+            }
+            return await this.authQlModelService.socialSignup(data);
+        } catch (error) {
+            customLogger(this.logger, '', error);
+            throw error;
+        }
+    }
 
 
 }

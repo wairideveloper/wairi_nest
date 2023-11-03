@@ -350,6 +350,5 @@ export class AuthService {
             refresh_token: refresh_token,
             data: data
         }
-
     }
 }

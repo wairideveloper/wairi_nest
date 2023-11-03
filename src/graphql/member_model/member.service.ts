@@ -422,4 +422,15 @@ export class MembersService {
             .where('idx = :idx', {idx: idx})
             .execute();
     }
+
+    async findSocialId(email, id, socialType) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .where(`${AES_DECRYPT('email')} = :email`, {email: email})
+            // .where(`${AES_DECRYPT('id')} = :id`, {id: id})
+            // .andWhere(`${socialType} = :socialType`, {socialType: id})
+            .getRawOne();
+
+    }
 }

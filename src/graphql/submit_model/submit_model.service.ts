@@ -84,6 +84,7 @@ export class SubmitModelService {
                 "campaignSubmit.agreeContent as agreeContent",
                 "campaignSubmit.denyReason as denyReason",
                 "campaignSubmit.cancelReason as cancelReason",
+                "campaignSubmit.postUrl as postUrl",
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
             ])
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')

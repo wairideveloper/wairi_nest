@@ -543,4 +543,48 @@ export class AuthQlModelService {
             .addSelect("withdrawal.use_yn", "use_yn")
             .getRawMany();
     }
+
+    async socialSignup(data: { social_type: string; nickname: string; id: string; email: string }) {
+        try{
+            const memberCheck = await this.memberService.findSocialId(data.email, data.id, 'social_google');
+            const passwd = await hashPassword(data.id.toString());
+
+            if(memberCheck){
+                const hash = memberCheck.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
+                const check: boolean = compareSync(passwd, hash);
+                console.log("=>(auth.service.ts:246) check", check);
+
+                const payload = {
+                    idx: memberCheck.idx,
+                    username: data.nickname,
+                    memberType: 1
+                }
+                const result = await this.jwtResponse(payload, memberCheck);
+                console.log("-> result", result);
+                return result;
+            }else{
+
+            }
+
+        }catch (error) {
+            throw new HttpException(error.message, error.status);
+        }
+    }
+
+    async jwtResponse(payload: any, data: any) {
+        const access_token = await this.jwtService.signAsync(payload, {
+            expiresIn: process.env.JWT_EXPIRATION_TIME,
+            secret: process.env.JWT_SECRET
+        })
+        const refresh_token = await this.jwtService.signAsync({id: payload.idx}, {
+            expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
+            secret: process.env.JWT_SECRET
+        })
+        return {
+            message: '로그인 성공',
+            access_token: access_token,
+            refresh_token: refresh_token,
+            data: data
+        }
+    }
 }
