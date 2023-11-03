@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {Member} from '../../../entity/entities/Member';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME, getNowUnix, AES_ENCRYPT2} from "../../util/common";
+import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME, getNowUnix, AES_ENCRYPT2, hashPassword} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {SignupInput} from '../auth_ql_model/dto/signupInput';
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
@@ -151,6 +151,8 @@ export class MembersService {
             .addSelect(`(${FROM_UNIXTIME('lastSignin')})`, 'lastSignin')
             .addSelect('passwd')
             .where('id = :id', {id: id})
+            // status -9 는 탈퇴회원
+            .andWhere('status != -9')
             .getRawOne();
     }
 
@@ -427,10 +429,52 @@ export class MembersService {
         return await this.memberRepository
             .createQueryBuilder()
             .select('*')
+            .addSelect(`(${AES_DECRYPT('name')})`, 'name')
+            .addSelect(`(${AES_DECRYPT('email')})`, 'email')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
             .where(`${AES_DECRYPT('email')} = :email`, {email: email})
             // .where(`${AES_DECRYPT('id')} = :id`, {id: id})
             // .andWhere(`${socialType} = :socialType`, {socialType: id})
             .getRawOne();
 
     }
+
+    async createSocial(social_type: string, nickname: string, id: string, email: string, name: string) {
+        try {
+            const now = getNowUnix();
+            const passwd = await hashPassword(id.toString());
+            // 회원 닉네임 난수 생성
+            const nickname = `user_${Math.floor(Math.random() * 1000000)}`;
+            const memberInsert = await this.memberRepository
+                .createQueryBuilder()
+                .insert()
+                .into(Member, ['id', 'social_kakao', 'social_naver', 'social_google', 'social_apple', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
+                     'name', 'passwd', 'regdate'
+                ])
+                .values({
+                    id: () => `"${id}"`,
+                    social_kakao: () => social_type == "1" ?`"${id}"` : null,
+                    social_naver: () => social_type == "2" ?`"${id}"` : null,
+                    social_google: () => social_type == "3" ?`"${id}"` : null,
+                    social_apple: () => social_type == "4" ?`"${id}"` : null,
+                    type: 1,
+                    level: 0,
+                    status: 4,
+                    social_type: social_type,
+                    nickname: () => name ? `"${name}"` : `"${nickname}"`,
+                    email: () => AES_ENCRYPT(email),
+                    // phone: () => phone ? AES_ENCRYPT(phone) : AES_ENCRYPT(""),
+                    name: () => name ? AES_ENCRYPT(name) : AES_ENCRYPT(nickname),
+                    passwd: () => `"${passwd}"`,
+                    regdate: () => `"${now}"`,
+                })
+                .execute();
+
+            return memberInsert;
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
+
 }

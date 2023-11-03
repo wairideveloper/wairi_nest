@@ -197,10 +197,11 @@ type WithdrawalReason{
 }
 
 input SocialSignInput {
-    type: Int
+    type: String
     id: String
     email: String
     nickname: String
+    name: String
 }
 
 extend type Query {

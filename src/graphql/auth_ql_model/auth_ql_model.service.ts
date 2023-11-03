@@ -3,6 +3,7 @@ import {LoginInput} from './dto/loginInput';
 import {MembersService} from '../member_model/member.service';
 import {Partner} from "../../../entity/entities/Partner";
 import {Withdrawal} from "../../../entity/entities/Withdrawal";
+import {Member} from "../../../entity/entities/Member";
 import {compareSync} from "bcrypt";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
@@ -32,6 +33,8 @@ export class AuthQlModelService {
         private partnerRepository: Repository<Partner>,
         @InjectRepository(Withdrawal)
         private withdrawalRepository: Repository<Withdrawal>,
+        @InjectRepository(Member)
+        private memberRepository: Repository<Member>,
         private readonly memberService: MembersService,
         private readonly jwtService: JwtService,
         private readonly connection: Connection,
@@ -544,7 +547,7 @@ export class AuthQlModelService {
             .getRawMany();
     }
 
-    async socialSignup(data: { social_type: string; nickname: string; id: string; email: string }) {
+    async socialSignup(data: { social_type: string; nickname: string; id: string; email: string; name: string; }) {
         try{
             const memberCheck = await this.memberService.findSocialId(data.email, data.id, 'social_google');
             const passwd = await hashPassword(data.id.toString());
@@ -559,11 +562,31 @@ export class AuthQlModelService {
                     username: data.nickname,
                     memberType: 1
                 }
+
+                let memberChannel = await this.memberService.findChannel(memberCheck.idx);
+                //array memberChannel.regdate 변환
+                memberChannel = memberChannel.map((item, index) => {
+                    memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();
+                    memberChannel[index].interests = changeInterestsText(item.interests);
+                    return memberChannel[index];
+                })
+                memberCheck.memberChannel = memberChannel;
+
                 const result = await this.jwtResponse(payload, memberCheck);
                 console.log("-> result", result);
                 return result;
             }else{
-
+                console.log("=>(auth_ql_model.service.ts:577) data", data);
+                const newMember = await this.memberService.createSocial(data.social_type, data.nickname, data.id, data.email, data.name);
+                console.log("-> newMember", newMember);
+                // const payload = {
+                //     idx: newMember.generatedMaps[0].idx,
+                //     username: data.nickname,
+                //     memberType: 1
+                // }
+                // const result = await this.jwtResponse(payload, newMember.generatedMaps[0]);
+                // console.log("-> result", result);
+                // return result;
             }
 
         }catch (error) {
@@ -585,6 +608,32 @@ export class AuthQlModelService {
             access_token: access_token,
             refresh_token: refresh_token,
             data: data
+        }
+    }
+
+    async withdrawal(data: {reason: string; memberIdx: number}) {
+        try{
+            const withdrawal = await this.memberRepository.createQueryBuilder()
+                .update()
+                .set(
+                    {
+                        withdrawal: data.reason,
+                        status: -9
+                    }
+                )
+                .where("idx = :idx", {idx: data.memberIdx})
+                .execute();
+
+            if(withdrawal){
+                return {
+                    message: '회원탈퇴 성공',
+                    data: withdrawal
+                }
+            }else{
+                throw new HttpException('회원탈퇴 실패', 404);
+            }
+        }catch (error) {
+            throw new HttpException(error.message, error.status);
         }
     }
 }

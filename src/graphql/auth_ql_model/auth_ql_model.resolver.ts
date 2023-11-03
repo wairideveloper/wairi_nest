@@ -11,6 +11,7 @@ import {customLogger} from "../../util/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
+import {auth} from "firebase-admin";
 
 class ChangeMemberInfoInput {
     nickname: string;
@@ -27,6 +28,7 @@ class SocialSignInput {
     id: string;
     email: string;
     nickname: string;
+    name: string;
 }
 
 @Resolver('AuthQlModel')
@@ -264,7 +266,14 @@ export class AuthQlModelResolver {
     ) {
         try {
             console.log("=>(auth_ql_model.resolver.ts:245) reason", withdrawalInput.reasonForWithdrawal);
-            // return await this.authQlModelService.withdraw(authUser.idx);
+            // '1,2,3,4' 형태로 들어옴
+            // const reason = withdrawalInput.reasonForWithdrawal.split(',').map(Number);
+            const data = {
+                memberIdx: authUser.idx,
+                reason: withdrawalInput.reasonForWithdrawal,
+            }
+            return await this.authQlModelService.withdrawal(data);
+
         } catch (error) {
             customLogger(this.logger, '', error);
             throw error;
@@ -281,6 +290,7 @@ export class AuthQlModelResolver {
                 id: socialSignInput.id,
                 email: socialSignInput.email,
                 nickname: socialSignInput.nickname,
+                name: socialSignInput.name,
             }
             return await this.authQlModelService.socialSignup(data);
         } catch (error) {
@@ -288,6 +298,4 @@ export class AuthQlModelResolver {
             throw error;
         }
     }
-
-
 }

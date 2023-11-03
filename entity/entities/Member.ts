@@ -78,6 +78,9 @@ export class Member {
     @Column('varchar', {name: 'social_facebook', length: 100, default: ''})
     social_facebook: string;
 
+    @Column('varchar', {name: 'social_apple', length: 100, default: ''})
+    social_apple: string;
+
     @Column('int', {name: 'is_website', default: 0})
     is_website: number;
 
@@ -116,6 +119,10 @@ export class Member {
 
     @Column('int', {name: 'agreeMsg', default: 0})
     agreeMsg: number;
+
+    @Column('text', {name: 'withdrawal'})
+    withdrawal: string;
+
 
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
