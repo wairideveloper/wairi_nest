@@ -325,7 +325,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
             .addSelect(`(${FROM_UNIXTIME('campaignSubmit.autoCancelDate')})`, 'autoCancelDate')
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')
             .where("campaignSubmit.sid = :sid", {sid: sid})
-            .andWhere('campaignSubmit.status = 500')
+            // .andWhere('campaignSubmit.status = 500')
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
 

@@ -23,6 +23,11 @@ type AlimtalkResponse {
     msg: String
 }
 
+type GraphqlHttpResponse {
+    code: Int
+    message: String
+}
+
 type SearchWord {
     idx: Int!
     name: String

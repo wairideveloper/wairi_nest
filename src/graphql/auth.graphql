@@ -186,6 +186,10 @@ input ChangeMemberInfoInput {
     email: String
 }
 
+input WithdrawalInput {
+    reasonForWithdrawal: String
+}
+
 extend type Query {
     identityVerification(receipt_id : String!): identityVerificationResponse
     identityVerificationV2(receipt_id : String!): identityVerificationV2Response
@@ -211,5 +215,7 @@ extend type Mutation{
     setChannelManagement(channelInput: ChannelInput): String
 
     changeMemberInfo(changeMemberInfoInput: ChangeMemberInfoInput): Member
+
+    withdrawal(withdrawalInput: WithdrawalInput): GraphqlHttpResponse
 }
 

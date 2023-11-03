@@ -18,6 +18,10 @@ class ChangeMemberInfoInput {
     email: string;
 }
 
+class WithdrawalInput {
+    reasonForWithdrawal: string;
+}
+
 @Resolver('AuthQlModel')
 export class AuthQlModelResolver {
     private readonly logger = new Logger();
@@ -228,6 +232,21 @@ export class AuthQlModelResolver {
     async getSubscriptionPath() {
         try {
             return await this.authQlModelService.getSubscriptionPath();
+        } catch (error) {
+            customLogger(this.logger, '', error);
+            throw error;
+        }
+    }
+
+    @Mutation(() => String)
+    @UseGuards(GqlAuthGuard)
+    async withdrawal(
+        @AuthUser() authUser: Member,
+        @Args('withdrawalInput') withdrawalInput: WithdrawalInput
+    ) {
+        try {
+            console.log("=>(auth_ql_model.resolver.ts:245) reason", withdrawalInput.reasonForWithdrawal);
+            // return await this.authQlModelService.withdraw(authUser.idx);
         } catch (error) {
             customLogger(this.logger, '', error);
             throw error;
