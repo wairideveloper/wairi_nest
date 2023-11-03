@@ -96,11 +96,8 @@ export class AuthController {
     }
 
     @UseGuards(AuthGuard("apple"))
-    @Get('/apple/callback')
-    async appleCallback(@Req() req, @Res() res): Promise<any> {
-        console.log("-> user", req.user);
-        const data = await this.authService.appleLogin(req.user);
-        return data;
-
+    @Post('/apple/callback')
+    async appleCallback(@Req() req) {
+        return req.user;
     }
 }
