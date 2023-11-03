@@ -265,7 +265,7 @@ export class SubmitModelResolver {
     ){
         try{
             let data = await this.submitModelService.completeDraftRegistration(
-                draftCompleteInput.sid, draftCompleteInput.url, 12328);
+                draftCompleteInput.sid, draftCompleteInput.url, authUser.idx);
             if (data.affected === 1) {
                 return {
                     code: 200,
