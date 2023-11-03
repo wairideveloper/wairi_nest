@@ -356,7 +356,11 @@ console.log("=>(submit_model.service.ts:217) response", response);
                 // statusDate700: getUnixTimeStamp()
             })
             .where("campaignSubmit.sid = :sid", {sid: sid})
-            .andWhere('campaignSubmit.status = 500')
+            //status 500 or 700 일때
+            .andWhere(new Brackets(qb => {
+                qb.where('campaignSubmit.status = 500')
+                    .orWhere('campaignSubmit.status = 700')
+            }))
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .execute();
 
