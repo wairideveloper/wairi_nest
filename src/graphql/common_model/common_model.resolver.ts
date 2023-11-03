@@ -34,7 +34,7 @@ export class CommonModelResolver {
     ) {
 
         try {
-            const file = await images;
+            const file = images;
             console.log("=>(common_model.resolver.ts:37) file", file);
             return
             // let imgUrl = await this.commonModelService.uploadImage(file.file);

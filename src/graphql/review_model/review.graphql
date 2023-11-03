@@ -24,7 +24,21 @@ type Reviews implements Pagination {
     data: [Review!]!
 }
 
+type deleteReviewResponse{
+    status: Int
+    message: String
+}
+
 extend type Query {
     getReviews(idx:Int! take: Int!,page:Int!): Reviews
     getReview(idx:Int!): Review
+}
+
+extend type Mutation {
+    createReview(file: [Upload],
+        originalname: String,
+        content: String,
+        rate: Int
+    ): String
+    deleteReview(idx:Int!): deleteReviewResponse
 }

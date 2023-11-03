@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CampaignReview} from "../../../entity/entities/CampaignReview";
@@ -149,6 +149,32 @@ export class ReviewModelService {
         }catch (error) {
             console.log(error)
             throw error;
+        }
+    }
+
+    async deleteReview(idx: number, memberIdx: number) {
+        try{
+            let data = await this.reviewRepository.createQueryBuilder("campaignReview")
+                .leftJoin("campaignReview.member", "member")
+                .where("campaignReview.idx = :idx", {idx: idx})
+                .andWhere("campaignReview.memberIdx = :memberIdx", {memberIdx: memberIdx})
+                .getOne();
+
+            if(data){
+                await this.reviewRepository.delete(idx);
+                return {
+                    status : 200,
+                    message : "리뷰가 삭제되었습니다."
+                };
+            }else{
+                return {
+                    status : 400,
+                    message : "리뷰가 존재하지 않습니다."
+                };
+            }
+        }catch(error){
+            console.log(error)
+            throw new HttpException(error.message, error.status);
         }
     }
 }

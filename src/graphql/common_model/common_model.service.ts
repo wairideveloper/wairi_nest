@@ -46,7 +46,8 @@ export class CommonModelService {
     }
 
     async uploadImage(file: FileUpload) {
-        const fileName = `${uuidv4()}-${file.filename}`;
+        // const fileName = `${uuidv4()}-${file.filename}`;
+        const fileName = `${uuidv4()}}`;
         const encodeFileName = encodeURIComponent(fileName);
         const buffer = await this.streamToBuffer(file.createReadStream());
         const uploadParams = {
