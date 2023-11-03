@@ -355,7 +355,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
                 // statusDate700: getUnixTimeStamp()
             })
             .where("campaignSubmit.sid = :sid", {sid: sid})
-            .andWhere('campaignSubmit.status = 700')
+            .andWhere('campaignSubmit.status = 500')
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .execute();
 
