@@ -599,14 +599,14 @@ export class AuthQlModelService {
                     data.agreeMsg
                     );
                 console.log("-> newMember", newMember);
-                // const payload = {
-                //     idx: newMember.generatedMaps[0].idx,
-                //     username: data.nickname,
-                //     memberType: 1
-                // }
-                // const result = await this.jwtResponse(payload, newMember.generatedMaps[0]);
-                // console.log("-> result", result);
-                // return result;
+                const payload = {
+                    idx: newMember.generatedMaps[0].idx,
+                    username: data.nickname,
+                    memberType: 1
+                }
+                const result = await this.jwtResponse(payload, newMember.generatedMaps[0]);
+                console.log("-> result", result);
+                return result;
             }
 
         }catch (error) {
