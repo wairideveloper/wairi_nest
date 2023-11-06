@@ -549,7 +549,25 @@ export class AuthQlModelService {
 
     async socialSignup(data: { social_type: string; nickname: string; id: string; email: string; name: string; }) {
         try{
-            const memberCheck = await this.memberService.findSocialId(data.email, data.id, 'social_google');
+            // 1: kakao
+            // 2: naver
+            // 3: google
+            // 4: apple
+            // switch (data.social_type) {
+            //     case "1": //naver
+            //         data.social_type = 'social_kakao';
+            //         break;
+            //     case "2": //kakao
+            //         data.social_type = 'social_naver';
+            //         break;
+            //     case "3": //google
+            //         data.social_type = 'social_google';
+            //         break;
+            //     case "4": //google
+            //         data.social_type = 'social_apple';
+            //         break;
+            // }
+            const memberCheck = await this.memberService.findSocialId(data.email, data.id, data.social_type);
             const passwd = await hashPassword(data.id.toString());
 
             if(memberCheck){
