@@ -10,7 +10,7 @@ export class FirebaseService {
                 title: 'Hello',
                 body: 'World',
             },
-            token: 'd8d8mdQiuWbH0Eu90trwi3:APA91bF8_4CZHHNa-onLm9i_yHKBgRwTUtZJcjsvcVBc7PLUFtDAWTmwH0AVHruJV-HZu7VsoSBmIWf-JBhOpjVV2aCp208XF5APRLNhGlNfYJMX-vBnGe-2pDUIVMLrJY9RJix3UX7J',
+            token: 'eWGyWqUr71IQ0fVJ-PRtzg:APA91bHsKZ9AUksB-zZuDH6wpRyiTXeCXlb9lPSXpGLpelvegf30pn0-cPYU5Y9rCGhdAVOuKDblcmOB-WnStPZgz5Bq0CdCuRDKDW36TFv2m6XSMLLRxinWAs7eezbzTjjWS-rGvOVW',
         };
 
         try {

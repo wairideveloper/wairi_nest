@@ -432,7 +432,7 @@ export class MembersService {
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
-            .where(`${AES_DECRYPT('email')} = :email`, {email: email})
+            .where(`${AES_DECRYPT('email')} = :email`, {email: `"${email}"`})
             // .where(`${AES_DECRYPT('id')} = :id`, {id: id})
             // .andWhere(`${socialType} = :socialType`, {socialType: id})
             .getRawOne();

@@ -56,6 +56,7 @@ export class ReviewModelResolver {
   ){
 
     const files =  await file;
+    console.log("=>(review_model.resolver.ts:60) files.length", files.length);
     //단일 파일 업로드
     if(files.length === 1){
   // console.log("=>(review_model.resolver.ts:60) file[0].file", file[0].file);
@@ -66,12 +67,20 @@ export class ReviewModelResolver {
     //다중 파일 업로드
     if(files.length > 1){
       await Promise.all(files.map(async (item) => {
-        console.log("=>(review_model.resolver.ts:67) item", item);
+
+        console.log("=>(review_model.resolver.ts:81) item", item);
+        console.log("=>(review_model.resolver.ts:71) item.file.filename", item.file.filename);
+        const decodedFilename = decodeURIComponent(item.file.filename);
+        // console.log("=>(review_model.resolver.ts:71) decodedFilename", decodedFilename);
+        // let originalname = Buffer.from(item.file.filename, "latin1").toString("utf8");
+        // console.log("=>(review_model.resolver.ts:72) originalname",originalname);
+
             // console.log("=>(review_model.resolver.ts:60) item.file", item.file);
-          // let imgUrl = await this.commonModelService.uploadImage(item.file);
+          let imgUrl = await this.commonModelService.uploadImage(item.file);
           // console.log("=>(review_model.resolver.ts:60) imgUrl", imgUrl);
         // item.promise.resolve();
         }));
+
     }
     // let imgUrl = await this.commonModelService.uploadImage(file.file);
   }

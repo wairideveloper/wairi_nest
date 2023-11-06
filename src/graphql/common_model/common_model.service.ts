@@ -49,6 +49,8 @@ export class CommonModelService {
         // const fileName = `${uuidv4()}-${file.filename}`;
         const fileName = `${uuidv4()}}`;
         const encodeFileName = encodeURIComponent(fileName);
+        console.log("=>(common_model.service.ts:52) encodeFileName", encodeFileName);
+        return
         const buffer = await this.streamToBuffer(file.createReadStream());
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
