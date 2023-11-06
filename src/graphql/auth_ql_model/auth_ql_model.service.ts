@@ -547,26 +547,21 @@ export class AuthQlModelService {
             .getRawMany();
     }
 
-    async socialSignup(data: { social_type: string; nickname: string; id: string; email: string; name: string; }) {
+    async socialSignup(data: {
+        social_type: string;
+        nickname: string;
+        id: string;
+        email: string;
+        name: string;
+        agreeMsg: number;
+    }) {
         try{
-            // 1: kakao
-            // 2: naver
-            // 3: google
-            // 4: apple
-            // switch (data.social_type) {
-            //     case "1": //naver
-            //         data.social_type = 'social_kakao';
-            //         break;
-            //     case "2": //kakao
-            //         data.social_type = 'social_naver';
-            //         break;
-            //     case "3": //google
-            //         data.social_type = 'social_google';
-            //         break;
-            //     case "4": //google
-            //         data.social_type = 'social_apple';
-            //         break;
-            // }
+            /*
+            1: kakao
+            2: naver
+            3: google
+            4: apple
+             */
             const memberCheck = await this.memberService.findSocialId(data.email, data.id, data.social_type);
             const passwd = await hashPassword(data.id.toString());
 
@@ -595,7 +590,14 @@ export class AuthQlModelService {
                 return result;
             }else{
                 console.log("=>(auth_ql_model.service.ts:577) data", data);
-                const newMember = await this.memberService.createSocial(data.social_type, data.nickname, data.id, data.email, data.name);
+                const newMember = await this.memberService.createSocial(
+                    data.social_type,
+                    data.nickname,
+                    data.id,
+                    data.email,
+                    data.name,
+                    data.agreeMsg
+                    );
                 console.log("-> newMember", newMember);
                 // const payload = {
                 //     idx: newMember.generatedMaps[0].idx,

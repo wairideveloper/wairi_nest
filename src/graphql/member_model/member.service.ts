@@ -437,7 +437,13 @@ export class MembersService {
             .getRawOne();
     }
 
-    async createSocial(social_type: string, nickname: string, id: string, email: string, name: string) {
+    async createSocial(
+        social_type: string,
+        nickname: string,
+        id: string,
+        email: string,
+        name: string,
+        agreeMsg: number) {
         try {
             const now = getNowUnix();
             const passwd = await hashPassword(id.toString());
@@ -447,7 +453,7 @@ export class MembersService {
                 .createQueryBuilder()
                 .insert()
                 .into(Member, ['id', 'social_kakao', 'social_naver', 'social_google', 'social_apple', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
-                     'name', 'passwd', 'regdate'
+                     'name', 'passwd', 'regdate', 'agreeMsg'
                 ])
                 .values({
                     id: () => `"${id}"`,
@@ -465,6 +471,7 @@ export class MembersService {
                     name: () => name ? AES_ENCRYPT(name) : AES_ENCRYPT(nickname),
                     passwd: () => `"${passwd}"`,
                     regdate: () => `"${now}"`,
+                    agreeMsg: agreeMsg
                 })
                 .execute();
 

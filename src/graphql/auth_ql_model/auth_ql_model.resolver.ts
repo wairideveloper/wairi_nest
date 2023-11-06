@@ -29,6 +29,7 @@ class SocialSignInput {
     email: string;
     nickname: string;
     name: string;
+    agreeMsg: number;
 }
 
 @Resolver('AuthQlModel')
@@ -291,6 +292,7 @@ export class AuthQlModelResolver {
                 email: socialSignInput.email,
                 nickname: socialSignInput.nickname,
                 name: socialSignInput.name,
+                agreeMsg: socialSignInput.agreeMsg,
             }
             return await this.authQlModelService.socialSignup(data);
         } catch (error) {
