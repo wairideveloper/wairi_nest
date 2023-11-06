@@ -12,6 +12,7 @@ type Review{
     memberName: String
     images: [String]
     itemName: String
+    name: String
 }
 
 type Reviews implements Pagination {
