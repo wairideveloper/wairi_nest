@@ -598,15 +598,17 @@ export class AuthQlModelService {
                     data.name,
                     data.agreeMsg
                     );
-                console.log("-> newMember", newMember);
-                const payload = {
-                    idx: newMember.generatedMaps[0].idx,
-                    username: data.nickname,
-                    memberType: 1
+                if(newMember){
+                    let member = await this.memberService.findSocialId(data.email, data.id, data.social_type);
+                    const payload = {
+                        idx: member.idx,
+                        username: data.nickname,
+                        memberType: 1
+                    }
+                    const result = await this.jwtResponse(payload, member);
+                    console.log("-> result", result);
+                    return result;
                 }
-                const result = await this.jwtResponse(payload, newMember.generatedMaps[0]);
-                console.log("-> result", result);
-                return result;
             }
 
         }catch (error) {
