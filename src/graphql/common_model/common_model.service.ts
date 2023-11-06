@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {CreateCommonModelInput} from './dto/create-common_model.input';
 import {UpdateCommonModelInput} from './dto/update-common_model.input';
 import {v4 as uuidv4} from "uuid";
 // import {S3} from "aws-sdk";
 import * as process from 'process';
-import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {FileUpload} from "graphql-upload/Upload";
 import * as AWS from "aws-sdk";
@@ -46,25 +46,61 @@ export class CommonModelService {
     }
 
     async uploadImage(file: FileUpload) {
-        // const fileName = `${uuidv4()}-${file.filename}`;
-        const fileName = `${uuidv4()}}`;
-        const encodeFileName = encodeURIComponent(fileName);
-        const buffer = await this.streamToBuffer(file.createReadStream());
-        const uploadParams = {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: String(encodeFileName),
-            Body: buffer,
-            ContentType: file.mimetype,
-            ACL: 'public-read',
-        };
-        console.log("-> process.env.AWS_BUCKET_NAME", process.env.AWS_BUCKET_NAME);
+        try {
+            // const fileName = `${uuidv4()}-${file.filename}`;
+            const fileName = `${uuidv4()}}`;
+            const encodeFileName = encodeURIComponent(fileName);
+            const buffer = await this.streamToBuffer(file.createReadStream());
+            const uploadParams = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: String(encodeFileName),
+                Body: buffer,
+                ContentType: file.mimetype,
+                ACL: 'public-read',
+            };
 
-        const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
+            const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
 
-        if (res.$metadata.httpStatusCode === 200) {
-            const url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
-            return url;
+            if (res.$metadata.httpStatusCode === 200) {
+                const url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
+
+                return {
+                    key : encodeFileName,
+                    url : url
+                };
+            }
+        } catch (error) {
+            throw new HttpException(error.message, 500)
         }
+    }
+
+    async deleteImage(fileName: string) {
+        // const command = new GetObjectCommand({
+        //     Bucket: process.env.AWS_BUCKET_NAME,
+        //     Key: '0cf95743-3838-4a36-9116-c5b675276c55%7D',
+        // });
+        // const response = await this.s3_V2.send(command);
+        // const str = await response.Body.transformToString();
+
+        return this.getSignedUrl('0ba43afc-6c2e-4082-9e32-a326f9386bdb%7D')
+
+        // Todo delete 주석 제거
+        // const input = {
+        //     "Bucket": process.env.AWS_BUCKET_NAME,
+        //     "Key": '3c968b97-2087-4dfd-9dd3-8848189199f3%7D'
+        // };
+        // const command = new DeleteObjectCommand(input);
+        // return await this.s3_V2.send(command);
+    }
+
+    async getSignedUrl(awsObjectKey: string) {
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: awsObjectKey,
+        });
+        const url = await getSignedUrl(this.s3_V2, command, { expiresIn: 15 * 60 }); // expires in seconds
+        console.log('Presigned URL: ', url);
+        return url;
     }
 
     async streamToBuffer(stream: Stream): Promise<Buffer> {

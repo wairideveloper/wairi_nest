@@ -42,4 +42,5 @@ extend type Mutation {
         rate: Int
     ): String
     deleteReview(idx:Int!): deleteReviewResponse
+    deleteImage: deleteReviewResponse
 }
