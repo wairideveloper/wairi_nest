@@ -331,21 +331,23 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
         let result = await this.campaignItemRepository.createQueryBuilder('campaignItem')
             .select([
                     'campaignItem.*',
-                    `(SELECT 
-                    IF(
-                        schedule.priceDeposit > 0, 
-                        schedule.priceDeposit, 
-                        ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2)
-                    ) 
-                        FROM campaignItemSchedule schedule 
-                        JOIN campaignItem ON schedule.itemIdx = campaignItem.idx 
-                        WHERE campaignItem.campaignIdx = ${id}
-                        AND schedule.stock > 0 
-                        AND campaignItem.remove = 0 
-                        AND schedule.date >= UNIX_TIMESTAMP(CURDATE()) 
-                        ORDER BY price 
-                        LIMIT 1
-                    ) as lowestPrice`,
+                   //  `(SELECT
+                   //  IF(
+                   //      schedule.priceDeposit > 0,
+                   // // schedule.priceDeposit,
+                   //      ROUND(CAST(schedule.priceDeposit * campaignItem.dc11 / 100 AS UNSIGNED), -2),
+                   //      ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2)
+                   //  )
+                   //      FROM campaignItemSchedule schedule
+                   //      JOIN campaignItem ON schedule.itemIdx = campaignItem.idx
+                   //      WHERE campaignItem.campaignIdx = ${id}
+                   //      AND schedule.stock > 0
+                   //      AND campaignItem.remove = 0
+                   //      AND schedule.date >= UNIX_TIMESTAMP(CURDATE())
+                   //      ORDER BY price
+                   //      LIMIT 1
+                   //  ) as lowestPrice`,
+                    'ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) as lowestPrice',
                     'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
                 ]
             )
