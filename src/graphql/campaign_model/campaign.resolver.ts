@@ -36,7 +36,7 @@ export class CampaignResolver {
             let data = await this.campaignsService.search(keyword);
             //json 형식으로 변환
 
-            console.log(data)
+            // console.log(data)
             // console.log(bufferToString(data))
             // data.forEach((element) => {
             //     bufferToString(element);

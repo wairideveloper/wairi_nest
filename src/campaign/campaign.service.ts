@@ -68,8 +68,8 @@ export class CampaignService {
                 'campaign.name as name',
                 'campaign.weight as weight',
                 // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
-                'min(campaignItem.priceOrig) as lowestPriceOrig',
-                'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
+                // 'min(campaignItem.priceOrig) as lowestPriceOrig',
+                // 'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
                 'min(campaignItem.calcType1) as lowestPriceCalcType1',
                 'min(campaignItem.calcType2) as lowestPriceCalcType2',
                 'min(campaignItem.sellType) as lowestPriceSellType',
@@ -79,11 +79,11 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            .where('(campaign.status = :status AND campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaign.status = :status AND campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
-                status: 200,
-                remove: 0,
+            .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) ' +
+                'OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+                // status: 200,
+                // remove: 0,
                 campaignKeyword: '%' + keyword + '%',
-                itemRemove: 0,
                 itemKeyword: '%' + keyword + '%',
             })
             .orderBy('campaign.idx', 'DESC')
@@ -92,9 +92,9 @@ export class CampaignService {
             .offset(take * (page - 1))
             .limit(take)
             .getRawMany();
-
+console.log("=>(campaign.service.ts:98) 123213123231data", data);
         const campaignItemLowestPrice = await this.getCampaignLowestPrice();
-        data = bufferToString(data);
+        // data = bufferToString(data);
         let result = [];
         data.forEach((item) => {
             campaignItemLowestPrice.forEach((item2) => {
@@ -109,9 +109,17 @@ export class CampaignService {
 
         const total = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
-            .where('campaign.remove = :remove', {remove: 0})
-            .andWhere('campaign.name like :keyword', {keyword: '%' + keyword + '%'})
-            .orWhere('campaignItem.name like :keyword', {keyword: '%' + keyword + '%'})
+            // .where('campaign.remove = :remove', {remove: 0})
+            // .andWhere('campaign.name like :keyword', {keyword: '%' + keyword + '%'})
+            // .orWhere('campaignItem.name like :keyword', {keyword: '%' + keyword + '%'})
+            .where('(campaign.status = :status AND campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaign.status = :status AND campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaignItem.name like :itemKeyword)', {
+                status: 200,
+                memberTarget: 1,
+                remove: 0,
+                campaignKeyword: '%' + keyword + '% ',
+                itemRemove: 0,
+                itemKeyword: '%' + keyword + '%',
+            })
             .getCount()
 
         let totalPage = Math.ceil(total / take);
