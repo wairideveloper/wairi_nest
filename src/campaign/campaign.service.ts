@@ -57,7 +57,7 @@ export class CampaignService {
 
     async search(keyword: string) {
         const {take, page} = {take: 10, page: 1};
-        const data = await this.campaignRepository.createQueryBuilder('campaign')
+        let data = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .leftJoin('campaign.cate', 'cate')
@@ -83,6 +83,7 @@ export class CampaignService {
                 itemRemove: 0,
                 itemKeyword: '%' + keyword + '%',
             })
+            .andWhere('campaign.status >= :t', {t: 200})
             .orderBy('campaign.idx', 'DESC')
             .addOrderBy('campaign.weight', 'DESC')
             .groupBy('campaign.idx')
@@ -91,7 +92,7 @@ export class CampaignService {
             .getRawMany();
 
         const campaignItemLowestPrice = await this.getCampaignLowestPrice();
-
+        data = bufferToString(data);
         let result = [];
         data.forEach((item) => {
             campaignItemLowestPrice.forEach((item2) => {
