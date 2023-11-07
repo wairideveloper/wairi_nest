@@ -83,7 +83,7 @@ export class CampaignService {
                 itemRemove: 0,
                 itemKeyword: '%' + keyword + '%',
             })
-            .andWhere('campaign.status >= :t', {t: 200})
+            .andWhere('campaign.status = :status', {status: 200})
             .orderBy('campaign.idx', 'DESC')
             .addOrderBy('campaign.weight', 'DESC')
             .groupBy('campaign.idx')
