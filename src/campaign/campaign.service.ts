@@ -67,7 +67,9 @@ export class CampaignService {
                 'campaign.idx as idx',
                 'campaign.name as name',
                 'campaign.weight as weight',
+                // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
                 'min(campaignItem.priceOrig) as lowestPriceOrig',
+                'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
                 'min(campaignItem.calcType1) as lowestPriceCalcType1',
                 'min(campaignItem.calcType2) as lowestPriceCalcType2',
                 'min(campaignItem.sellType) as lowestPriceSellType',
@@ -77,8 +79,8 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            .where('campaign.status = :status', {status: 200})
-            .andWhere('(campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
+            .where('(campaign.status = :status AND campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaign.status = :status AND campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
+                status: 200,
                 remove: 0,
                 campaignKeyword: '%' + keyword + '%',
                 itemRemove: 0,
