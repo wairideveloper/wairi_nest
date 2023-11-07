@@ -23,7 +23,6 @@ export class CampaignResolver {
     ) {
         try {
             let data = await this.campaignsService.getRecommendedSearchWords(type, limit);
-            console.log("-> data", data);
             return data;
         } catch (error) {
             console.log(error)

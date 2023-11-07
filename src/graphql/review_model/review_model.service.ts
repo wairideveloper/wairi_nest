@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Pagination} from "../../paginate";
-import {AES_DECRYPT, FROM_UNIXTIME_JS, FROM_UNIXTIME_JS_YY_MM_DD} from "../../util/common";
+import {AES_DECRYPT, bufferToString, FROM_UNIXTIME_JS, FROM_UNIXTIME_JS_YY_MM_DD} from "../../util/common";
 import moment from "moment";
 
 @Injectable()
@@ -35,7 +35,7 @@ export class ReviewModelService {
                 .offset(take * (page - 1))
                 .limit(take)
                 .getRawMany();
-
+            data = bufferToString(data)
             let total = await this.reviewRepository.createQueryBuilder("campaignReview")
                 .select('*')
                 .where("campaignReview.campaignIdx = :idx", {idx: idx})
@@ -76,7 +76,7 @@ export class ReviewModelService {
                     item.images = images;
                 })
             }
-
+            console.log("=>(review_model.service.ts:80) data", data);
             return new Pagination({
                 data,
                 total,
@@ -176,5 +176,9 @@ export class ReviewModelService {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }
+    }
+
+    async createReview(idx: number, keys: any[], urls: any[]) {
+
     }
 }

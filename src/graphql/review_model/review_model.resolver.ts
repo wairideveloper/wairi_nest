@@ -1,7 +1,7 @@
 import {Resolver, Query, Args, Mutation} from '@nestjs/graphql';
 import {ReviewModelService} from './review_model.service';
 import {CommonModelService} from "../common_model/common_model.service";
-import {UseGuards} from "@nestjs/common";
+import {HttpException, UseGuards} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
@@ -55,30 +55,36 @@ export class ReviewModelResolver {
         @Args('originalname') originalname: string,
     ) {
 
-        const files = await file;
-        console.log("=>(review_model.resolver.ts:60) files.length", files.length);
-        //단일 파일 업로드
-        if (files.length === 1) {
-            // console.log("=>(review_model.resolver.ts:60) file[0].file", file[0].file);
-            // let imgUrl = await this.commonModelService.uploadImage(file[0].file);
-            // console.log("=>(review_model.resolver.ts:55) imgUrl", imgUrl);
-        }
+        try {
+            const files = await file;
+            console.log("=>(review_model.resolver.ts:60) files.length", files.length);
+            //단일 파일 업로드
+            if (files.length === 1) {
+                // console.log("=>(review_model.resolver.ts:60) file[0].file", file[0].file);
+                // let imgUrl = await this.commonModelService.uploadImage(file[0].file);
+                // console.log("=>(review_model.resolver.ts:55) imgUrl", imgUrl);
+            }
 
-        //다중 파일 업로드
-        if (files.length > 1) {
-            let keys = [];
-            let urls = [];
-            await Promise.allSettled(files.map(async (item) => {
+            //다중 파일 업로드
+            if (files.length > 1) {
+                let keys = [];
+                let urls = [];
+                await Promise.allSettled(files.map(async (item) => {
 
-                const decodedFilename = decodeURIComponent(item.file.filename);
-                const awsObjectData = await this.commonModelService.uploadImage(item.file);
-                urls.push(awsObjectData.url);
-                keys.push(awsObjectData.key);
-            }));
-            console.log("=>(review_model.resolver.ts:79) urls", urls);
-            console.log("=>(review_model.resolver.ts:80) keys", keys);
+                    const decodedFilename = decodeURIComponent(item.file.filename);
+                    const awsObjectData = await this.commonModelService.uploadImage(item.file);
+                    urls.push(awsObjectData.url);
+                    keys.push(awsObjectData.key);
+                }));
+                console.log("=>(review_model.resolver.ts:79) urls", urls);
+                console.log("=>(review_model.resolver.ts:80) keys", keys);
+
+                let data = await this.reviewModelService.createReview(authUser.idx, keys, urls);
+                return data;
+            }
+        } catch (error) {
+            throw new HttpException(error.message, 500)
         }
-        // let imgUrl = await this.commonModelService.uploadImage(file.file);
     }
 
     @Mutation()

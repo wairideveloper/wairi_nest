@@ -16,7 +16,7 @@ import {CampaignRecent} from "../../entity/entities/CampaignRecent";
 import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
 import {CampaignSubmit} from "../../entity/entities/CampaignSubmit";
 import {CampaignFav} from "../../entity/entities/CampaignFav";
-import {FROM_UNIXDATE, FROM_UNIXTIME, getUnixTimeStamp, getYmd} from "../util/common"
+import {bufferToString, FROM_UNIXDATE, FROM_UNIXTIME, getUnixTimeStamp, getYmd} from "../util/common"
 import * as moment from 'moment';
 
 @Injectable()
@@ -662,11 +662,12 @@ export class CampaignService {
                     'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 ])
                 .where('campaign.remove = :remove', {remove: 0})
+                .andWhere('campaign.status = 200')
                 .orderBy('campaign.weight', 'DESC')
                 .limit(limit)
                 .getRawMany();
 
-            const submit = this.campaignSubmit.createQueryBuilder('campaignSubmit')
+            const submit = await this.campaignSubmit.createQueryBuilder('campaignSubmit')
                 .select([
                     'campaignSubmit.campaignIdx as idx',
                     'count(*) as count',
@@ -680,6 +681,7 @@ export class CampaignService {
                 .leftJoin('campaign.cate', 'cate')
                 .leftJoin('campaign.cateArea', 'cateArea')
                 .where('campaign.remove = :remove', {remove: 0})
+                .andWhere('campaign.status = 200')
                 //wherein campaignSubmit.status = 400, 500, 700
                 .andWhere('campaignSubmit.status IN (:...status)', {status: [400, 500, 700]})
                 .groupBy('campaignSubmit.campaignIdx')
@@ -688,9 +690,9 @@ export class CampaignService {
                 .getRawMany();
 
             if (type == 'weight') {
-                return weight;
+                return bufferToString(weight);
             } else if (type == 'submit') {
-                return submit;
+                return bufferToString(submit);
             } else {
                 return [];
             }

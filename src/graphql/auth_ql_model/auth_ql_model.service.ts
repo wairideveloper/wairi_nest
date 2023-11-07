@@ -10,7 +10,7 @@ import {JwtService} from "@nestjs/jwt";
 import {SignupInput} from "./dto/signupInput";
 import {
     AES_DECRYPT,
-    AES_ENCRYPT,
+    AES_ENCRYPT, bufferToString,
     changeInterestsText,
     FROM_UNIXTIME,
     FROM_UNIXTIME_JS,
@@ -43,8 +43,8 @@ export class AuthQlModelService {
 
     async login(id: string, password: string) {
         try {
-            const member = await this.memberService.findById(id);
-            console.log("=>(auth_ql_model.service.ts:33) member", member);
+            let member = await this.memberService.findById(id);
+            console.log("=>(auth_ql_model.service.ts:47) member", member);
             if (!member) {
                 throw new HttpException('회원정보 없음', 404);
             }

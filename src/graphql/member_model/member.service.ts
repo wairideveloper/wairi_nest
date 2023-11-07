@@ -2,7 +2,15 @@ import {Injectable} from '@nestjs/common';
 import {Member} from '../../../entity/entities/Member';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {AES_ENCRYPT, AES_DECRYPT, FROM_UNIXTIME, getNowUnix, AES_ENCRYPT2, hashPassword} from "../../util/common";
+import {
+    AES_ENCRYPT,
+    AES_DECRYPT,
+    FROM_UNIXTIME,
+    getNowUnix,
+    AES_ENCRYPT2,
+    hashPassword,
+    bufferToString
+} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {SignupInput} from '../auth_ql_model/dto/signupInput';
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
@@ -139,7 +147,7 @@ export class MembersService {
     }
 
     async findById(id: string) {
-        return await this.memberRepository
+        const result = await this.memberRepository
             .createQueryBuilder()
             .select('*')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
@@ -154,6 +162,8 @@ export class MembersService {
             // status -9 는 탈퇴회원
             .andWhere('status != -9')
             .getRawOne();
+
+        return bufferToString(result);
     }
 
     update(id: number) {

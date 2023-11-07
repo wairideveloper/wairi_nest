@@ -136,11 +136,27 @@ export const getDiscountRate = (price: number, salePrice: number) => {
 
 //object 배열중 buffer 타입을 string으로 변환
 export const bufferToString = (data: any) => {
-    Object.keys(data).forEach(function(v){
-        if(data[v] instanceof Buffer) {
-            data[v] = data[v].toString();
-        }
-    })
+
+    const dataLengh = data.length;
+    console.log("=>(common.ts:141) dataLengh", dataLengh);
+    //object 일때
+
+    if(dataLengh === undefined) {
+        Object.keys(data).forEach(function (v) {
+            if (data[v] instanceof Buffer) {
+                data[v] = data[v].toString();
+            }
+        })
+    }else {
+        //object 배열일때
+        data.forEach((item) => {
+            Object.keys(item).forEach(function (v) {
+                if (item[v] instanceof Buffer) {
+                    item[v] = item[v].toString();
+                }
+            })
+        })
+    }
     return data;
 }
 
