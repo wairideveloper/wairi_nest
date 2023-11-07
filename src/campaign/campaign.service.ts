@@ -77,13 +77,13 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            .where('(campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
+            .where('campaign.status = :status', {status: 200})
+            .andWhere('(campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaignItem.remove = :itemRemove AND campaignItem.name like :itemKeyword)', {
                 remove: 0,
                 campaignKeyword: '%' + keyword + '%',
                 itemRemove: 0,
                 itemKeyword: '%' + keyword + '%',
             })
-            .andWhere('campaign.status = :status', {status: 200})
             .orderBy('campaign.idx', 'DESC')
             .addOrderBy('campaign.weight', 'DESC')
             .groupBy('campaign.idx')
