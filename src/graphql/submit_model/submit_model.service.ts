@@ -200,7 +200,7 @@ export class SubmitModelService {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .select('*')
             .where("campaignSubmit.sid = :sid", {sid: sid})
-            .andWhere('campaignSubmit.status = 100')
+            .andWhere('campaignSubmit.status = 200')
             .getRawOne();
 
         return data;
