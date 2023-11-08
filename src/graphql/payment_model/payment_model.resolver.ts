@@ -44,19 +44,21 @@ export class PaymentModelResolver {
             campaignItemSchdule.forEach((item) => {
                 // stock 확인 nop > stock
                 itemSchduleIdx.push(item.idx);
+                console.log("=>(payment_model.resolver.ts:48) submitItem.nop", submitItem.nop);
+                console.log("=>(payment_model.resolver.ts:49) item.stock", item.stock);
+
                  if(submitItem.nop > item.stock){
                         throw new HttpException("재고가 부족합니다.", 404);
                  }
             })
-
             //재고 체크후 결제 confirm
-            const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, 15120);
+            const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, authUser.idx);
             console.log("=>(payment_model.resolver.ts:53) response", response);
 
             //가상계좌
             if(response.method_symbol === 'vbank'){
                 //payment insert
-                const vbankData = await this.paymentModelService.insertVbankPayment(response, submitItem.idx, 15120);
+                const vbankData = await this.paymentModelService.insertVbankPayment(response, submitItem.idx, authUser.idx);
                 console.log("=>(payment_model.resolver.ts:58) vbankData", vbankData);
 
                 if(vbankData) {

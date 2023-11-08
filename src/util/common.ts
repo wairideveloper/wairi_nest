@@ -140,7 +140,7 @@ export const getDiscountRate = (price: number, salePrice: number) => {
 export const bufferToString = (data: any) => {
 
     const dataLengh = data.length;
-    console.log("=>(common.ts:141) dataLengh", dataLengh);
+    // console.log("=>(common.ts:141) dataLengh", dataLengh);
     //object 일때
 
     if(dataLengh === undefined) {
