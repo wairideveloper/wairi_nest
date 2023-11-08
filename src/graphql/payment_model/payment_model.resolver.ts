@@ -25,7 +25,7 @@ export class PaymentModelResolver {
     }
 
     @Mutation()
-    // @UseGuards(GqlAuthGuard)
+    @UseGuards(GqlAuthGuard)
     async confirmStock(
         @Args('confirmPaymentInput') confirmPaymentInput: ConfirmPaymentInput,
         @AuthUser() authUser: Member
@@ -52,6 +52,7 @@ export class PaymentModelResolver {
                  }
             })
             //재고 체크후 결제 confirm
+            console.log(authUser)
             const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, authUser.idx);
             console.log("=>(payment_model.resolver.ts:53) response", response);
 
