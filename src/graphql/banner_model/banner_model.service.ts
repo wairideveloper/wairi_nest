@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Banner } from '../../../entity/entities/Banner';
 import { Popup } from '../../../entity/entities/Popup';
+import {bufferToString} from "../../util/common";
 @Injectable()
 export class BannerModelService {
     constructor(
@@ -17,8 +18,10 @@ export class BannerModelService {
     }
     async getBanner() {
         try{
-            const data = await this.bannerRepository.find()
-            console.log("=>(banner_model.service.ts:18) data", data);
+            let data = await this.bannerRepository.find()
+            if(data){
+                data = bufferToString(data)
+            }
             return data;
         }catch (error) {
             throw new HttpException(error.message, error.status);
@@ -27,10 +30,13 @@ export class BannerModelService {
 
     async getPopup() {
         try{
-            const data = await this.popupRepository.find({where: {display: 1}, order: {idx: "DESC"}})
-            console.log("=>(banner_model.service.ts:31) data", data);
+            let data = await this.popupRepository.find({where: {display: 1}, order: {idx: "DESC"}})
+            if(data){
+                data = bufferToString(data)
+            }
             return data;
         }catch (error) {
+            console.log("=>(banner_model.service.ts:39) error", error);
             throw new HttpException(error.message, error.status);
         }
     }

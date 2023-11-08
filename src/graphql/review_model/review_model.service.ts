@@ -36,6 +36,7 @@ export class ReviewModelService {
                 .limit(take)
                 .getRawMany();
             data = bufferToString(data)
+
             let total = await this.reviewRepository.createQueryBuilder("campaignReview")
                 .select('*')
                 .where("campaignReview.campaignIdx = :idx", {idx: idx})
@@ -111,6 +112,8 @@ export class ReviewModelService {
                 .where("campaignReview.idx = :idx", {idx: idx})
                 .getRawOne();
 
+            data = bufferToString(data)
+
             if(data.images){
                 let jsonImages = JSON.parse(data.images);
                 let images = [];
@@ -147,8 +150,8 @@ export class ReviewModelService {
             }
             return data;
         }catch (error) {
-            console.log(error)
-            throw error;
+            console.log("=>(review_model.service.ts:153) error", error);
+            throw new HttpException(error.message, error.status);
         }
     }
 

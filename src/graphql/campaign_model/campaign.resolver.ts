@@ -162,6 +162,8 @@ export class CampaignResolver {
             console.log(now, nowUnix, startUnix, endUnix)
 
             let data = await this.campaignsService.getActiveItemSchedule(idx, startUnix, endUnix, nowUnix);
+            data = bufferToString(data);
+            console.log("=>(campaign.resolver.ts:166) data", data);
             return data
         } catch (error) {
             console.log(error)

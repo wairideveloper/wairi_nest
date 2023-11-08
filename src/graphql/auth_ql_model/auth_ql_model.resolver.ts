@@ -6,8 +6,8 @@ import {LoginInput} from "./dto/loginInput";
 import {SignupInput} from "./dto/signupInput";
 import {PartnerSignupInput} from "./dto/partnerSignupInput";
 import {ChangePasswordInput} from "./dto/changePasswordInput";
-import {Logger, UseGuards} from '@nestjs/common';
-import {customLogger} from "../../util/common";
+import {HttpException, Logger, UseGuards} from '@nestjs/common';
+import {bufferToString, customLogger} from "../../util/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
@@ -95,7 +95,7 @@ export class AuthQlModelResolver {
             return await this.authQlModelService.changeMemberInfo(data);
         } catch (error) {
             customLogger(this.logger, changeMemberInfoInput, error);
-            throw error;
+            throw new HttpException(error, 500);
         }
     }
 
@@ -241,7 +241,8 @@ export class AuthQlModelResolver {
     @Query(() => String)
     async getWithdrawalReasons(){
         try {
-            const data = await this.authQlModelService.getWithdrawalReasons();
+            let data = await this.authQlModelService.getWithdrawalReasons();
+            data = bufferToString(data);
             return data;
         } catch (error) {
             customLogger(this.logger, '', error);

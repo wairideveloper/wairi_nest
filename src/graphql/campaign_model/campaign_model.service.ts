@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository, SelectQueryBuilder} from "typeorm";
 import {Campaign} from "../../../entity/entities/Campaign";
@@ -7,6 +7,7 @@ import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedul
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 import {CateArea} from "../../../entity/entities/CateArea";
 import {Cate} from "../../../entity/entities/Cate";
+import {bufferToString} from "../../util/common";
 
 @Injectable()
 export class CampaignService {
@@ -103,13 +104,13 @@ export class CampaignService {
                     .getRawMany()
             }
 
-            const campaignItem = await this.campaignItemRepository
+            let campaignItem = await this.campaignItemRepository
                 .createQueryBuilder('campaignItem')
                 .select('*')
                 .where("campaignItem.remove != 1")
                 .getRawMany()
 
-            const campaignItemLowestPrice = await this.campaignRepository
+            let campaignItemLowestPrice = await this.campaignRepository
                 .createQueryBuilder('c')
                 .select('c.idx', 'campaignIdx')
                 .addSelect('c.name', 'campaignName')
@@ -141,21 +142,30 @@ export class CampaignService {
                 .addOrderBy('c.regdate', 'DESC')
                 .getRawMany();
 
-            const campaignItemSchedule = await this.campaignItemScheduleRepository
+            let campaignItemSchedule = await this.campaignItemScheduleRepository
                 .createQueryBuilder('campaignItemSchedule')
                 .select('*')
                 .getRawMany()
 
 
-            const cate = await this.cateRepository
+            let cate = await this.cateRepository
                 .createQueryBuilder('cate')
                 .select('*')
                 .getRawMany()
 
-            const cateArea = await this.cateAreaRepository
+            let cateArea = await this.cateAreaRepository
                 .createQueryBuilder('cateArea')
                 .select('*')
                 .getRawMany()
+
+            if(campaign){
+                campaign = bufferToString(campaign)
+                campaignItem = bufferToString(campaignItem)
+                campaignItemSchedule = bufferToString(campaignItemSchedule)
+                cate = bufferToString(cate)
+                cateArea = bufferToString(cateArea)
+                campaignItemLowestPrice = bufferToString(campaignItemLowestPrice)
+            }
 
             let result = [];
             campaign.forEach((item, index) => {
@@ -193,7 +203,8 @@ export class CampaignService {
             })
             return result;
         } catch (error) {
-            throw error;
+            console.log("=>(campaign_model.service.ts:196) error", error);
+            throw new HttpException(error.message, error.status);
         }
 
     }

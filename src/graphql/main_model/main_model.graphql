@@ -82,6 +82,8 @@ type CampaignItemSchedules{
     status: Int
     stock: Int
     priceDeposit: Int
+    discountPriceDeposit: Int
+
 }
 
 type MainPage {

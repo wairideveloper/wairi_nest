@@ -150,7 +150,8 @@ export class AuthQlModelService {
             // }
 
             if (newMember) {
-                const result = await this.memberService.findById(newMember.generatedMaps[0].id);
+                let result = await this.memberService.findById(newMember.generatedMaps[0].id);
+                result = bufferToString(result);
                 console.log("=>(auth_ql_model.service.ts:148) result", result);
                 const payload = {
                     idx: result.idx,
@@ -411,10 +412,11 @@ export class AuthQlModelService {
     async findId(phone: string, username: string) {
         try {
             //본인인증 후 아이디 찾기
-            const data = await this.memberService.findByPhone(phone, username);
-            console.log("-> data", data.idx);
-            const channel = await this.memberService.findChannel(data.idx);
-            console.log("-> channel", channel);
+            let data = await this.memberService.findByPhone(phone, username);
+            data = bufferToString(data);
+
+            let channel = await this.memberService.findChannel(data.idx);
+            channel = bufferToString(channel);
             data.memberChannel = channel;
 
             if (data) {
@@ -456,10 +458,12 @@ export class AuthQlModelService {
     async changePassword(data: any) {
         try {
             //본인인증 후 비밀번호 변경
-            const member = await this.memberService.findByPhone(data.phone, data.username);
+            let member = await this.memberService.findByPhone(data.phone, data.username);
+            member = bufferToString(member);
             const password = await hashPassword(data.password);
-            const update = await this.memberService.updatePassword(member.idx, password);
+            let update = await this.memberService.updatePassword(member.idx, password);
             if (update) {
+                member = bufferToString(member);
                 return member
             }
         } catch (error) {
@@ -523,15 +527,15 @@ export class AuthQlModelService {
         nickname: string;
         email: string}) {
         try {
-            const member = await this.memberService.findOne(data.memberIdx);
-            console.log("-> nickname", data.nickname);
+            let member = await this.memberService.findOne(data.memberIdx);
             if(!member){
                 throw new HttpException('회원정보가 없습니다.', 404);
             }
             const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
 
             if (update) {
-                const updateMember = await this.memberService.findById(member.id);
+                let updateMember = await this.memberService.findById(member.id);
+                updateMember = bufferToString(updateMember);
                 return updateMember
             }
         } catch (error) {
@@ -562,10 +566,11 @@ export class AuthQlModelService {
             3: google
             4: apple
              */
-            const memberCheck = await this.memberService.findSocialId(data.email, data.id, data.social_type);
+            let memberCheck = await this.memberService.findSocialId(data.email, data.id, data.social_type);
             const passwd = await hashPassword(data.id.toString());
 
             if(memberCheck){
+                memberCheck = bufferToString(memberCheck);
                 const hash = memberCheck.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
                 const check: boolean = compareSync(passwd, hash);
                 console.log("=>(auth.service.ts:246) check", check);
@@ -586,11 +591,10 @@ export class AuthQlModelService {
                 memberCheck.memberChannel = memberChannel;
 
                 const result = await this.jwtResponse(payload, memberCheck);
-                console.log("-> result", result);
+                console.log("=>(auth_ql_model.service.ts:590) result", result);
                 return result;
             }else{
-                console.log("=>(auth_ql_model.service.ts:577) data", data);
-                const newMember = await this.memberService.createSocial(
+                let newMember = await this.memberService.createSocial(
                     data.social_type,
                     data.nickname,
                     data.id,
@@ -600,13 +604,14 @@ export class AuthQlModelService {
                     );
                 if(newMember){
                     let member = await this.memberService.findSocialId(data.email, data.id, data.social_type);
+                    member = bufferToString(member);
                     const payload = {
                         idx: member.idx,
                         username: data.nickname,
                         memberType: 1
                     }
                     const result = await this.jwtResponse(payload, member);
-                    console.log("-> result", result);
+                    console.log("=>(auth_ql_model.service.ts:609) result", result);
                     return result;
                 }
             }

@@ -67,11 +67,13 @@ export const AES_DECRYPT = (column: string) => {
 
 //FROM_UNIXTIME 유닉스타임스템프를 날짜로 변환
 export const FROM_UNIXTIME = (column: string) => {
-    return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),'UTC','Asia/Seoul'),'%Y-%m-%d %H:%i:%s')`;
+    return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),"+00:00","+09:00"),"%Y-%m-%d %H:%i:%s")`;
+    // return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),"UTC","Asia/Seoul"),"%Y-%m-%d %H:%i:%s")`;
 }
 
 export const FROM_UNIXDATE = (column: string) => {
-    return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),'UTC','Asia/Seoul'),'%Y-%m-%d')`;
+    return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),"+00:00","+09:00"),"%Y-%m-%d")`;
+    // return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),"UTC","Asia/Seoul"),"%Y-%m-%d")`;
 }
 
 //유닉스타임스템프를 javacript  한국 날짜로 변환 YYYY-MM-DD HH:mm:ss

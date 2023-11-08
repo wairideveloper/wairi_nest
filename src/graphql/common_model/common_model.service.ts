@@ -12,6 +12,7 @@ import {Stream} from 'stream';
 import {Config} from "../../../entity/entities/Config";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
+import {bufferToString} from "../../util/common";
 
 @Injectable()
 export class CommonModelService {
@@ -121,8 +122,8 @@ export class CommonModelService {
                 query.where("config.cfg_key = :key", {key: key})
             }
 
-            const data = await query.getRawMany();
-
+            let data = await query.getRawMany();
+            data = bufferToString(data)
             return data;
         } catch (error) {
             console.log(error)

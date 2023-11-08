@@ -192,12 +192,14 @@ export class MembersService {
     }
 
     async findReview(memberIdx: number) {
-        return await this.campaignReviewRepository
+        let result = await this.campaignReviewRepository
             .createQueryBuilder()
             .select('*')
             .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
             .where('memberIdx = :memberIdx', {memberIdx: memberIdx})
             .getRawMany();
+
+        return bufferToString(result);
     }
 
     async findByNickName(nickname: string) {
@@ -348,7 +350,6 @@ export class MembersService {
         type: number;
         interests: any
     }) {
-        console.log("=>(member.service.ts:320) channelName", data.channelName);
         return await this.memberChannelRepository
             .createQueryBuilder()
             .update()

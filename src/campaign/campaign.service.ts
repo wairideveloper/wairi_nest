@@ -92,9 +92,9 @@ export class CampaignService {
             .offset(take * (page - 1))
             .limit(take)
             .getRawMany();
-console.log("=>(campaign.service.ts:98) 123213123231data", data);
         const campaignItemLowestPrice = await this.getCampaignLowestPrice();
-        // data = bufferToString(data);
+
+        data = bufferToString(data);
         let result = [];
         data.forEach((item) => {
             campaignItemLowestPrice.forEach((item2) => {
@@ -116,7 +116,7 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
                 status: 200,
                 memberTarget: 1,
                 remove: 0,
-                campaignKeyword: '%' + keyword + '% ',
+                campaignKeyword: '%' + keyword + '%',
                 itemRemove: 0,
                 itemKeyword: '%' + keyword + '%',
             })
@@ -186,7 +186,8 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
             query.andWhere('campaign.cateAreaIdx = :cateArea', {cateArea: cateArea})
         }
 
-        const data = await query.getRawMany();
+        let data = await query.getRawMany();
+        data = bufferToString(data);
 
         const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 
@@ -233,79 +234,86 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
     }
 
     async detailCampaign(id: number) {
-        const campaign = await this.getDetailCampaign(id);
-        // return campaign;
-        const campaignItem = await this.getCampaignItem(id);
-        //campaignItem 배열 리스트에서 Idx 값 추출
-        const campaignItemIdx = campaignItem.map((item) => {
-            return item.idx;
-        })
-
-        const campaignItemSchedule = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
-            .select(['*', 'DATE_FORMAT(FROM_UNIXTIME(campaignItemSchedule.date), "%Y-%m-%d") AS formattedDate'])
-            .where('campaignItemSchedule.itemIdx IN (:...idx)', {idx: campaignItemIdx})
-            .andWhere('campaignItemSchedule.date >= :now', {now: getUnixTimeStamp()})
-            .getRawMany();
-
-        campaignItem.forEach((item) => {
-            let channelNames = [];
-            // @ts-ignore
-            let jsonChannel = JSON.parse(item.channels);
-
-            // 1.블로그 2.youtube 3.인스타그램 4.틱톡 5.티스토리 9.기타
-            jsonChannel.forEach((item2) => {
-                switch (item2) {
-                    case "1":
-                        channelNames.push("네이버 블로그");
-                        break;
-                    case "2":
-                        channelNames.push("유튜브");
-                        break;
-                    case "3":
-                        channelNames.push("인스타그램");
-                        break;
-                    case "4":
-                        channelNames.push("틱톡");
-                        break;
-                    case "5":
-                        channelNames.push("티스토리");
-                        break;
-                    case "9":
-                        channelNames.push("기타");
-                        break;
-
-                }
-            })
-            item.channels = channelNames
-
-            //campaignItemSchedule 값 추가
-            item.campaignItemSchedule = campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
-                return campaignItemScheduleItem.itemIdx == item.idx;
-            }).map((campaignItemScheduleItem, campaignItemScheduleIndex) => {
-                return {
-                    ...campaignItemScheduleItem,
-                    active: moment.unix(campaignItemScheduleItem.date).format('YYYY-MM-DD'),
-                }
+        try {
+            const campaign = await this.getDetailCampaign(id);
+            // return campaign;
+            const campaignItem = await this.getCampaignItem(id);
+            //campaignItem 배열 리스트에서 Idx 값 추출
+            const campaignItemIdx = campaignItem.map((item) => {
+                return item.idx;
             })
 
-        })
-        const campaignImages = await this.getCampaignImages(id);
-        const campaignCate = await this.getCampaignCate(id);
-        const campaignCateArea = await this.getCampaignCateArea(id);
-        const campaignPartner = await this.getCampaignPartner(id);
-        const campaignReview = await this.getCampaignReview(id);
+            let campaignItemSchedule = await this.campaignItemScheduleRepository.createQueryBuilder('campaignItemSchedule')
+                .select(['*', 'DATE_FORMAT(FROM_UNIXTIME(campaignItemSchedule.date), "%Y-%m-%d") AS formattedDate'])
+                .addSelect('campaignItemSchedule.priceDeposit * campaignItem.dc11 / 100 AS discountPriceDeposit')
+                .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
+                .where('campaignItemSchedule.itemIdx IN (:...idx)', {idx: campaignItemIdx})
+                .andWhere('campaignItemSchedule.date >= :now', {now: getUnixTimeStamp()})
+                .getRawMany();
+            campaignItemSchedule = bufferToString(campaignItemSchedule);
 
-        const result = {
-            campaign,
-            campaignItem,
-            campaignImages,
-            campaignCate,
-            campaignCateArea,
-            campaignPartner,
-            campaignReview,
+            campaignItem.forEach((item) => {
+                let channelNames = [];
+                // @ts-ignore
+                let jsonChannel = JSON.parse(item.channels);
+
+                // 1.블로그 2.youtube 3.인스타그램 4.틱톡 5.티스토리 9.기타
+                jsonChannel.forEach((item2) => {
+                    switch (item2) {
+                        case "1":
+                            channelNames.push("네이버 블로그");
+                            break;
+                        case "2":
+                            channelNames.push("유튜브");
+                            break;
+                        case "3":
+                            channelNames.push("인스타그램");
+                            break;
+                        case "4":
+                            channelNames.push("틱톡");
+                            break;
+                        case "5":
+                            channelNames.push("티스토리");
+                            break;
+                        case "9":
+                            channelNames.push("기타");
+                            break;
+
+                    }
+                })
+                item.channels = channelNames
+
+                //campaignItemSchedule 값 추가
+                item.campaignItemSchedule = campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+                    return campaignItemScheduleItem.itemIdx == item.idx;
+                }).map((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+                    return {
+                        ...campaignItemScheduleItem,
+                        active: moment.unix(campaignItemScheduleItem.date).format('YYYY-MM-DD'),
+                    }
+                })
+
+            })
+            const campaignImages = await this.getCampaignImages(id);
+            const campaignCate = await this.getCampaignCate(id);
+            const campaignCateArea = await this.getCampaignCateArea(id);
+            const campaignPartner = await this.getCampaignPartner(id);
+            const campaignReview = await this.getCampaignReview(id);
+
+            const result = {
+                campaign,
+                campaignItem,
+                campaignImages,
+                campaignCate,
+                campaignCateArea,
+                campaignPartner,
+                campaignReview,
+            }
+            return result;
+        } catch (error) {
+            console.log("=>(campaign.service.ts:315) error", error);
+            throw new HttpException(error, 500);
         }
-
-        return result;
     }
 
     async getCampaign(id: number) {
@@ -331,22 +339,22 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
         let result = await this.campaignItemRepository.createQueryBuilder('campaignItem')
             .select([
                     'campaignItem.*',
-                   //  `(SELECT
-                   //  IF(
-                   //      schedule.priceDeposit > 0,
-                   // // schedule.priceDeposit,
-                   //      ROUND(CAST(schedule.priceDeposit * campaignItem.dc11 / 100 AS UNSIGNED), -2),
-                   //      ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2)
-                   //  )
-                   //      FROM campaignItemSchedule schedule
-                   //      JOIN campaignItem ON schedule.itemIdx = campaignItem.idx
-                   //      WHERE campaignItem.campaignIdx = ${id}
-                   //      AND schedule.stock > 0
-                   //      AND campaignItem.remove = 0
-                   //      AND schedule.date >= UNIX_TIMESTAMP(CURDATE())
-                   //      ORDER BY price
-                   //      LIMIT 1
-                   //  ) as lowestPrice`,
+                    //  `(SELECT
+                    //  IF(
+                    //      schedule.priceDeposit > 0,
+                    // // schedule.priceDeposit,
+                    //      ROUND(CAST(schedule.priceDeposit * campaignItem.dc11 / 100 AS UNSIGNED), -2),
+                    //      ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2)
+                    //  )
+                    //      FROM campaignItemSchedule schedule
+                    //      JOIN campaignItem ON schedule.itemIdx = campaignItem.idx
+                    //      WHERE campaignItem.campaignIdx = ${id}
+                    //      AND schedule.stock > 0
+                    //      AND campaignItem.remove = 0
+                    //      AND schedule.date >= UNIX_TIMESTAMP(CURDATE())
+                    //      ORDER BY price
+                    //      LIMIT 1
+                    //  ) as lowestPrice`,
                     'ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) as lowestPrice',
                     'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
                 ]
@@ -357,7 +365,7 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
             .orderBy('campaignItem.ordering', 'ASC')
             .getRawMany()
 
-        return result;
+        return bufferToString(result);
     }
 
     async getCampaignImages(id: number) {
@@ -513,7 +521,8 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
                 .andWhere('campaign.status = 200')
                 .andWhere('partner.status = :status', {status: 1});
 
-            const result = await query.getRawOne();
+            let result = await query.getRawOne();
+            result = bufferToString(result);
             console.log("=>(campaign.service.ts:521) result", result);
 
             return result;
@@ -537,22 +546,23 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
                     'campaignItem.sellType as sellType',
                     'campaignItemSchedule.stock as stock',
                     'campaignItemSchedule.priceDeposit as priceDeposit',
+                    'DATE_FORMAT(FROM_UNIXTIME(campaignItemSchedule.date), "%Y-%m-%d") AS date'
                 ])
-                .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
-                .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
-                .addSelect(`(${FROM_UNIXTIME('campaignItemSchedule.date')})`, 'date')
+                // .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
+                // .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
+                // .addSelect(`(${FROM_UNIXDATE('campaignItemSchedule.date')})`, 'date')
                 .where('campaignItem.remove = :remove', {remove: 0})
                 .andWhere('campaign.idx = :idx', {idx: idx})
                 //UNIX_TIMESTAMP 로 campaignItemSchedule.date 비교
                 .andWhere(`campaignItemSchedule.date >= UNIX_TIMESTAMP('${start_day}')`)
                 .andWhere(`campaignItemSchedule.date <= UNIX_TIMESTAMP('${end_day}')`)
                 .getRawMany();
-            console.log("=>(campaign.service.ts:446) start_day", start_day);
-            console.log("-> data", data);
+            data = bufferToString(data);
+            console.log("=>(campaign.service.ts:560) data", data);
             return data;
         } catch (error) {
-            console.log(error)
-            throw error;
+            console.log("=>(campaign.service.ts:562) error", error);
+            throw new HttpException(error, 500);
         }
     }
 
@@ -570,10 +580,10 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
                     'campaignItem.sellType as sellType',
                     'campaignItemSchedule.stock as stock',
                     'campaignItemSchedule.priceDeposit as priceDeposit',
-                    'FROM_UNIXTIME(date,("%Y-%m-%d")) as active',
+                    'FROM_UNIXTIME(campaignItemSchedule.date,("%Y-%m-%d")) as active',
                 ])
-                .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDay')
-                .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDay')
+                .addSelect(`(${FROM_UNIXDATE('campaignItem.startDate')})`, 'startDay')
+                .addSelect(`(${FROM_UNIXDATE('campaignItem.endDate')})`, 'endDay')
                 .addSelect(`(${FROM_UNIXTIME('campaignItemSchedule.date')})`, 'date')
                 .where('campaignItem.remove = :remove', {remove: 0})
                 .andWhere('campaignItemSchedule.stock > 0')
@@ -618,7 +628,7 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
                 .offset(take * (page - 1))
                 .limit(take)
                 .getRawMany();
-
+            data = bufferToString(data);
             const total = await this.campaignRecentRepository.createQueryBuilder('campaignRecent')
                 .leftJoin('campaignRecent.campaign', 'campaign')
                 .where('campaignRecent.memberIdx = :memberIdx', {memberIdx: memberIdx})
@@ -917,6 +927,7 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
 
             const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 
+            data = bufferToString(data)
             let result = [];
             data.forEach((item) => {
                 campaignItemLowestPrice.forEach((item2) => {
@@ -956,7 +967,7 @@ console.log("=>(campaign.service.ts:98) 123213123231data", data);
     }
 
     async getCampaignLowestPrice() {
-        return  await this.campaignRepository
+        return await this.campaignRepository
             .createQueryBuilder('c')
             .select('c.idx', 'campaignIdx')
             .addSelect('c.name', 'campaignName')

@@ -32,6 +32,7 @@ export class PaymentModelResolver {
     ) {
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
+            console.log("=>(payment_model.resolver.ts:35) submitItem", submitItem);
             if(!submitItem){ //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
@@ -49,12 +50,14 @@ export class PaymentModelResolver {
             })
 
             //재고 체크후 결제 confirm
-            const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, 12328);
+            const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, 15120);
+            console.log("=>(payment_model.resolver.ts:53) response", response);
 
             //가상계좌
             if(response.method_symbol === 'vbank'){
                 //payment insert
-                const vbankData = await this.paymentModelService.insertVbankPayment(response, submitItem.idx, 12328);
+                const vbankData = await this.paymentModelService.insertVbankPayment(response, submitItem.idx, 15120);
+                console.log("=>(payment_model.resolver.ts:58) vbankData", vbankData);
 
                 if(vbankData) {
                     return {

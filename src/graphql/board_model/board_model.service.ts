@@ -1,9 +1,9 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Board } from '../../../entity/entities/Board';
 import { BoardArticles} from "../../../entity/entities/BoardArticles";
-import {FROM_UNIXTIME} from "../../util/common";
+import {bufferToString, FROM_UNIXTIME} from "../../util/common";
 import {Pagination} from "../../paginate";
 
 @Injectable()
@@ -16,12 +16,15 @@ export class BoardModelService {
     ) {}
     async getBoardList(type: number, take: number, page: number) {
         try{
-            const board = await this.boardRepository
+            let board = await this.boardRepository
                 .createQueryBuilder('board')
                 .select('*')
                 .where('board.idx = :type', {type: type})
                 .getRawMany();
-            const data = await this.boardArticlesRepository
+            if(board){
+                board = bufferToString(board);
+            }
+            let data = await this.boardArticlesRepository
                 .createQueryBuilder('boardArticles')
                 .select('*')
                 .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
@@ -30,7 +33,9 @@ export class BoardModelService {
                 .offset(take * (page - 1))
                 .limit(take)
                 .getRawMany();
-
+            if(data){
+                data = bufferToString(data);
+            }
             const total = await this.boardArticlesRepository.createQueryBuilder('boardArticles')
                 .where('boardArticles.boardIdx = :type', {type: type}).getCount();
 
@@ -55,10 +60,10 @@ export class BoardModelService {
                 })
             })
 
-            console.log(result)
             return result;
         }catch (error) {
-            throw error;
+            console.log("=>(board_model.service.ts:61) error", error);
+            throw new HttpException(error, 500)
         }
     }
 }

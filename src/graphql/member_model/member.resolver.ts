@@ -123,15 +123,16 @@ export class MemberResolver {
 
             const createChannel = await this.membersService.setMemberChannel(data);
             const channelIdx = createChannel.raw.insertId;
-            console.log("=>(member.resolver.ts:126) channelIdx", channelIdx);
             if(channelIdx == undefined){
                 return {
                     code: 500,
                     message: '채널 등록 실패',
                 }
             }
-            const getChannel = await this.membersService.getMemberChannel(channelIdx);
-            console.log("=>(member.resolver.ts:116) getChannel", getChannel);
+            let getChannel = await this.membersService.getMemberChannel(channelIdx);
+            if(getChannel){
+                getChannel = bufferToString(getChannel);
+            }
             return {
                 code: 200,
                 message: '채널 등록 성공',
@@ -144,6 +145,7 @@ export class MemberResolver {
                 level: getChannel.level,
             }
         } catch (error) {
+            console.log("=>(member.resolver.ts:148) error", error);
             throw new HttpException(error.message, 500);
         }
     }
@@ -168,7 +170,10 @@ export class MemberResolver {
 
             const channel = await this.membersService.updateMemberChannel(data);
             if(channel.affected > 0){
-                const getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
+                let getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
+                if(getChannel){
+                    getChannel = bufferToString(getChannel);
+                }
                 return {
                     code: 200,
                     message: '채널 수정 성공',
@@ -227,7 +232,11 @@ export class MemberResolver {
     @UseGuards(GqlAuthGuard)
     async getMemberChannel(@AuthUser() authUser: Member){
         try{
-            const data = await this.membersService.getMemberChannelAll(authUser.idx);
+            let data = await this.membersService.getMemberChannelAll(authUser.idx);
+            // let data = await this.membersService.getMemberChannelAll(15807);
+            if(data.length > 0){
+                data = bufferToString(data);
+            }
             data.forEach((element, index) => {
                 if (element.regdate) {
                     //time -> datetime 형식으로 변환
@@ -239,6 +248,7 @@ export class MemberResolver {
             return data;
 
         } catch (error) {
+            console.log("=>(member.resolver.ts:246) error", error);
             throw new HttpException(error.message, 500);
         }
     }

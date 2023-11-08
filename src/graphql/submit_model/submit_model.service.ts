@@ -5,7 +5,7 @@ import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
-import {FROM_UNIXTIME, getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
+import {bufferToString, FROM_UNIXTIME, getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
 import {Connection} from "typeorm";
 import { ReceiptResponseParameters } from '@bootpay/backend-js/lib/response';
 
@@ -93,7 +93,7 @@ export class SubmitModelService {
             .offset(take * (page - 1))
             .limit(take)
             .getRawMany();
-
+        data = bufferToString(data);
         let total = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .select('*')
             .where("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
@@ -154,6 +154,7 @@ export class SubmitModelService {
         console.log("=>(submit_model.service.ts:153) data", data);
 
         if (data) {
+            data = bufferToString(data);
             // data.status = switchSubmitStatusText(data.status);
         }
 
@@ -331,6 +332,9 @@ console.log("=>(submit_model.service.ts:217) response", response);
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
 
+        if (data) {
+        data = bufferToString(data);
+        }
         return data;
     }
 
