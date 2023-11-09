@@ -523,12 +523,24 @@ export class CampaignService {
 
             let result = await query.getRawOne();
             result = bufferToString(result);
+
+            //info , production_guide, caution = "" -> null
+            if (result.info == "") {
+                result.info = null;
+            }
+            if (result.production_guide == "") {
+                result.production_guide = null;
+            }
+            if (result.caution == "") {
+                result.caution = null;
+            }
+
             console.log("=>(campaign.service.ts:521) result", result);
 
             return result;
         } catch (error) {
-            console.log(error)
-            throw error;
+            console.log("=>(campaign.service.ts:532) error", error);
+            throw new HttpException(error, 500);
         }
     }
 
