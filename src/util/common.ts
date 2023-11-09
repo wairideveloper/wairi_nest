@@ -353,6 +353,7 @@ export const dataDateTimeTransform = (data) => {
     return data;
 }
 
-// export const setPaymentData = (paymentData) => {
-//     if()
-// }
+export const alimtalkTemplateCode = (templateCode) => {
+    //이용 완료 알림
+
+}

@@ -66,6 +66,9 @@ type CampaignItem{
     minDays: Int
     maxDays: Int
     minSubmit: Int
+    infoRefund: String
+    infoRefund1: String
+    infoRefund2: String
     campaignItemSchedule: [CampaignItemSchedules]
 }
 

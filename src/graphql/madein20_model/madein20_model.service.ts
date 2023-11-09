@@ -31,12 +31,14 @@ export class Madein20ModelService {
   }
 
   async sendAlimtalk(receivers: ReceiverInput, templateCode: string, params = []) {
+    console.log("=>(madein20_model.service.ts:34) receivers", receivers);
     const url = 'https://api.madein20.com/messages/alimtalk/v1/messages';
     const headers = {
       'X-CLIENT-ID': `${process.env.MADEIN20_CLIENT_ID}`,
       'Content-Type': 'application/json;charset=UTF-8',
     };
 
+    return
     const receiver =
       {
         // phone: '010-8230-8203',
