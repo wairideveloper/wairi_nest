@@ -5,9 +5,15 @@ import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
-import {bufferToString, FROM_UNIXTIME, getUnixTimeStamp, switchSubmitStatusText} from "../../util/common";
+import {
+    bufferToString, dataDateTimeTransform,
+    FROM_UNIXTIME,
+    FROM_UNIXTIME_JS,
+    getUnixTimeStamp,
+    switchSubmitStatusText
+} from "../../util/common";
 import {Connection} from "typeorm";
-import { ReceiptResponseParameters } from '@bootpay/backend-js/lib/response';
+import {ReceiptResponseParameters} from '@bootpay/backend-js/lib/response';
 
 @Injectable()
 export class SubmitModelService {
@@ -106,9 +112,7 @@ export class SubmitModelService {
         const currentPage = page;
 
         if (data.length > 0) {
-            // data.forEach((item) => {
-            //     item.status = switchSubmitStatusText(item.status);
-            // })
+            dataDateTimeTransform(data);
         }
 
         return new Pagination({
@@ -151,10 +155,10 @@ export class SubmitModelService {
             .where("campaignSubmit.sid = :sid", {sid: sid})
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
-        console.log("=>(submit_model.service.ts:153) data", data);
 
         if (data) {
             data = bufferToString(data);
+            dataDateTimeTransform(data);
             // data.status = switchSubmitStatusText(data.status);
         }
 
@@ -223,30 +227,31 @@ export class SubmitModelService {
     async updateCampaignItemSchduleStock(itemSchduleIdx: any[], nop: string,
                                          sid: string, response: ReceiptResponseParameters,
                                          memberIdx: number, submitIdx: number
-                                         ) {
+    ) {
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
-console.log("=>(submit_model.service.ts:217) response", response);
+        console.log("=>(submit_model.service.ts:217) response", response);
 
         try {
             let paymentDataInsert = await queryRunner.manager.createQueryBuilder()
                 .insert()
                 .into(Payment)
                 .values({
-                    status: response.status == 1? 200 : 100,
+                    status: response.status == 1 ? 200 : 100,
                     oid: response.order_id,
                     memberIdx: memberIdx,
                     submitIdx: submitIdx,
                     payTotal: response.price,
+                    payAmount: response.price,
                     receiptId: response.receipt_id,
                     payMethod: response.method_origin_symbol,
                     regdate: getUnixTimeStamp(),
                     paydate: getUnixTimeStamp(),
-                    cardName: response.card_data? response.card_data.card_company : '',
-                    cardNum: response.card_data? response.card_data.card_no : '',
-                    vbankCode: response.vbank_data? response.vbank_data.bank_code : '',
-                    vbankNum: response.vbank_data? response.vbank_data.bank_account : '',
+                    cardName: response.card_data ? response.card_data.card_company : '',
+                    cardNum: response.card_data ? response.card_data.card_no : '',
+                    vbankCode: response.vbank_data ? response.vbank_data.bank_code : '',
+                    vbankNum: response.vbank_data ? response.vbank_data.bank_account : '',
                 })
                 .execute();
             console.log("=>(submit_model.service.ts:256) paymentDataInsert", paymentDataInsert);
@@ -257,7 +262,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
                 .set({
                     stock: () => "stock - " + nop
                 })
-                .where("idx IN (:...idx)", { idx: itemSchduleIdx })
+                .where("idx IN (:...idx)", {idx: itemSchduleIdx})
                 .execute();
 
             let submitDataUpdate = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
@@ -273,7 +278,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
             await queryRunner.commitTransaction();
 
             return true;
-        }catch (err) {
+        } catch (err) {
             await queryRunner.rollbackTransaction();
             throw err;
         }
@@ -333,7 +338,7 @@ console.log("=>(submit_model.service.ts:217) response", response);
             .getRawOne();
 
         if (data) {
-        data = bufferToString(data);
+            data = bufferToString(data);
         }
         return data;
     }

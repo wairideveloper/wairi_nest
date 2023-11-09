@@ -27,6 +27,7 @@ type CampaignSubmit{
     nop: Int!
     startDate: String!
     endDate: String!
+    regdate: String
     price: Int!
     payTotal: Int!
     type: Int!

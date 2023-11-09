@@ -27,7 +27,6 @@ export class PaymentModelService {
             console.log("=>(payment_model.service.ts:19) response", response);
             if(response.status === 1){
                 console.log("-> response", response.status);
-
             }
             return response
         } catch (e) {

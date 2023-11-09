@@ -335,6 +335,24 @@ export const switchSubmitStatusText = (status) => {
     }
 }
 
+export const dataDateTimeTransform = (data) => {
+    // data 배열이면 forEach 아니면 그냥
+    if(data.length === undefined) {
+        data.regdate = FROM_UNIXTIME_JS(data.regdate);
+        data.startDate = FROM_UNIXTIME_JS(data.startDate);
+        data.endDate = FROM_UNIXTIME_JS(data.endDate);
+        data.autoCancelDate = FROM_UNIXTIME_JS(data.autoCancelDate);
+    }else {
+        data.forEach((item) => {
+            item.regdate = FROM_UNIXTIME_JS(item.regdate);
+            item.startDate = FROM_UNIXTIME_JS(item.startDate);
+            item.endDate = FROM_UNIXTIME_JS(item.endDate);
+            item.autoCancelDate = FROM_UNIXTIME_JS(item.autoCancelDate);
+        })
+    }
+    return data;
+}
+
 // export const setPaymentData = (paymentData) => {
 //     if()
 // }

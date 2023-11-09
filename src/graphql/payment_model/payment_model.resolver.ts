@@ -79,7 +79,7 @@ export class PaymentModelResolver {
                 if((submitItem.payTotal * submitItem.nop) != response.price){
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
-                    // throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
+                    throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
 
                 //재고 차감
