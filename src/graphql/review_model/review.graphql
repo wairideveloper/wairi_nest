@@ -30,17 +30,16 @@ type deleteReviewResponse{
     message: String
 }
 
+scalar Upload
+
 extend type Query {
     getReviews(idx:Int! take: Int!,page:Int!): Reviews
     getReview(idx:Int!): Review
 }
 
 extend type Mutation {
-    createReview(file: [Upload],
-        originalname: String,
-        content: String,
-        rate: Int
-    ): String
+    createReview(files: [Upload]
+    ): [String]
     deleteReview(idx:Int!): deleteReviewResponse
     deleteImage: deleteReviewResponse
 }

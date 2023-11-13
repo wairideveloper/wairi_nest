@@ -445,6 +445,7 @@ export class MembersService {
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
             .where(`${AES_DECRYPT('email')} = :email`, {email: email})
             .andWhere('social_type = :socialType', {socialType: socialType})
+            .andWhere('stauts != -9')
             .getRawOne();
     }
 

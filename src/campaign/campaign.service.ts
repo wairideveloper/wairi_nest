@@ -79,8 +79,7 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) ' +
-                'OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+            .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
                 // status: 200,
                 // remove: 0,
                 campaignKeyword: '%' + keyword + '%',

@@ -123,7 +123,7 @@ import {Withdrawal} from "../entity/entities/Withdrawal";
                 CommonModelModule,
                 FirebaseModule,
                 SubmitModelModule,
-                ReviewModelModule
+                ReviewModelModule,
             ],
             typePaths: ['./**/*.graphql'],
             definitions: {

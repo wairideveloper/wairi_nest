@@ -7,6 +7,8 @@ import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import * as Upload from "graphql-upload/Upload.js";
+import {FileUpload} from "graphql-upload/Upload";
+
 
 
 @Resolver('ReviewModel')
@@ -50,39 +52,45 @@ export class ReviewModelResolver {
     @UseGuards(GqlAuthGuard)
     async createReview(
         @AuthUser() authUser: Member,
-        @Args({name: 'file', type: () => GraphQLUpload})
-            file: [Upload],
-        @Args('originalname') originalname: string,
-    ) {
-
+        @Args({name: 'files', type: () => [GraphQLUpload]}) files:  FileUpload[],
+    ){
         try {
-            const files = await file;
-            console.log("=>(review_model.resolver.ts:60) files.length", files.length);
+            let file:FileUpload[] = files;
+            let completedFiles = files.filter(file => !file.promise);
+            // completedFiles에는 완전히 업로드된 파일만 포함됩니다.
+
+            for (const file of completedFiles) {
+                const stream = file.createReadStream();
+                console.log("=>(review_model.resolver.ts:64) stream", stream);
+                // 이제 파일의 스트림을 사용하여 작업을 수행할 수 있습니다.
+            }
+
             //단일 파일 업로드
-            if (files.length === 1) {
+            if (file.length === 1) {
                 // console.log("=>(review_model.resolver.ts:60) file[0].file", file[0].file);
                 // let imgUrl = await this.commonModelService.uploadImage(file[0].file);
                 // console.log("=>(review_model.resolver.ts:55) imgUrl", imgUrl);
             }
 
             //다중 파일 업로드
-            if (files.length > 1) {
+            if (file.length > 1) {
                 let keys = [];
                 let urls = [];
-                await Promise.allSettled(files.map(async (item) => {
 
-                    const decodedFilename = decodeURIComponent(item.file.filename);
-                    const awsObjectData = await this.commonModelService.uploadImage(item.file);
-                    urls.push(awsObjectData.url);
-                    keys.push(awsObjectData.key);
+                await Promise.allSettled(file.map(async (  item, index) => {
+                    // let awsObjectData = await this.commonModelService.uploadImage(item.file);
+                    // urls.push(awsObjectData.url);
+                    // keys.push(awsObjectData.key);
                 }));
-                console.log("=>(review_model.resolver.ts:79) urls", urls);
-                console.log("=>(review_model.resolver.ts:80) keys", keys);
+                // console.log("=>(review_model.resolver.ts:79) urls", urls);
+                // console.log("=>(review_model.resolver.ts:80) keys", keys);
+                // console.log("=>(review_model.resolver.ts:80) result", result);
 
-                let data = await this.reviewModelService.createReview(authUser.idx, keys, urls);
-                return data;
+                // let data = await this.reviewModelService.createReview(authUser.idx, keys, urls);
+                // return data;
             }
         } catch (error) {
+            console.log("=>(review_model.resolver.ts:86) error", error);
             throw new HttpException(error.message, 500)
         }
     }
@@ -97,8 +105,8 @@ export class ReviewModelResolver {
             let data = await this.reviewModelService.deleteReview(idx, authUser.idx);
             return data;
         } catch (error) {
-            console.log(error)
-            throw error;
+            console.log("=>(review_model.resolver.ts:100) error", error);
+            throw new HttpException(error.message, 500)
         }
     }
 

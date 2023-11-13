@@ -47,7 +47,11 @@ export class CommonModelService {
     }
 
     async uploadImage(file: FileUpload) {
+        console.log("=>(common_model.service.ts:50) file", file);
         try {
+            if (!file || !file.createReadStream) {
+                throw new HttpException("Invalid file object", 500);
+            }
             // const fileName = `${uuidv4()}-${file.filename}`;
             const fileName = `${uuidv4()}}`;
             const encodeFileName = encodeURIComponent(fileName);

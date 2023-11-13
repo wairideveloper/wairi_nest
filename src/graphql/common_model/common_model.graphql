@@ -1,5 +1,3 @@
-scalar Upload
-
 input ChannelInput {
     name: String!
     url: String!
