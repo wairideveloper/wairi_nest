@@ -55,15 +55,8 @@ export class ReviewModelResolver {
         @Args({name: 'files', type: () => [GraphQLUpload]}) files:  FileUpload[],
     ){
         try {
-            let file:FileUpload[] = files;
-            let completedFiles = files.filter(file => !file.promise);
-            // completedFiles에는 완전히 업로드된 파일만 포함됩니다.
-
-            for (const file of completedFiles) {
-                const stream = file.createReadStream();
-                console.log("=>(review_model.resolver.ts:64) stream", stream);
-                // 이제 파일의 스트림을 사용하여 작업을 수행할 수 있습니다.
-            }
+            let file:FileUpload[] =  files;
+            console.log("=>(review_model.resolver.ts:59) file", file);
 
             //단일 파일 업로드
             if (file.length === 1) {
