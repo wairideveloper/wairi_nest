@@ -275,7 +275,7 @@ export class CampaignResolver {
     ) {
         try {
             const data = await this.campaignsService.getCampaignSchedule(idx);
-            console.log("=>(campaign.resolver.ts:226) data", data);
+            // console.log("=>(campaign.resolver.ts:226) data", data);
             return data
         } catch (error) {
             console.log(error)

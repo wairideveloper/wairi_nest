@@ -235,7 +235,7 @@ export class CampaignService {
     async detailCampaign(id: number) {
         try {
             const campaign = await this.getDetailCampaign(id);
-            // return campaign;
+
             const campaignItem = await this.getCampaignItem(id);
             //campaignItem 배열 리스트에서 Idx 값 추출
             const campaignItemIdx = campaignItem.map((item) => {
@@ -293,11 +293,16 @@ export class CampaignService {
                 })
 
             })
-            const campaignImages = await this.getCampaignImages(id);
-            const campaignCate = await this.getCampaignCate(id);
-            const campaignCateArea = await this.getCampaignCateArea(id);
-            const campaignPartner = await this.getCampaignPartner(id);
-            const campaignReview = await this.getCampaignReview(id);
+            let campaignImages = await this.getCampaignImages(id);
+            campaignImages = bufferToString(campaignImages);
+            let campaignCate = await this.getCampaignCate(id);
+            campaignCate = bufferToString(campaignCate);
+            let campaignCateArea = await this.getCampaignCateArea(id);
+            campaignCateArea = bufferToString(campaignCateArea);
+            let campaignPartner = await this.getCampaignPartner(id);
+            campaignPartner = bufferToString(campaignPartner);
+            let campaignReview = await this.getCampaignReview(id);
+            campaignReview = bufferToString(campaignReview);
 
             const result = {
                 campaign,
@@ -487,6 +492,7 @@ export class CampaignService {
                 'campaign.production_guide as production_guide',
                 'campaign.caution as caution',
                 'campaign.tel as tel',
+                'campaign.info as info',
                 'campaign.addr1 as addr1',
                 'campaign.addr2 as addr2',
                 'campaign.addrLat as addrLat',
@@ -522,7 +528,7 @@ export class CampaignService {
 
             let result = await query.getRawOne();
             result = bufferToString(result);
-
+return result;
             //info , production_guide, caution = "" -> null
             if (result.info == "") {
                 result.info = null;
@@ -809,7 +815,7 @@ export class CampaignService {
             .andWhere('campaign.idx = :idx', {idx: idx})
             .orderBy('campaignItem.ordering', 'ASC')
             .getRawMany();
-
+        data = bufferToString(data);
         //data 에서 신청 가능 date 값만 추출
         let date = data.map((item) => {
             return item.date;

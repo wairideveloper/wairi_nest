@@ -139,6 +139,7 @@ export const getDiscountRate = (price: number, salePrice: number) => {
 //object 배열중 buffer 타입을 string으로 변환
 export const bufferToString = (data: any) => {
     //object 일때
+    // console.log("=>(common.ts:143) data", data);
     if(typeof data === 'object') {
 
         if (data.length === undefined) {
