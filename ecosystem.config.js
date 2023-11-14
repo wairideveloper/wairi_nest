@@ -3,7 +3,7 @@ module.exports = {
         {
             name: 'API_DEV',
             script: './dist/src/main.js',
-            watch: '.',
+            watch: false,
             env: {
                 PORT:3000,
                 DB_HOST: 'wairi.cd3o2k56nbte.ap-northeast-2.rds.amazonaws.com',
@@ -40,7 +40,7 @@ module.exports = {
         {
             name: 'API_PROD',
             script: './dist/src/main.js',
-            watch: '.',
+            watch: false,
             env_production: {
                 PORT:4000,
                 DB_HOST: '203.245.24.10',
