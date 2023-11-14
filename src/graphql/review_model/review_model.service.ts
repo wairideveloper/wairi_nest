@@ -3,14 +3,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Pagination} from "../../paginate";
-import {AES_DECRYPT, bufferToString, FROM_UNIXTIME_JS, FROM_UNIXTIME_JS_YY_MM_DD} from "../../util/common";
+import {
+    AES_DECRYPT,
+    bufferToString,
+    FROM_UNIXTIME_JS,
+    FROM_UNIXTIME_JS_YY_MM_DD,
+    getNow,
+    getNowUnix
+} from "../../util/common";
 import moment from "moment";
+import {CommonModelService} from "../common_model/common_model.service";
+import {CampaignReviewImage} from "../../../entity/entities/CampaignReviewImage";
 
 @Injectable()
 export class ReviewModelService {
     constructor(
         @InjectRepository(CampaignReview)
         private readonly reviewRepository: Repository<CampaignReview>,
+        private readonly commonModelService: CommonModelService,
     ) {
     }
     async getReviews(idx: number, take: number, page: number) {
@@ -18,6 +28,7 @@ export class ReviewModelService {
             let data = await this.reviewRepository.createQueryBuilder("campaignReview")
                 .leftJoin("campaignReview.member", "member")
                 .leftJoin("campaignReview.campaignItem", "campaignItem")
+                // .leftJoin('campaignReviewImage', 'campaignReviewImage', 'campaignReviewImage.reviewIdx = campaignReview.idx')
                 .select([
                     "campaignReview.idx as idx",
                     "campaignItem.idx as itemIdx",
@@ -28,6 +39,8 @@ export class ReviewModelService {
                     "campaignReview.content_a as content_a",
                     "campaignReview.rate as rate",
                     "campaignReview.images as images",
+                    // "campaignReviewImage.key as awsKey",
+                    // "campaignReviewImage.url as url",
                 ])
                 .addSelect(`(${AES_DECRYPT('member.name')})`, 'name')
                 .where("campaignReview.campaignIdx = :idx", {idx: idx})
@@ -66,14 +79,18 @@ export class ReviewModelService {
                     //images
                     let jsonImages = JSON.parse(item.images);
                     let images = [];
-                    jsonImages.map((image) => {
-                        //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
-                        if(image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1){
-                            images.push('https://wairi.co.kr/img/review/'+image);
-                        }else{
-                            images.push(image);
-                        }
-                    })
+                    if(item.aws_use_yn == 'N') {
+                        jsonImages.map((image) => {
+                            //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
+                            if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
+                                images.push('https://wairi.co.kr/img/review/' + image);
+                            } else {
+                                images.push(image);
+                            }
+                        })
+                    }else{
+
+                    }
                     item.images = images;
                 })
             }
@@ -117,14 +134,17 @@ export class ReviewModelService {
             if(data.images){
                 let jsonImages = JSON.parse(data.images);
                 let images = [];
-                jsonImages.map((image) => {
-                    //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
-                    if(image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1){
-                        images.push('https://wairi.co.kr/img/review/'+image);
-                    }else{
-                        images.push(image);
-                    }
-                })
+                //jsonImages.length > 0
+                if(jsonImages.length > 0) {
+                    jsonImages.map((image) => {
+                        //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
+                        if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
+                            images.push('https://wairi.co.kr/img/review/' + image);
+                        } else {
+                            images.push(image);
+                        }
+                    })
+                }
                 data.images = images;
             }
 
@@ -181,7 +201,70 @@ export class ReviewModelService {
         }
     }
 
-    async createReview(idx: number, keys: any[], urls: any[]) {
+    async createReview(s3ObjectData: any[], content: string, campaignIdx: number, itemIdx: number, submitIdx: number, rate: number, idx: number) {
+        // transaction start
 
+        const queryRunner = this.reviewRepository.manager.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try{
+            const now = getNowUnix();
+            let data = await queryRunner.manager.createQueryBuilder()
+                .insert()
+                .into(CampaignReview)
+                .values({
+                    memberIdx : idx,
+                    campaignIdx : campaignIdx,
+                    itemIdx : itemIdx,
+                    submitIdx : submitIdx,
+                    content : content,
+                    rate : rate,
+                    images : JSON.stringify(s3ObjectData),
+                    aws_use_yn : 'Y',
+                    regdate: () => `"${now}"`,
+                })
+                .execute();
+
+            //data insert id
+            let insertId = data.identifiers[0].idx;
+            if(insertId){
+                //이미지 DB 저장
+                for(let i=0; i<s3ObjectData.length; i++){
+                    await queryRunner.manager.createQueryBuilder()
+                        .insert()
+                        .into(CampaignReviewImage, [
+                            'reviewIdx','key','url','create_at'
+                        ])
+                        .values({
+                            reviewIdx : insertId,
+                            key : s3ObjectData[i].key,
+                            url : s3ObjectData[i].url,
+                            create_at: () => `"${getNow()}"`
+                        })
+                        .execute();
+                }
+            }
+
+            await queryRunner.commitTransaction();
+            return {
+                status : 200,
+                message : "리뷰가 등록되었습니다."
+            };
+
+        }catch (error) {
+            this.removeFiles(s3ObjectData);
+            console.log(error)
+            await queryRunner.rollbackTransaction();
+            throw new HttpException(error.message, error.status);
+        }finally {
+            await queryRunner.release();
+        }
+    }
+
+    private removeFiles(s3ObjectData: any[]) {
+        for(let i=0; i<s3ObjectData.length; i++){
+            this.commonModelService.deleteImage(s3ObjectData[i].key);
+        }
     }
 }

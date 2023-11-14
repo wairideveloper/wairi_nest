@@ -79,7 +79,7 @@ export class CommonModelService {
         }
     }
 
-    async deleteImage(fileName: string) {
+    async deleteImage(key: string) {
         // const command = new GetObjectCommand({
         //     Bucket: process.env.AWS_BUCKET_NAME,
         //     Key: '0cf95743-3838-4a36-9116-c5b675276c55%7D',
@@ -87,15 +87,15 @@ export class CommonModelService {
         // const response = await this.s3_V2.send(command);
         // const str = await response.Body.transformToString();
 
-        return this.getSignedUrl('0ba43afc-6c2e-4082-9e32-a326f9386bdb%7D')
+        // return this.getSignedUrl('0ba43afc-6c2e-4082-9e32-a326f9386bdb%7D')
 
         // Todo delete 주석 제거
-        // const input = {
-        //     "Bucket": process.env.AWS_BUCKET_NAME,
-        //     "Key": '3c968b97-2087-4dfd-9dd3-8848189199f3%7D'
-        // };
-        // const command = new DeleteObjectCommand(input);
-        // return await this.s3_V2.send(command);
+        const input = {
+            "Bucket": process.env.AWS_BUCKET_NAME,
+            "Key": key
+        };
+        const command = new DeleteObjectCommand(input);
+        return await this.s3_V2.send(command);
     }
 
     async getSignedUrl(awsObjectKey: string) {

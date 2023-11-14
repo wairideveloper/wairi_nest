@@ -52,39 +52,34 @@ export class ReviewModelResolver {
     @UseGuards(GqlAuthGuard)
     async createReview(
         @AuthUser() authUser: Member,
-        @Args({name: 'files', type: () => [GraphQLUpload]}) files:  FileUpload[],
+        @Args({name: 'files', type: () => [GraphQLUpload]}) files:  Upload[],
+        @Args('content') content: string,
+        @Args('campaignIdx') campaignIdx: number,
+        @Args('itemIdx') itemIdx: number,
+        @Args('submitIdx') submitIdx: number,
+        @Args('rate') rate: number,
     ){
         try {
-            let file:FileUpload[] = files;
-            console.log("=>(review_model.resolver.ts:59) file", file[0]);
-            console.log("=>(review_model.resolver.ts:59) file", await file[1]);
-
-
-
-
+            let file:Upload[] = files;
             //단일 파일 업로드
             if (file.length === 1) {
                 // console.log("=>(review_model.resolver.ts:60) file[0].file", file[0].file);
                 // let imgUrl = await this.commonModelService.uploadImage(file[0].file);
                 // console.log("=>(review_model.resolver.ts:55) imgUrl", imgUrl);
             }
-
             //다중 파일 업로드
             if (file.length > 1) {
-                let keys = [];
-                let urls = [];
+                let s3ObjectData = [];
+                for(let i=0; i<file.length; i++) {
+                    console.log("=>(review_model.resolver.ts:59) file", await file[i]);
+                    let awsObjectData = await this.commonModelService.uploadImage(await file[i].file);
+                    s3ObjectData.push(
+                        {'key': awsObjectData.key, 'url': awsObjectData.url})
+                }
+                console.log("=>(review_model.resolver.ts:78) s3ObjectData", s3ObjectData);
+                console.log("=>(review_model.resolver.ts:61) content", content);
 
-                await Promise.allSettled(file.map(async (  item, index) => {
-                    // let awsObjectData = await this.commonModelService.uploadImage(item.file);
-                    // urls.push(awsObjectData.url);
-                    // keys.push(awsObjectData.key);
-                }));
-                // console.log("=>(review_model.resolver.ts:79) urls", urls);
-                // console.log("=>(review_model.resolver.ts:80) keys", keys);
-                // console.log("=>(review_model.resolver.ts:80) result", result);
-
-                // let data = await this.reviewModelService.createReview(authUser.idx, keys, urls);
-                // return data;
+                await this.reviewModelService.createReview(s3ObjectData, content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
             }
         } catch (error) {
             console.log("=>(review_model.resolver.ts:86) error", error);

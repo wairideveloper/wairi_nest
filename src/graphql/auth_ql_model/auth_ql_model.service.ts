@@ -568,12 +568,12 @@ export class AuthQlModelService {
              */
             let memberCheck = await this.memberService.findSocialId(data.email, data.id, data.social_type);
             console.log("=>(auth_ql_model.service.ts:570) memberCheck", memberCheck);
-            if(memberCheck.status == -9){
-                throw new HttpException('탈퇴한 회원입니다.', 404);
-            }
             const passwd = await hashPassword(data.id.toString());
 
             if(memberCheck){
+                if(memberCheck.status == -9){
+                    throw new HttpException('탈퇴한 회원입니다.', 404);
+                }
                 memberCheck = bufferToString(memberCheck);
                 const hash = memberCheck.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
                 const check: boolean = compareSync(passwd, hash);

@@ -262,9 +262,7 @@ export class AuthService {
                 const memberInsert = await this.memberRepository
                     .createQueryBuilder()
                     .insert()
-                    .into(Member, ['id', 'social_google', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
-                        'phone', 'name', 'passwd', 'regdate',
-                    ])
+                    .into(Member)
                     .values({
                         id: () => `"${user.id}"`,
                         social_google: () => `"${user.id}"`,

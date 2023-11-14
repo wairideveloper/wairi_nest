@@ -63,6 +63,7 @@ import {Payment} from "../entity/entities/Payment";
 import { BootpayModule } from './bootpay/bootpay.module';
 import {Popup} from "../entity/entities/Popup";
 import {Withdrawal} from "../entity/entities/Withdrawal";
+import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
 
 @Module({
     imports: [
@@ -83,7 +84,7 @@ import {Withdrawal} from "../entity/entities/Withdrawal";
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
-                Payment, Popup, Withdrawal
+                Payment, Popup, Withdrawal, CampaignReviewImage
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',
@@ -134,7 +135,7 @@ import {Withdrawal} from "../entity/entities/Withdrawal";
                 },
             },
             resolvers: {
-                Upload: GraphQLUpload,
+                // Upload: Upload,
                 BigInt: BigIntResolver,
                 Date: DateResolver,
                 DateTime: DateTimeResolver,
