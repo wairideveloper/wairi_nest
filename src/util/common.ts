@@ -138,12 +138,11 @@ export const getDiscountRate = (price: number, salePrice: number) => {
 
 //object 배열중 buffer 타입을 string으로 변환
 export const bufferToString = (data: any) => {
+    console.log("=>(common.ts:142) typeof data", typeof data);
+    console.log(typeof data)
 
-    const dataLengh = data.length;
-    // console.log("=>(common.ts:141) dataLengh", dataLengh);
-    //object 일때
 
-    if(dataLengh === undefined) {
+    if(data.length === undefined) {
         Object.keys(data).forEach(function (v) {
             if (data[v] instanceof Buffer) {
                 data[v] = data[v].toString();

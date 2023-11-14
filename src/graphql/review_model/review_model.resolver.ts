@@ -55,8 +55,12 @@ export class ReviewModelResolver {
         @Args({name: 'files', type: () => [GraphQLUpload]}) files:  FileUpload[],
     ){
         try {
-            let file:FileUpload[] =  files;
-            console.log("=>(review_model.resolver.ts:59) file", file);
+            let file:FileUpload[] = files;
+            console.log("=>(review_model.resolver.ts:59) file", file[0]);
+            console.log("=>(review_model.resolver.ts:59) file", await file[1]);
+
+
+
 
             //단일 파일 업로드
             if (file.length === 1) {

@@ -163,7 +163,7 @@ export class MembersService {
             .andWhere('status != -9')
             .getRawOne();
 
-        return bufferToString(result);
+        return result;
     }
 
     update(id: number) {

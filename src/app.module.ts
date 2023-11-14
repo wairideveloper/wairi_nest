@@ -54,7 +54,8 @@ import { PaymentModelModule } from './graphql/payment_model/payment_model.module
 import { Madein20ModelModule } from './graphql/madein20_model/madein20_model.module';
 import { CommonModelModule } from './graphql/common_model/common_model.module';
 import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
-// import {GraphQLUpload} from "graphql-upload";
+import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
+import * as Upload from "graphql-upload/Upload.js";
 import { FirebaseModule } from './graphql/firebase/firebase.module';
 import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
 import { ReviewModelModule } from './graphql/review_model/review_model.module';
@@ -133,12 +134,13 @@ import {Withdrawal} from "../entity/entities/Withdrawal";
                 },
             },
             resolvers: {
+                Upload: GraphQLUpload,
                 BigInt: BigIntResolver,
                 Date: DateResolver,
                 DateTime: DateTimeResolver,
                 // Upload: GraphQLUpload
             },
-            uploads: false,
+            // uploads: false,
             context: ({req, connection}) => { //graphql에게 request를 요청할때 req안으로 jwt토큰이 담김
                 if (req) {
                     const user = req.headers.authorization;

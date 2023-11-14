@@ -48,7 +48,7 @@ export class AuthQlModelService {
             if (!member) {
                 throw new HttpException('회원정보 없음', 404);
             }
-
+            bufferToString(member);
             const hash = member.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
             const check: boolean = compareSync(password, hash);
 

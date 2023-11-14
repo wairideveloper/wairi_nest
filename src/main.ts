@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 // Import firebase-admin
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from "firebase-admin";
+import * as process from 'process';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,
       {
@@ -43,7 +44,7 @@ async function bootstrap() {
   // });
 
   app.enableCors();
-
-  await app.listen(3000);
+console.log("=>(main.ts:48) process.env.PORT", process.env.PORT);
+  await app.listen(process.env.PORT);
 }
 bootstrap().then(r => console.log("NestJS Server Start"));
