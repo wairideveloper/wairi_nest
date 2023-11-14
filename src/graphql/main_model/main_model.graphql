@@ -69,6 +69,7 @@ type CampaignItem{
     infoRefund: String
     infoRefund1: String
     infoRefund2: String
+    inStock: Boolean
     campaignItemSchedule: [CampaignItemSchedules]
 }
 

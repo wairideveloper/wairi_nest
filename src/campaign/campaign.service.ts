@@ -282,6 +282,23 @@ export class CampaignService {
                 })
                 item.channels = channelNames
 
+                item.inStock = false;
+
+                let inStock = campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+                    return campaignItemScheduleItem.itemIdx == item.idx;
+                }).map((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+                    // 하나라도 재고가 있으면 true
+                    if (campaignItemScheduleItem.stock > 0) {
+                        return true;
+                    }
+                })
+                //inStock 배열에서 true 값이 있으면 inStock = true
+                if (inStock.indexOf(true) > -1) {
+                    item.inStock = true;
+                }
+
+                console.log("=>(campaign.service.ts:295) inStock", inStock);
+
                 //campaignItemSchedule 값 추가
                 item.campaignItemSchedule = campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
                     return campaignItemScheduleItem.itemIdx == item.idx;
