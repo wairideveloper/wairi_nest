@@ -429,8 +429,12 @@ export class AuthQlModelService {
 
     async getMemberInfo(id: string) {
         try {
-            const data = await this.memberService.findById(id);
-            const channel = await this.memberService.findChannel(data.idx);
+            let data = await this.memberService.findById(id);
+            data = bufferToString(data);
+            console.log("=>(auth_ql_model.service.ts:433) data", data);
+            let channel = await this.memberService.findChannel(data.idx);
+            channel = bufferToString(channel);
+            console.log("=>(auth_ql_model.service.ts:437) channel", channel);
             const review = await this.memberService.findReview(data.idx);
 
             data.memberChannel = channel;
