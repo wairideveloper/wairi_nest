@@ -70,7 +70,8 @@ import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
         ConfigModule.forRoot({
             cache: true,
             isGlobal: true,
-            envFilePath: ['.development.env'],
+            // envFilePath: ['.development.env'],
+            envFilePath: `.${process.env.NODE_ENV}.env`,
         }),
         TypeOrmModule.forRoot({
             type: 'mysql',
