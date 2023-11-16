@@ -245,6 +245,7 @@ export const changeInterestsText = (interests: number) => {
             return '패션';
         case 99:
             return '기타';
+            default: return '선택하지 않음';
     }
 }
 

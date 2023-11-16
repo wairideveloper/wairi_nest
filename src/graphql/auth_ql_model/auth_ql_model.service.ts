@@ -44,11 +44,12 @@ export class AuthQlModelService {
     async login(id: string, password: string) {
         try {
             let member = await this.memberService.findById(id);
-            console.log("=>(auth_ql_model.service.ts:47) member", member);
+            member = bufferToString(member);
             if (!member) {
                 throw new HttpException('회원정보 없음', 404);
             }
-            bufferToString(member);
+
+            console.log("=>(auth_ql_model.service.ts:52) member", member);
             const hash = member.passwd.toString().replace(/^\$2y(.+)$/i, '$2a$1');
             const check: boolean = compareSync(password, hash);
 
@@ -68,6 +69,8 @@ export class AuthQlModelService {
                 });
                 console.log("-> member.idx", member.idx);
                 let memberChannel = await this.memberService.findChannel(member.idx);
+                memberChannel = bufferToString(memberChannel);
+
                 //array memberChannel.regdate 변환
                 memberChannel = memberChannel.map((item, index) => {
                     memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();
@@ -75,6 +78,7 @@ export class AuthQlModelService {
                     return memberChannel[index];
                 })
                 member.memberChannel = memberChannel;
+                console.log("=>(auth_ql_model.service.ts:80) member", member);
                 return {
                     message: '로그인 성공',
                     access_token: access_token,
