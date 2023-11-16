@@ -5,6 +5,7 @@ module.exports = {
             script: './dist/src/main.js',
             watch: false,
             env: {
+                NODE_ENV: "development",
                 PORT:3000,
                 DB_HOST: 'wairi.cd3o2k56nbte.ap-northeast-2.rds.amazonaws.com',
                 DB_PORT: '3306',
@@ -42,6 +43,7 @@ module.exports = {
             script: './dist/src/main.js',
             watch: false,
             env_production: {
+                NODE_ENV: "production",
                 PORT:4000,
                 DB_HOST: '203.245.24.10',
                 DB_PORT: '3306',
