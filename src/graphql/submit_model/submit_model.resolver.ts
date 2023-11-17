@@ -63,9 +63,6 @@ export class SubmitModelResolver {
             const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
             const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
 
-            console.log("=>(submit_model.resolver.ts:56) campaignItem", campaignItem.calcType1);
-            console.log("=>(submit_model.resolver.ts:56) campaignItem", campaignItem.calcType2);
-
             //일자별
             campaignItem.channelNames = _getChannelName(campaignItem.channels);
 

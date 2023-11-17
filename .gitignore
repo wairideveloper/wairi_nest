@@ -2,6 +2,7 @@
 /dist
 /node_modules
 .env.development
+.env.production
 .package-lock.json
 /uploads
 # Logs

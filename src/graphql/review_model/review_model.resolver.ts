@@ -79,7 +79,7 @@ export class ReviewModelResolver {
                 console.log("=>(review_model.resolver.ts:78) s3ObjectData", s3ObjectData);
                 console.log("=>(review_model.resolver.ts:61) content", content);
 
-                await this.reviewModelService.createReview(s3ObjectData, content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
+                return await this.reviewModelService.createReview(s3ObjectData, content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
             }
         } catch (error) {
             console.log("=>(review_model.resolver.ts:86) error", error);

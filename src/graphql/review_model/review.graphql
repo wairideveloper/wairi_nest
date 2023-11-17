@@ -46,7 +46,7 @@ extend type Mutation {
         itemIdx: Int!,
         submitIdx: Int!,
         rate: Int!,
-    ): [String]
+    ): GraphqlHttpResponse
     deleteReview(idx:Int!): deleteReviewResponse
     deleteImage: deleteReviewResponse
 }

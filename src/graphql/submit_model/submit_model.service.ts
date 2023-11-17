@@ -177,6 +177,13 @@ export class SubmitModelService {
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
 
+        if(!submit){
+            return {
+                code: -1,
+                message: '신청 데이터가 없습니다.',
+                data: null
+            }
+        }
         if (submit.status < 100 || submit.status > 200) {
             return {
                 code: -1,

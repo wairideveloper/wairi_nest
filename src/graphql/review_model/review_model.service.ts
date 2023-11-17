@@ -11,7 +11,6 @@ import {
     getNow,
     getNowUnix
 } from "../../util/common";
-import moment from "moment";
 import {CommonModelService} from "../common_model/common_model.service";
 import {CampaignReviewImage} from "../../../entity/entities/CampaignReviewImage";
 
@@ -20,6 +19,8 @@ export class ReviewModelService {
     constructor(
         @InjectRepository(CampaignReview)
         private readonly reviewRepository: Repository<CampaignReview>,
+        @InjectRepository(CampaignReviewImage)
+        private readonly reviewImageRepository: Repository<CampaignReviewImage>,
         private readonly commonModelService: CommonModelService,
     ) {
     }
@@ -89,12 +90,16 @@ export class ReviewModelService {
                             }
                         })
                     }else{
-
+                        if (jsonImages.length > 0) {
+                            jsonImages.map((image) => {
+                                images.push(image.url);
+                            })
+                        }
                     }
                     item.images = images;
                 })
             }
-            console.log("=>(review_model.service.ts:80) data", data);
+            console.log("=>(review_model.service.ts getReviews:80) data", data);
             return new Pagination({
                 data,
                 total,
@@ -135,15 +140,23 @@ export class ReviewModelService {
                 let jsonImages = JSON.parse(data.images);
                 let images = [];
                 //jsonImages.length > 0
-                if(jsonImages.length > 0) {
-                    jsonImages.map((image) => {
-                        //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
-                        if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
-                            images.push('https://wairi.co.kr/img/review/' + image);
-                        } else {
-                            images.push(image);
-                        }
-                    })
+                if(data.aws_use_yn == 'N') {
+                    if (jsonImages.length > 0) {
+                        jsonImages.map((image) => {
+                            //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
+                            if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
+                                images.push('https://wairi.co.kr/img/review/' + image);
+                            } else {
+                                images.push(image);
+                            }
+                        })
+                    }
+                }else{
+                    if (jsonImages.length > 0) {
+                        jsonImages.map((image) => {
+                            images.push(image.url);
+                        })
+                    }
                 }
                 data.images = images;
             }
@@ -168,6 +181,7 @@ export class ReviewModelService {
                 const date_a = FROM_UNIXTIME_JS_YY_MM_DD(data.regdate_a);
                 data.regdate_a = date_a;
             }
+            console.log("=>(review_model.service.ts getReview:184) data", data);
             return data;
         }catch (error) {
             console.log("=>(review_model.service.ts:153) error", error);
@@ -176,27 +190,60 @@ export class ReviewModelService {
     }
 
     async deleteReview(idx: number, memberIdx: number) {
+        //transaction start
+        const queryRunner = this.reviewRepository.manager.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         try{
             let data = await this.reviewRepository.createQueryBuilder("campaignReview")
                 .leftJoin("campaignReview.member", "member")
                 .where("campaignReview.idx = :idx", {idx: idx})
                 .andWhere("campaignReview.memberIdx = :memberIdx", {memberIdx: memberIdx})
                 .getOne();
-
-            if(data){
-                await this.reviewRepository.delete(idx);
-                return {
-                    status : 200,
-                    message : "리뷰가 삭제되었습니다."
-                };
-            }else{
-                return {
-                    status : 400,
-                    message : "리뷰가 존재하지 않습니다."
-                };
+            if(!data){
+                throw new HttpException("리뷰가 존재하지 않습니다.", 400);
             }
+
+            //s3 key
+            let s3ImageKeys = [];
+            await this.reviewImageRepository.createQueryBuilder("campaignReviewImage")
+                .select("*")
+                .where("reviewIdx = :idx", {idx: idx})
+                .getRawMany()
+                .then((result) => {
+                    result.map((item) => {
+                        s3ImageKeys.push(item.key);
+                    })
+                });
+console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
+            //reivew DB 삭제
+            await queryRunner.manager.createQueryBuilder()
+                .delete()
+                .from(CampaignReview)
+                .where("idx = :idx", {idx: idx})
+                .execute();
+
+            //이미지 DB 삭제
+            await queryRunner.manager.createQueryBuilder()
+                .delete()
+                .from(CampaignReviewImage)
+                .where("reviewIdx = :idx", {idx: idx})
+                .execute();
+
+            await queryRunner.commitTransaction();
+
+            //s3 이미지 삭제
+            for(let i=0; i<s3ImageKeys.length; i++){
+                await this.commonModelService.deleteImage(s3ImageKeys[i]);
+            }
+
+            return {
+                status : 200,
+                message : "리뷰가 삭제되었습니다."
+            }
+
         }catch(error){
-            console.log(error)
+            await queryRunner.rollbackTransaction();
             throw new HttpException(error.message, error.status);
         }
     }
@@ -248,13 +295,12 @@ export class ReviewModelService {
 
             await queryRunner.commitTransaction();
             return {
-                status : 200,
+                code : 200,
                 message : "리뷰가 등록되었습니다."
             };
 
         }catch (error) {
             this.removeFiles(s3ObjectData);
-            console.log(error)
             await queryRunner.rollbackTransaction();
             throw new HttpException(error.message, error.status);
         }finally {

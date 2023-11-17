@@ -7,9 +7,12 @@ import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {JwtService} from "@nestjs/jwt";
 import {CommonModelService} from "../common_model/common_model.service";
 import {Config} from "../../../entity/entities/Config";
+import {CampaignReviewImage} from "../../../entity/entities/CampaignReviewImage";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Campaign,CampaignReview,Config])],
+  imports: [TypeOrmModule.forFeature([
+      Campaign,CampaignReview,Config,CampaignReviewImage
+  ])],
   providers: [ReviewModelResolver, ReviewModelService, JwtService, CommonModelService]
 })
 export class ReviewModelModule {}

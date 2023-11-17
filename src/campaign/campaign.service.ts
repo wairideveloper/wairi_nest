@@ -297,8 +297,6 @@ export class CampaignService {
                     item.inStock = true;
                 }
 
-                console.log("=>(campaign.service.ts:295) inStock", inStock);
-
                 //campaignItemSchedule 값 추가
                 item.campaignItemSchedule = campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
                     return campaignItemScheduleItem.itemIdx == item.idx;
