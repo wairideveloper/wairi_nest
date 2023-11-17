@@ -164,7 +164,7 @@ export class SubmitModelResolver {
         @AuthUser() authUser: Member,
     ){
         try{
-            let data = await this.submitModelService.cancellationRequest(sid, 11242, reason);
+            let data = await this.submitModelService.cancellationRequest(sid, authUser.idx, reason);
             if (data) {
                 return {
                     code: 200,
