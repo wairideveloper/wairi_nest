@@ -384,4 +384,45 @@ export class SubmitModelService {
 
         return data;
     }
+
+
+    async checkMonthDuplicateSubmit(memberIdx: number, campaignIdx: number) {
+        // 이번달 microtime으로 1개의 아이디로 동일한 캠페인 승인 or 거절 확정 전까지는 1번만 신청 가능
+        let count = await this.campaignSubmitRepository.createQueryBuilder('campaignSubmit')
+            .select('*')
+            .where("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            .andWhere("campaignSubmit.campaignIdx = :campaignIdx", {campaignIdx: campaignIdx})
+            .andWhere(new Brackets(qb => {
+                qb.where('campaignSubmit.status = 100')
+                    .orWhere('campaignSubmit.status = 200')
+                    .orWhere('campaignSubmit.status = 300')
+                    .orWhere('campaignSubmit.status = 310')
+                    .orWhere('campaignSubmit.status = 320')
+                    .orWhere('campaignSubmit.status = 400')
+                    .orWhere('campaignSubmit.status = 500')
+                    .orWhere('campaignSubmit.status = 700')
+            }))
+            //현재 달 기준 microtime
+            .andWhere("campaignSubmit.regdate >= :regdate", {regdate: getUnixTimeStamp()})
+            .getCount();
+        return count;
+
+
+    }
+
+    async checkMonthDuplicateReject(memberIdx: number, campaignIdx: number) {
+        //1개의 아이디로 동일한 캠페인 승인 or 거절 확정이 3번 초과일때는 신청 불가
+        let count = await this.campaignSubmitRepository.createQueryBuilder('campaignSubmit')
+            .select('*')
+            .where("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            .andWhere("campaignSubmit.campaignIdx = :campaignIdx", {campaignIdx: campaignIdx})
+            .andWhere(new Brackets(qb => {
+                qb.where('campaignSubmit.status = 900')
+                    .orWhere('campaignSubmit.status = -1')
+            }))
+            //현재 달 기준 microtime
+            .andWhere("campaignSubmit.regdate >= :regdate", {regdate: getUnixTimeStamp()})
+            .getCount();
+        return count;
+    }
 }

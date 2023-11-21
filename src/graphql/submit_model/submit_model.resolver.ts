@@ -60,6 +60,12 @@ export class SubmitModelResolver {
                     checked = false;
                 }
             }
+
+            // 1개의 아이디로 동일한 캠페인 승인 or 거절 확정 전까지는 1번만 신청 가능 and 1개의 아이디로 동일한 캠페인 승인 or 거절 확정이 3번 초과일때는 신청 불가
+            // const checkMonthDuplicateSubmit = await this.submitModelService.checkMonthDuplicateSubmit(authUser.idx, createCampaignSubmitInput.campaignIdx);
+            // 같은 캠페인 토탈 3번 거절
+            // const checkMonthDuplicateReject = await this.submitModelService.checkMonthDuplicateReject(authUser.idx, createCampaignSubmitInput.campaignIdx);
+
             const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
             const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
 
