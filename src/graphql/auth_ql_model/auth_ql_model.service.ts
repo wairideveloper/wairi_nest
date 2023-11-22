@@ -369,6 +369,7 @@ export class AuthQlModelService {
                     data.authenticate_data.phone,
                     data.authenticate_data.name
                 );
+                checkUnique = bufferToString(checkUnique);
                 console.log("=>(auth_ql_model.service.ts:362) checkUnique", checkUnique);
                 if(checkUnique){
                     return {

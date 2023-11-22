@@ -4,7 +4,7 @@ import {UpdateCampaignDto} from './dto/update-campaign.dto';
 import {Campaign} from "../../entity/entities/Campaign";
 import {CampaignItem} from "../../entity/entities/CampaignItem";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {Repository, SelectQueryBuilder} from "typeorm";
 import {Pagination} from '../paginate'
 import {PaginationOptions} from '../paginate/pagination.option'
 import {Cate} from "../../entity/entities/Cate";
@@ -135,48 +135,80 @@ export class CampaignService {
         });
     }
 
-    async mainList(take, page, cate, cateArea) {
+    async mainList(take, page, cate, cateArea, sort) {
+        let query: SelectQueryBuilder<Campaign>
+        if(sort == 'recent'){
+            query = this.campaignRepository.createQueryBuilder('campaign')
+                .leftJoin('campaign.campaignItem', 'campaignItem')
+                .leftJoin('campaign.campaignImage', 'campaignImage')
+                .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .leftJoin('campaign.partner', 'partner')
+                .select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.weight as weight',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                    'cate.name as cateName',
+                    'cate.idx as cateIdx',
+                    'cateArea.name as cateAreaName',
+                    'cateArea.idx as cateAreaIdx',
+                ])
+                .where('campaign.remove = :remove', {remove: 0})
+                // .andWhere('campaignItem.remove = :remove', {remove: 0})
+                .andWhere('campaign.status >= :t', {t: 200})
+                .andWhere('campaign.status <= :s', {s: 700})
+                .andWhere('partner.status = :status', {status: 1})
+                .orderBy('campaign.weight', 'DESC')
+                .addOrderBy('campaign.regdate', 'DESC')
+                .groupBy('campaign.idx')
+                .offset(take * (page - 1))
+                .limit(take)
+        }else{
+            let submitCount = this.campaignSubmit
+                .createQueryBuilder()
+                .subQuery()
+                .select([
+                    'campaignSubmit.campaignIdx as campaignIdx',
+                    'COUNT(*) AS submitCount'
+                ])
+                .from(CampaignSubmit, 'campaignSubmit')
+                .where('campaignSubmit.status > 0')
+                .andWhere('campaignSubmit.status < 900')
+                .groupBy('campaignSubmit.campaignIdx')
+                .getQuery();
 
-        // 	$searchs = [
-        // 			'campaign.status>='=>200,
-        // 			'campaign.status<='=>700,
-        // 			'campaign.cateIdx'=>$cateIdx,
-        // 			'partner.status'=>1,
-        // 			'setCampaignMemberTarget'=>$this->memberType,
-        // 		];
+            query = this.campaignRepository.createQueryBuilder('campaign')
+                .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
+                .leftJoin('campaign.campaignItem', 'campaignItem')
+                .leftJoin('campaign.campaignImage', 'campaignImage')
+                .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                .leftJoin('campaign.cate', 'cate')
+                .leftJoin('campaign.cateArea', 'cateArea')
+                .leftJoin('campaign.partner', 'partner')
+                .select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.weight as weight',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                    'cate.name as cateName',
+                    'cate.idx as cateIdx',
+                    'cateArea.name as cateAreaName',
+                    'cateArea.idx as cateAreaIdx',
+                ])
+                .where('campaign.remove = :remove', {remove: 0})
+                // .andWhere('campaignItem.remove = :remove', {remove: 0})
+                .andWhere('campaign.status >= :t', {t: 200})
+                .andWhere('campaign.status <= :s', {s: 700})
+                .andWhere('partner.status = :status', {status: 1})
+                .orderBy('submitCount', 'DESC')
+                .addOrderBy('campaign.weight', 'DESC')
+                .groupBy('campaign.idx')
+                .offset(take * (page - 1))
+                .limit(take)
+        }
 
-        // const {take, page} = options;
-        const query = this.campaignRepository.createQueryBuilder('campaign')
-            .leftJoin('campaign.campaignItem', 'campaignItem')
-            .leftJoin('campaign.campaignImage', 'campaignImage')
-            .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
-            .leftJoin('campaign.cate', 'cate')
-            .leftJoin('campaign.cateArea', 'cateArea')
-            .leftJoin('campaign.partner', 'partner')
-            .select([
-                'campaign.idx as idx',
-                'campaign.name as name',
-                'campaign.weight as weight',
-                // 'min(campaignItem.priceOrig) as lowestPriceOrig',
-                // 'min(campaignItem.priceDeposit) as lowestPriceDeposit',
-                // 'min(campaignItemSchedule.priceDeposit) as lowestSchedulePriceDeposit',
-                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                'cate.name as cateName',
-                'cate.idx as cateIdx',
-                'cateArea.name as cateAreaName',
-                'cateArea.idx as cateAreaIdx',
-                // 'partner.corpName as partnerName',
-            ])
-            .where('campaign.remove = :remove', {remove: 0})
-            // .andWhere('campaignItem.remove = :remove', {remove: 0})
-            .andWhere('campaign.status >= :t', {t: 200})
-            .andWhere('campaign.status <= :s', {s: 700})
-            .andWhere('partner.status = :status', {status: 1})
-            .orderBy('campaign.weight', 'DESC')
-            .addOrderBy('campaign.regdate', 'DESC')
-            .groupBy('campaign.idx')
-            .offset(take * (page - 1))
-            .limit(take)
 
         if (cate) {
             query.andWhere('campaign.cateIdx = :cate', {cate: cate})

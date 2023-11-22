@@ -155,7 +155,7 @@ extend type Query {
     #  getAllMember(skip: Int, take: Int!,title:String): [Member]
     getCampaign(id: Int!): Campaign!
     #캠페인 리스트
-    getCampaigns(take: Int!,page:Int!,cate:Int,cateArea:Int): Campaigns!
+    getCampaigns(take: Int!,page:Int!,cate:Int,cateArea:Int,sort:String): Campaigns!
 
     #관심 캠페인 리스트
     getFavCampaigns(take: Int!,page:Int!,cate:Int,cateArea:Int): Campaigns!

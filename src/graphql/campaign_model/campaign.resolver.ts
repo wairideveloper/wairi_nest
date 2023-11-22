@@ -75,11 +75,11 @@ export class CampaignResolver {
         @Args('page', {type: () => Int}) page: number,
         @Args('cate', {type: () => Int}) cate?: number,
         @Args('cateArea', {type: () => Int}) cateArea?: number,
-
+        @Args('sort', {type: () => Int}) sort?: string,
     ) {
         try {
-            console.log(take, page, cate, cateArea)
-            const list = await this.campaignsService.mainList(take, page, cate, cateArea);
+            console.log("=>(campaign.resolver.ts:82 getCampaigns) sort", sort);
+            const list = await this.campaignsService.mainList(take, page, cate, cateArea, sort);
             return list
         } catch (error) {
             console.log(error)
