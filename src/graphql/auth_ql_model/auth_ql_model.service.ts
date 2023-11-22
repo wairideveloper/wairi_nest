@@ -595,6 +595,7 @@ export class AuthQlModelService {
                 }
 
                 let memberChannel = await this.memberService.findChannel(memberCheck.idx);
+                memberChannel = bufferToString(memberChannel);
                 //array memberChannel.regdate 변환
                 memberChannel = memberChannel.map((item, index) => {
                     memberChannel[index].date = FROM_UNIXTIME_JS(item.regdate).toString();

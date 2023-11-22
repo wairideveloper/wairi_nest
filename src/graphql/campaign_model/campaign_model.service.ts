@@ -206,6 +206,5 @@ export class CampaignService {
             console.log("=>(campaign_model.service.ts:196) error", error);
             throw new HttpException(error.message, error.status);
         }
-
     }
 }

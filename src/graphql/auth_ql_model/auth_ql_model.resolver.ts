@@ -12,7 +12,7 @@ import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {auth} from "firebase-admin";
-
+import axios from 'axios';
 class ChangeMemberInfoInput {
     nickname: string;
     phone: string;
@@ -42,6 +42,48 @@ export class AuthQlModelResolver {
     @Mutation(() => LoginResponse)
     async login(@Args('loginInput',) loginInput: LoginInput) {
         try {
+
+            //test
+            // const sendgridAPIUrl = 'https://api.sendgrid.com/v3/mail/send';
+            //
+            // const to = 'sonminsoon@naver.com'; // Replace with the actual recipient email
+            // const sendTitle = 'Your Email Subject'; // Replace with the actual email subject
+            // const templateContent = '<p>Your HTML email content</p>'; // Replace with the actual HTML email content
+            //
+            // const mailData = {
+            //     personalizations: [
+            //         {
+            //             to: [{ email: to }],
+            //             subject: sendTitle,
+            //         },
+            //     ],
+            //     content: [
+            //         {
+            //             type: 'text/html',
+            //             value: templateContent,
+            //         },
+            //     ],
+            //     from: {
+            //         email: 'wairi_rsv@naver.com',
+            //         name: '와이리',
+            //     },
+            // };
+            //
+            // const mailHeaders = {
+            //     Authorization: 'Bearer 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',
+            //     'Content-Type': 'application/json',
+            // };
+            //
+            // axios.post(sendgridAPIUrl, mailData, { headers: mailHeaders })
+            //     .then(response => {
+            //         console.log('Email sent successfully:', response.data);
+            //     })
+            //     .catch(error => {
+            //         console.error('Error sending email:', error.response ? error.response.data : error.message);
+            //     });
+            //test
+
+
             return await this.authQlModelService.login(loginInput.id, loginInput.password);
         } catch (error) {
             customLogger(this.logger, loginInput, error);
