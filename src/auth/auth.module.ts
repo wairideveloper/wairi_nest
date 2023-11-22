@@ -8,10 +8,10 @@ import {MemberChannel} from "../../entity/entities/MemberChannel";
 import {JwtModule} from '@nestjs/jwt';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {PassportModule} from "@nestjs/passport";
-import {JwtKakaoStrategy} from "./strategies/kakao.strategy";
+// import {JwtKakaoStrategy} from "./strategies/kakao.strategy";
 import {JwtStrategy} from "./strategies/jwt.strategy";
-import {NaverStrategy} from "./strategies/naver.strategy";
-import {JwtGoogleStrategy} from "./strategies/google.strategy";
+// import {NaverStrategy} from "./strategies/naver.strategy";
+// import {JwtGoogleStrategy} from "./strategies/google.strategy";
 
 @Module({
     imports: [
@@ -30,8 +30,9 @@ import {JwtGoogleStrategy} from "./strategies/google.strategy";
         PassportModule.register({defaultStrategy: 'jwt'}),
     ],
     controllers: [AuthController],
-    providers: [AuthService, MembersService, JwtKakaoStrategy,
-        JwtStrategy, NaverStrategy, JwtGoogleStrategy],
+    providers: [AuthService, MembersService,JwtStrategy,],
+        // JwtKakaoStrategy,
+        // JwtStrategy, NaverStrategy, JwtGoogleStrategy],
 })
 export class AuthModule {
 }
