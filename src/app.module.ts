@@ -56,7 +56,7 @@ import { CommonModelModule } from './graphql/common_model/common_model.module';
 import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import * as Upload from "graphql-upload/Upload.js";
-import { FirebaseModule } from './graphql/firebase/firebase.module';
+// import { FirebaseModule } from './graphql/firebase/firebase.module';
 import { SubmitModelModule } from './graphql/submit_model/submit_model.module';
 import { ReviewModelModule } from './graphql/review_model/review_model.module';
 import {Payment} from "../entity/entities/Payment";
@@ -124,7 +124,7 @@ import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
                 PaymentModelModule,
                 Madein20ModelModule,
                 CommonModelModule,
-                FirebaseModule,
+                // FirebaseModule,
                 SubmitModelModule,
                 ReviewModelModule,
             ],
@@ -182,7 +182,7 @@ import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
         PaymentModelModule,
         Madein20ModelModule,
         CommonModelModule,
-        FirebaseModule,
+        // FirebaseModule,
         SubmitModelModule,
         ReviewModelModule,
         BootpayModule
