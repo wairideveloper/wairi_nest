@@ -157,8 +157,10 @@ export class CampaignService {
                 ])
                 .where('campaign.remove = :remove', {remove: 0})
                 // .andWhere('campaignItem.remove = :remove', {remove: 0})
-                .andWhere('campaign.status = :t', {t: 200})
-                // .andWhere('campaign.status < :s', {s: 700})
+                .andWhere('campaign.status >= :t', {t: 200})
+                .andWhere('campaign.status <= :s', {s: 700})
+                .andWhere('campaignItem.memberTarget = :mt', {mt: 1})
+
                 .andWhere('partner.status = :status', {status: 1})
                 .orderBy('campaign.weight', 'DESC')
                 .addOrderBy('campaign.regdate', 'DESC')
