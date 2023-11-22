@@ -63,8 +63,8 @@ module.exports = {
                 AWS_ACCESS_KEY:'AKIA4EHT2T5MKCVIA7HS',
                 AWS_SECRET_KEY:'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',
 
-                BOOTPAY_APPLICATION_ID:'6502477a00c78a001a44eedf',
-                BOOTPAY_PRIVATE_KEY:'ZIV+z148QtYk16RBc7yk8WB61YMqTASiCQ+ucosCMPs=',
+                BOOTPAY_APPLICATION_ID:'6143fb797b5ba4002152b6e1',
+                BOOTPAY_PRIVATE_KEY:'RQ/RYIauHAVJZ8jkKggH6o3EIKKNnviRcGXN4hPNjiM=',
 
                 MADEIN20_CLIENT_ID:'i598wjz8egN812iYLXBvSSwruE4qx0IQ',
                 MADEIN20_CHANNEL_ID:'@wairi',

@@ -171,7 +171,6 @@ export class CampaignService {
                 'cateArea.idx as cateAreaIdx',
             ])
             .where('campaign.remove = :remove', {remove: 0})
-            // .andWhere('campaignItem.remove = :remove', {remove: 0})
             .andWhere('campaign.status >= :t', {t: 200})
             .andWhere('campaign.status <= :s', {s: 700})
             .andWhere('campaignItem.memberTarget = :mt', {mt: 1})
@@ -181,7 +180,6 @@ export class CampaignService {
             .groupBy('campaign.idx')
             .offset(take * (page - 1))
             .limit(take)
-
 
         if (cate) {
             query.andWhere('campaign.cateIdx = :cate', {cate: cate})
@@ -207,7 +205,7 @@ export class CampaignService {
                 }
             })
         });
-console.log("=>(campaign.service.ts:211) data", data);
+
         const totalQuery = this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.partner', 'partner')
@@ -977,7 +975,6 @@ console.log("=>(campaign.service.ts:211) data", data);
                     }
                 })
             });
-            console.log("=>(campaign.service.ts:994) data", data);
 
             const total = await this.campaignFavRepository.createQueryBuilder('campaignFav')
                 .leftJoin('campaignFav.campaign', 'campaign')
@@ -986,7 +983,7 @@ console.log("=>(campaign.service.ts:211) data", data);
                 .getCount()
 
             let totalPage = Math.ceil(total / take);
-            console.log("=>(campaign.service.ts:959) totalPage", totalPage);
+
             if (page > totalPage) {
                 throw new NotFoundException();
             }
