@@ -74,7 +74,8 @@ export class SubmitModelResolver {
 
             const startDate = getUnixTimeStampByDate(createCampaignSubmitInput.startDate);
             const endDate = getUnixTimeStampByDate(createCampaignSubmitInput.endDate);
-            const pay = campaignItem.priceOrig * (campaignItem.dc11/100) * createCampaignSubmitInput.nop;
+            // const pay = campaignItem.priceOrig * (campaignItem.dc11/100) * createCampaignSubmitInput.nop;
+            const pay = campaignItem.priceOrig * (campaignItem.dc11/100);
 
             //createCampaignSubmitInput.endDate - createCampaignSubmitInput.startDate
             const nights = (endDate - startDate) / 86400;
