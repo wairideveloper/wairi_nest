@@ -24,6 +24,7 @@ import {Repository} from "typeorm";
 import {Connection} from "typeorm";
 import * as admin from 'firebase-admin';
 import {ServiceAccount} from "firebase-admin";
+import * as moment from "moment";
 
 
 @Injectable()
@@ -369,6 +370,10 @@ export class AuthQlModelService {
                     data.authenticate_data.phone,
                     data.authenticate_data.name
                 );
+                if(!checkUnique){
+                    throw new HttpException('본인인증 등록된 계정이 없습니다.', 404);
+                }
+                checkUnique.regdate = moment.unix(checkUnique.regdate).format('YYYY-MM-DD HH:mm:ss');
                 checkUnique = bufferToString(checkUnique);
                 console.log("=>(auth_ql_model.service.ts:362) checkUnique", checkUnique);
                 if(checkUnique){

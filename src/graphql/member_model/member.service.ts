@@ -317,7 +317,7 @@ export class MembersService {
     }
 
     async checkUniqueFindId(unique: any, phone, name) {
-        const data = await this.memberRepository
+        let data = await this.memberRepository
             .createQueryBuilder()
             .select('*')
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
@@ -327,9 +327,6 @@ export class MembersService {
             .andWhere(`${AES_DECRYPT('name')} = :name`, {name: name})
             .andWhere(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
             .getRawOne();
-
-
-        data.regdate = moment.unix(data.regdate).format('YYYY-MM-DD HH:mm:ss');
 
         return data
     }
