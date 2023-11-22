@@ -47,7 +47,7 @@ export class PaymentModelResolver {
                 console.log("=>(payment_model.resolver.ts:48) submitItem.nop", submitItem.nop);
                 console.log("=>(payment_model.resolver.ts:49) item.stock", item.stock);
 
-                 if(submitItem.nop > item.stock){
+                 if(item.stock == 0){
                         throw new HttpException("재고가 부족합니다.", 404);
                  }
             })
