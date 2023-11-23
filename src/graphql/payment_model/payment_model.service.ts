@@ -36,7 +36,8 @@ export class PaymentModelService {
             return response
         } catch (e) {
             // 발급 실패시 오류
-            throw e
+            console.log("=>confirmPayment ");
+            throw new HttpException(e.message, e.status);
         }
     }
 
