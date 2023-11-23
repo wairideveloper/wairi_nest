@@ -135,9 +135,6 @@ export class PaymentModelService {
                     .where("idx IN (:...idx)", {idx: itemSchduleIdx})
                     .execute();
 
-  console.log("=>(payment_model.service.ts:138) itemSchduleIdx", itemSchduleIdx);
-await queryRunner.rollbackTransaction();
-return true;
                 await queryRunner.commitTransaction();
                 return response
             }

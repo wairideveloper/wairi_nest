@@ -56,17 +56,6 @@ export class BootpayService {
                 }
             })
 
-            if(itemSchduleIdx.length > 0){
-                // update campaign_item_schedule.stock = campaign_item_schedule.stock - submit.nop
-                await queryRunner.manager.createQueryBuilder()
-                    .update(CampaignItemSchedule)
-                    .set({
-                        stock: () => `stock - ${submit.nop}`,
-                    })
-                    .where("idx IN (:...idx)", { idx: itemSchduleIdx })
-                    .execute();
-            }
-
             // update submit.status = 300
             await queryRunner.manager.createQueryBuilder()
                 .update(CampaignSubmit)

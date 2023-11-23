@@ -26,7 +26,7 @@ export class PaymentModelResolver {
     }
 
     @Mutation()
-    // @UseGuards(GqlAuthGuard) //로그인 체크
+    @UseGuards(GqlAuthGuard) //로그인 체크
     async confirmStock(
         @Args('confirmPaymentInput') confirmPaymentInput: ConfirmPaymentInput,
         @AuthUser() authUser: Member
@@ -35,7 +35,7 @@ export class PaymentModelResolver {
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
 
-            if(!submitItem){ //신청 정보가 없을 경우
+            if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
 
@@ -49,56 +49,55 @@ export class PaymentModelResolver {
                 console.log("=>(payment_model.resolver.ts:48) submitItem.nop", submitItem.nop);
                 console.log("=>(payment_model.resolver.ts:49) item.stock", item.stock);
 
-                 if(item.stock == 0){
-                        throw new HttpException("재고가 부족합니다.", 404);
-                 }
+                if (item.stock == 0) {
+                    throw new HttpException("재고가 부족합니다.", 404);
+                }
             })
             //재고 체크후 결제 confirm
             // authUser.idx set
-            let memberIdx = authUser? authUser.idx : 15120;
+            let memberIdx = authUser ? authUser.idx : 15120;
             console.log("=>(payment_model.resolver.ts:59) memberIdx", memberIdx);
 
-            console.log("=>(payment_model.resolver.ts:59) authUser", authUser);
-            const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, authUser.idx);
+            const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, memberIdx);
             // console.log("=>(payment_model.resolver.ts:53) confirmPayment response", response);
 
             //가상계좌
-            if(response.method_symbol === 'vbank'){
+            if (response.method_symbol === 'vbank') {
                 //payment insert transaction
-                const vbankDataTransaction = await this.paymentModelService.vbankDataTransaction(response, submitItem, 111);
+                const vbankDataTransaction = await this.paymentModelService.vbankDataTransaction(response, submitItem, memberIdx);
                 console.log("=>(payment_model.resolver.ts:68) vbankDataTransaction", vbankDataTransaction);
 
-                if(vbankDataTransaction) {
+                if (vbankDataTransaction) {
                     return {
                         status: response.status,
                         code: 200,
                         message: "가상계좌 발급이 완료되었습니다.",
                         data: response
                     }
-                }else{
+                } else {
                     throw new HttpException("가상계좌 발급이 실패하였습니다.", 404);
                 }
             }
 
-            if(response.status === 1){
+            if (response.status === 1) {
                 //submitItem.payTotal == response.data.price;
-                if((submitItem.payTotal) != response.price){
+                if ((submitItem.payTotal) != response.price) {
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
 
                 //재고 차감
-                if(itemSchduleIdx.length > 0){
-                   const result = await this.submitModelService.updateCampaignItemSchduleStock(
+                if (itemSchduleIdx.length > 0) {
+                    const result = await this.submitModelService.updateCampaignItemSchduleStock(
                         itemSchduleIdx,
                         submitItem.nop,
                         confirmPaymentInput.sid,
                         response,
                         // 12328, // memberIdx
-                        authUser.idx, // memberIdx
+                        memberIdx, // memberIdx
                         submitItem.idx
-                        )
+                    )
                 }
             }
 
