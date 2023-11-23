@@ -338,7 +338,8 @@ export class AuthQlModelService {
                     memberIdx,
                     data.authenticate_data.unique,
                     data.authenticate_data['di'],
-                    data.authenticate_data.phone
+                    data.authenticate_data.phone,
+                    data.authenticate_data.name,
                     )
 
                 return {

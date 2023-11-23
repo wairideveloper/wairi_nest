@@ -372,7 +372,7 @@ export class MembersService {
             .getRawMany();
     }
 
-    async updateUnique(idx, ci: string, di: string, phone: string){
+    async updateUnique(idx, ci: string, di: string, phone: string , name: string) {
         const data = {
             ci: ci,
             di: di,
@@ -384,7 +384,8 @@ export class MembersService {
             .set({
                 ci: ci,
                 di: di,
-                phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`
+                phone: () => `HEX(AES_ENCRYPT("${phone}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`,
+                name: () => `HEX(AES_ENCRYPT("${name}","@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6"))`
             })
             .where('idx = :idx', {idx: idx})
             .execute();

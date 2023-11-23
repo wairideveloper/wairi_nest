@@ -6,6 +6,7 @@ import {HttpException, UseGuards} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
+import {auth} from "firebase-admin";
 
 
 class ConfirmPaymentInput {
@@ -25,14 +26,15 @@ export class PaymentModelResolver {
     }
 
     @Mutation()
-    @UseGuards(GqlAuthGuard)
+    // @UseGuards(GqlAuthGuard) //로그인 체크
     async confirmStock(
         @Args('confirmPaymentInput') confirmPaymentInput: ConfirmPaymentInput,
         @AuthUser() authUser: Member
     ) {
+        console.log("=>(payment_model.resolver.ts:34) confirmPaymentInput.sid", confirmPaymentInput.sid);
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
-            console.log("=>(payment_model.resolver.ts:35) submitItem", submitItem);
+
             if(!submitItem){ //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
@@ -52,17 +54,21 @@ export class PaymentModelResolver {
                  }
             })
             //재고 체크후 결제 confirm
-            console.log(authUser)
+            // authUser.idx set
+            let memberIdx = authUser? authUser.idx : 15120;
+            console.log("=>(payment_model.resolver.ts:59) memberIdx", memberIdx);
+
+            console.log("=>(payment_model.resolver.ts:59) authUser", authUser);
             const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, authUser.idx);
-            console.log("=>(payment_model.resolver.ts:53) response", response);
+            // console.log("=>(payment_model.resolver.ts:53) confirmPayment response", response);
 
             //가상계좌
             if(response.method_symbol === 'vbank'){
-                //payment insert
-                const vbankData = await this.paymentModelService.insertVbankPayment(response, submitItem.idx, authUser.idx);
-                console.log("=>(payment_model.resolver.ts:58) vbankData", vbankData);
+                //payment insert transaction
+                const vbankDataTransaction = await this.paymentModelService.vbankDataTransaction(response, submitItem, 111);
+                console.log("=>(payment_model.resolver.ts:68) vbankDataTransaction", vbankDataTransaction);
 
-                if(vbankData) {
+                if(vbankDataTransaction) {
                     return {
                         status: response.status,
                         code: 200,
@@ -89,7 +95,8 @@ export class PaymentModelResolver {
                         submitItem.nop,
                         confirmPaymentInput.sid,
                         response,
-                        12328, // memberIdx
+                        // 12328, // memberIdx
+                        authUser.idx, // memberIdx
                         submitItem.idx
                         )
                 }

@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {Payment} from "../../../entity/entities/Payment";
@@ -239,7 +239,7 @@ export class SubmitModelService {
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
-        console.log("=>(submit_model.service.ts:217) response", response);
+        console.log("=>(submit_model.service.ts:217) updateCampaignItemSchduleStock ", response);
 
         try {
             let paymentDataInsert = await queryRunner.manager.createQueryBuilder()
@@ -278,7 +278,6 @@ export class SubmitModelService {
                 .set({
                     status: 300,
                     paymentIdx: paymentDataInsert.raw.insertId,
-
                 })
                 .where("campaignSubmit.sid = :sid", {sid: sid})
                 .execute();
@@ -286,9 +285,10 @@ export class SubmitModelService {
             await queryRunner.commitTransaction();
 
             return true;
-        } catch (err) {
+        } catch (e) {
             await queryRunner.rollbackTransaction();
-            throw err;
+            console.log("=>(submit_model.service.ts:292) updateCampaignItemSchduleStock error", e);
+            throw new HttpException(e, 404);
         }
     }
 
@@ -424,5 +424,17 @@ export class SubmitModelService {
             .andWhere("campaignSubmit.regdate >= :regdate", {regdate: getUnixTimeStamp()})
             .getCount();
         return count;
+    }
+
+    async updateSubmitPaymentIdx(idx, paymentId: any) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .update(CampaignSubmit)
+            .set({
+                paymentIdx: paymentId
+            })
+            .where("campaignSubmit.idx = :idx", {idx: idx})
+            .execute();
+
+        return data;
     }
 }
