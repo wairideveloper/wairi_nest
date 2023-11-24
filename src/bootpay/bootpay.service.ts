@@ -28,6 +28,8 @@ export class BootpayService {
         if(body.method !== "vbank"){
             throw new HttpException(`가상계좌 알림 아님 X : (${body.method})`, 404);
         }
+        console.log("=>(bootpay.controller.ts:10) 가상계좌 결제 완료 알림: ", body);
+
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();

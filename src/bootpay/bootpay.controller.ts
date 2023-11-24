@@ -7,9 +7,10 @@ export class BootpayController {
 
   @Post('vBankPayment')
   vBankPayment(@Body() body,@Res() res) {
-    console.log("=>(bootpay.controller.ts:10) 가상계좌 결제 완료 알림: ", body);
     if(body.status == 1){
-      this.bootpayService.updateVbankPayment(body)
+      if(body.method == "vbank") {
+        this.bootpayService.updateVbankPayment(body)
+      }
     }
     //http status 200 으로 리턴 {"success":true}
     res.status(200).json({"success":true})
