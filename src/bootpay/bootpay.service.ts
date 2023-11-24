@@ -23,10 +23,10 @@ export class BootpayService {
     ) {}
     async updateVbankPayment(body) {
         if(body.status != 1){
-            throw new Error(`status is not ${body.status}`);
+            throw new HttpException("status is not 1", 404);
         }
         if(body.method !== "vbank"){
-            throw new Error(`method is not ${body.method}`);
+            throw new HttpException(`가상계좌 알림 아님 X : (${body.method})`, 404);
         }
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
