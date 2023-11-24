@@ -289,6 +289,8 @@ export class SubmitModelService {
             await queryRunner.rollbackTransaction();
             console.log("=>(submit_model.service.ts:292) updateCampaignItemSchduleStock error", e);
             throw new HttpException(e, 404);
+        } finally {
+            await queryRunner.release();
         }
     }
 

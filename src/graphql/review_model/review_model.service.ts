@@ -245,6 +245,8 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
         }catch(error){
             await queryRunner.rollbackTransaction();
             throw new HttpException(error.message, error.status);
+        }finally {
+            await queryRunner.release();
         }
     }
 
