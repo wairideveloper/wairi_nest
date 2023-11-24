@@ -473,6 +473,7 @@ export class AuthQlModelService {
     async changePassword(data: any) {
         try {
             //본인인증 후 비밀번호 변경
+            // let member = await this.memberService.findByPhoneAndId(data.phone, data.username, data.id);
             let member = await this.memberService.findByPhone(data.phone, data.username);
             member = bufferToString(member);
             const password = await hashPassword(data.password);

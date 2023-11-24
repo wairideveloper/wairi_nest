@@ -10,4 +10,7 @@ export class ChangePasswordInput {
 
     @Field()
     password: string;
+
+    // @Field()
+    // id: string;
 }

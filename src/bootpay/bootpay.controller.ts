@@ -11,6 +11,7 @@ export class BootpayController {
       if(body.method == "vbank") {
         this.bootpayService.updateVbankPayment(body)
       }
+      res.status(200).json({"success":true})
     }
     //http status 200 으로 리턴 {"success":true}
     res.status(200).json({"success":true})

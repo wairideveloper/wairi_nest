@@ -250,6 +250,7 @@ export class AuthQlModelResolver {
                 password: changePasswordInput.password,
                 username: changePasswordInput.username,
                 phone: changePasswordInput.phone,
+                // id: changePasswordInput.id,
             }
             return await this.authQlModelService.changePassword(data);
         } catch (error) {

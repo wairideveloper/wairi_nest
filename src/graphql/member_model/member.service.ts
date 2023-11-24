@@ -187,6 +187,23 @@ export class MembersService {
             .getRawOne();
     }
 
+    async findByPhoneAndId(phone, username, id) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .select('idx,id,type,level,nickname,status,regdate,lastSignin')
+            .addSelect(`(${AES_DECRYPT('name')})`, 'name')
+            .addSelect(`(${AES_DECRYPT('email')})`, 'email')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
+            .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+            .where(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
+            .andWhere(`${AES_DECRYPT('name')} = :username`, {username: username})
+            .andWhere('idx = :idx', {idx: id})
+            //status 1, 4, 9일때만
+            .andWhere('type = 1')
+            .andWhere('status in (1,4,9)')
+            .getRawOne();
+    }
+
     async findChannel(memberIdx: number) {
         return await this.memberChannelRepository.find({where: [{memberIdx: memberIdx}]});
     }
@@ -492,6 +509,4 @@ export class MembersService {
             console.log(e)
         }
     }
-
-
 }
