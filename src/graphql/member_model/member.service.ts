@@ -326,6 +326,8 @@ export class MembersService {
             .where('ci = :unique', {unique: unique})
             .andWhere(`${AES_DECRYPT('name')} = :name`, {name: name})
             .andWhere(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
+            //status 1, 4, 9일때만
+            .andWhere('status in (1,4,9)')
             .getRawOne();
 
         return data
