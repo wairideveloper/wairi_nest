@@ -79,6 +79,8 @@ export class BootpayService {
         }catch (e) {
             await queryRunner.rollbackTransaction();
             console.log(e)
+        }finally {
+            await queryRunner.release();
         }
     }
 }

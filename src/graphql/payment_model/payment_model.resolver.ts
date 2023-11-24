@@ -74,8 +74,6 @@ export class PaymentModelResolver {
                         message: "가상계좌 발급이 완료되었습니다.",
                         data: response
                     }
-                } else {
-                    throw new HttpException("가상계좌 발급이 실패하였습니다.", 404);
                 }
             }
 
