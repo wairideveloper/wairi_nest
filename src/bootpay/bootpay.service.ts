@@ -22,6 +22,12 @@ export class BootpayService {
 
     ) {}
     async updateVbankPayment(body) {
+        if(body.status != 1){
+            throw new Error(`status is not ${body.status}`);
+        }
+        if(body.method !== "vbank"){
+            throw new Error(`method is not ${body.method}`);
+        }
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
