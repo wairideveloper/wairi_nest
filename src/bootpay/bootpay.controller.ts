@@ -10,6 +10,8 @@ export class BootpayController {
     if(body.status == 1){
       if(body.method == "vbank") {
         this.bootpayService.updateVbankPayment(body)
+      }else{
+        console.log("=>(bootpay.controller.ts:30) updateVbankPayment(가상계좌 외) : ", body);
       }
       res.status(200).json({"success":true})
     }
