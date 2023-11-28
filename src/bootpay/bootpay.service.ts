@@ -26,6 +26,7 @@ export class BootpayService {
             throw new HttpException("status is not 1", 404);
         }
         if(body.method !== "vbank"){
+            console.log("=>(bootpay.service.ts:30) updateVbankPayment(가상계좌 외) : ", body);
             throw new HttpException(`가상계좌 알림 아님 X : (${body.method})`, 404);
         }
         console.log("=>(bootpay.controller.ts:10) 가상계좌 결제 완료 알림: ", body);
