@@ -33,7 +33,15 @@ type Campaign {
 
 type CampaignDetail{
     campaign: Campaign!
+    campaignImages: [CampaignImage]
     campaignItem: [CampaignItem!]!
+}
+
+type CampaignImage {
+    idx: Int
+    campaignIdx: Int
+    fileName: String
+    ordering: Int
 }
 
 type  Campaigns implements Pagination {

@@ -25,7 +25,7 @@ import {Connection} from "typeorm";
 import * as admin from 'firebase-admin';
 import {ServiceAccount} from "firebase-admin";
 import * as moment from "moment";
-
+import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 
 @Injectable()
 export class AuthQlModelService {
@@ -39,6 +39,7 @@ export class AuthQlModelService {
         private readonly memberService: MembersService,
         private readonly jwtService: JwtService,
         private readonly connection: Connection,
+        private readonly madein20ModelService: Madein20ModelService
         ) {
     }
 
@@ -177,6 +178,11 @@ export class AuthQlModelService {
                 // }
 
                 await queryRunner.commitTransaction();
+
+                //관리자 알림톡 전송
+                // await this.madein20ModelService.sendManagerAlimtalk(data, 'test','EHu0hjNSYvP3y0ZSxSd2');
+
+                //회원 알림톡 발송
 
                 return {
                     message: '회원가입 성공',

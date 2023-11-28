@@ -17,14 +17,16 @@ import {Logger} from "winston";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {Config} from "../../../entity/entities/Config";
 import {Withdrawal} from "../../../entity/entities/Withdrawal";
+import {Madein20ModelService} from "../madein20_model/madein20_model.service";
+import {Admin} from "../../../entity/entities/Admin";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Member, MemberChannel, Campaign, CampaignItem, CampaignImage, Cate, CateArea
-            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal
+            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal, Admin
         ]),
     ],
-    providers: [AuthQlModelResolver, AuthQlModelService, MembersService, JwtService]
+    providers: [AuthQlModelResolver, AuthQlModelService, MembersService, JwtService, Madein20ModelService]
 })
 export class AuthQlModelModule {
 }

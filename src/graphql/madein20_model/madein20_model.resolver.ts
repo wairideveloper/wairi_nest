@@ -12,6 +12,18 @@ export class Madein20ModelResolver {
         @Args('templateCode') templateCode: string,
     ){
         try{
+            //test code
+            let data = {
+                idx : 1234,
+                name : '테스트 알림톡',
+                channelUrl : 'test'
+            }
+            //test code
+
+
+            // return await this.madein20ModelService.partnerConfig(575);
+            return await this.madein20ModelService.sendManagerAlimtalk(data, 'test','EHu0hjNSYvP3y0ZSxSd2');
+
             const response = await this.madein20ModelService.sendAlimtalk(receiverInput,templateCode);
             return response;
         }catch (error){

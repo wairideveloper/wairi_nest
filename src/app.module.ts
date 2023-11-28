@@ -64,6 +64,7 @@ import { BootpayModule } from './bootpay/bootpay.module';
 import {Popup} from "../entity/entities/Popup";
 import {Withdrawal} from "../entity/entities/Withdrawal";
 import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
+import {Admin} from "../entity/entities/Admin";
 
 @Module({
     imports: [
@@ -85,7 +86,7 @@ import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
-                Payment, Popup, Withdrawal, CampaignReviewImage
+                Payment, Popup, Withdrawal, CampaignReviewImage, Admin
             ],
             synchronize: false,
             charset: 'UTF8_GENERAL_CI',

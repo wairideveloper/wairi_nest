@@ -240,6 +240,19 @@ export class CampaignService {
         try {
             const campaign = await this.getDetailCampaign(id);
 
+            const images = await this.campaignImageRepository.createQueryBuilder('campaignImage')
+                .select(
+                    [
+                        'idx',
+                        'campaignIdx',
+                        'file_name as fileName',
+                        'ordering',
+                    ]
+                )
+                .where('campaignIdx = :idx', {idx: id})
+                .orderBy('ordering', 'ASC')
+                .getRawMany()
+
             const campaignItem = await this.getCampaignItem(id);
             //campaignItem 배열 리스트에서 Idx 값 추출
             const campaignItemIdx = campaignItem.map((item) => {
@@ -312,8 +325,10 @@ export class CampaignService {
                 })
 
             })
+            console.log (id)
             let campaignImages = await this.getCampaignImages(id);
             campaignImages = bufferToString(campaignImages);
+            console.log("=>(campaign.service.ts:331) campaignImages", campaignImages);
             let campaignCate = await this.getCampaignCate(id);
             campaignCate = bufferToString(campaignCate);
             let campaignCateArea = await this.getCampaignCateArea(id);
@@ -397,7 +412,7 @@ export class CampaignService {
                 [
                     'idx',
                     'campaignIdx',
-                    'file_name as fileName',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",file_name) as fileName',
                     'ordering',
                 ]
             )
