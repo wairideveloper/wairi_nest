@@ -82,6 +82,7 @@ export class ReviewModelResolver {
             if (file.length > 0) {
                 let s3ObjectData = [];
                 for(let i=0; i<file.length; i++) {
+                    console.log("=>(review_model.resolver.ts:85) file", file);
                     let awsObjectData = await this.commonModelService.uploadImage(await file[i].file);
                     s3ObjectData.push(
                         {'key': awsObjectData.key, 'url': awsObjectData.url})
