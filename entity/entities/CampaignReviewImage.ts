@@ -13,8 +13,8 @@ export class CampaignReviewImage {
     @Column("int", {name: "reviewIdx"})
     reviewIdx: number;
 
-    @Column("text", {name: "key"})
-    key: any;
+    @Column("text", {name: "awskey"})
+    awskey: any;
 
     @Column("text", {name: "url"})
     url: any;

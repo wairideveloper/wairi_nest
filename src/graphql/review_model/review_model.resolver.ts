@@ -69,7 +69,9 @@ export class ReviewModelResolver {
     @UseGuards(GqlAuthGuard)
     async createReview(
         @AuthUser() authUser: Member,
-        @Args({name: 'files', type: () => [GraphQLUpload]}) files:  Upload[],
+        //files 가 존재할지 안할지 모르기 때문에 ?로 설정
+
+        @Args({name: 'files', type: () => [GraphQLUpload], nullable: true}) files:  Upload[],
         @Args('content') content: string,
         @Args('campaignIdx') campaignIdx: number,
         @Args('itemIdx') itemIdx: number,
@@ -78,9 +80,16 @@ export class ReviewModelResolver {
     ){
         try {
             let file:Upload[] = files;
+            //  let test = await file;
+            //  console.log("=>(review_model.resolver.ts:84) file", file);
+            // return {
+            //     file : test
+            // }
+            console.log("=>(review_model.resolver.ts:89) file.length", file);
             //다중 파일 업로드
             let s3ObjectData = [];
-            if (file.length > 0) {
+
+            if (file && file.length > 0) {
                 for(let i=0; i<file.length; i++) {
                     console.log("=>(review_model.resolver.ts:85) file", file);
                     let awsObjectData = await this.commonModelService.uploadImage(await file[i].file);

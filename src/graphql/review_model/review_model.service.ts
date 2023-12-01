@@ -290,11 +290,11 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
                         await queryRunner.manager.createQueryBuilder()
                             .insert()
                             .into(CampaignReviewImage, [
-                                'reviewIdx', 'key', 'url', 'create_at'
+                                'reviewIdx', 'awskey', 'url', 'create_at'
                             ])
                             .values({
                                 reviewIdx: insertId,
-                                key: s3ObjectData[i].key,
+                                awskey: s3ObjectData[i].key,
                                 url: s3ObjectData[i].url,
                                 create_at: () => `"${getNow()}"`
                             })
@@ -342,11 +342,11 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
                 await queryRunner.manager.createQueryBuilder()
                     .insert()
                     .into(CampaignReviewImage, [
-                        'reviewIdx','key','url','create_at'
+                        'reviewIdx','awskey','url','create_at'
                     ])
                     .values({
                         reviewIdx : idx,
-                        key : s3ObjectData[i].key,
+                        awskey : s3ObjectData[i].key,
                         url : s3ObjectData[i].url,
                         create_at: () => `"${getNow()}"`
                     })
