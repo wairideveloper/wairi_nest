@@ -79,8 +79,8 @@ export class ReviewModelResolver {
         try {
             let file:Upload[] = files;
             //다중 파일 업로드
+            let s3ObjectData = [];
             if (file.length > 0) {
-                let s3ObjectData = [];
                 for(let i=0; i<file.length; i++) {
                     console.log("=>(review_model.resolver.ts:85) file", file);
                     let awsObjectData = await this.commonModelService.uploadImage(await file[i].file);
@@ -90,6 +90,8 @@ export class ReviewModelResolver {
                 console.log("=>(review_model.resolver.ts:78) s3ObjectData", s3ObjectData);
 
                 return await this.reviewModelService.createReview(s3ObjectData, content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
+            }else{
+                return await this.reviewModelService.createReview([], content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
             }
         } catch (error) {
             console.log("=>(review_model.resolver.ts:86) error", error);

@@ -285,19 +285,21 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
             let insertId = data.identifiers[0].idx;
             if(insertId){
                 //이미지 DB 저장
-                for(let i=0; i<s3ObjectData.length; i++){
-                    await queryRunner.manager.createQueryBuilder()
-                        .insert()
-                        .into(CampaignReviewImage, [
-                            'reviewIdx','key','url','create_at'
-                        ])
-                        .values({
-                            reviewIdx : insertId,
-                            key : s3ObjectData[i].key,
-                            url : s3ObjectData[i].url,
-                            create_at: () => `"${getNow()}"`
-                        })
-                        .execute();
+                if(s3ObjectData.length > 0) {
+                    for (let i = 0; i < s3ObjectData.length; i++) {
+                        await queryRunner.manager.createQueryBuilder()
+                            .insert()
+                            .into(CampaignReviewImage, [
+                                'reviewIdx', 'key', 'url', 'create_at'
+                            ])
+                            .values({
+                                reviewIdx: insertId,
+                                key: s3ObjectData[i].key,
+                                url: s3ObjectData[i].url,
+                                create_at: () => `"${getNow()}"`
+                            })
+                            .execute();
+                    }
                 }
             }
 
