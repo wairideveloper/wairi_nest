@@ -45,7 +45,7 @@ extend type Mutation {
         content: String!,
         campaignIdx: Int!,
         itemIdx: Int!,
-        submitIdx: Int!,
+        submitIdx: Float!,
         rate: Int!,
     ): GraphqlHttpResponse
     updateReview(idx:Int!,
