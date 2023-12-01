@@ -37,10 +37,20 @@ scalar Upload
 extend type Query {
     getReviews(idx:Int! take: Int!,page:Int!): Reviews
     getReview(idx:Int!): Review
+    getMyReviews(take: Int!,page:Int!): Reviews
 }
 
 extend type Mutation {
     createReview(files: [Upload],
+        content: String!,
+        campaignIdx: Int!,
+        itemIdx: Int!,
+        submitIdx: Int!,
+        rate: Int!,
+    ): GraphqlHttpResponse
+    updateReview(idx:Int!,
+        images: String!,
+        files: [Upload],
         content: String!,
         campaignIdx: Int!,
         itemIdx: Int!,

@@ -48,6 +48,23 @@ export class ReviewModelResolver {
         }
     }
 
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getMyReviews(
+        @AuthUser() authUser: Member,
+        @Args('take') take: number,
+        @Args('page') page: number,
+    ) {
+        try {
+            let data = await this.reviewModelService.getMyReviews(authUser.idx, take, page);
+            console.log("=>(review_model.resolver.ts:60) data", data);
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
     @Mutation()
     @UseGuards(GqlAuthGuard)
     async createReview(
@@ -61,28 +78,87 @@ export class ReviewModelResolver {
     ){
         try {
             let file:Upload[] = files;
-            //단일 파일 업로드
-            if (file.length === 1) {
-                // console.log("=>(review_model.resolver.ts:60) file[0].file", file[0].file);
-                // let imgUrl = await this.commonModelService.uploadImage(file[0].file);
-                // console.log("=>(review_model.resolver.ts:55) imgUrl", imgUrl);
-            }
             //다중 파일 업로드
-            if (file.length > 1) {
+            if (file.length > 0) {
                 let s3ObjectData = [];
                 for(let i=0; i<file.length; i++) {
-                    console.log("=>(review_model.resolver.ts:59) file", await file[i]);
                     let awsObjectData = await this.commonModelService.uploadImage(await file[i].file);
                     s3ObjectData.push(
                         {'key': awsObjectData.key, 'url': awsObjectData.url})
                 }
                 console.log("=>(review_model.resolver.ts:78) s3ObjectData", s3ObjectData);
-                console.log("=>(review_model.resolver.ts:61) content", content);
 
                 return await this.reviewModelService.createReview(s3ObjectData, content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
             }
         } catch (error) {
             console.log("=>(review_model.resolver.ts:86) error", error);
+            throw new HttpException(error.message, 500)
+        }
+    }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async updateReview(
+        @Args('idx') idx: number,
+        @Args('images') images: string,
+        @Args({name: 'files', type: () => [GraphQLUpload]}) files:  Upload[],
+        @Args('content') content: string,
+        @Args('campaignIdx') campaignIdx: number,
+        @Args('itemIdx') itemIdx: number,
+        @Args('submitIdx') submitIdx: number,
+        @Args('rate') rate: number,
+        @AuthUser() authUser: Member
+    ) {
+        let file:Upload[] = files;
+
+        //REVIEW UPDATE IMAGES DELETE
+
+        // idx로 review 조회
+        let review = await this.reviewModelService.getReview(idx);
+
+        if (review.memberIdx !== authUser.idx) {
+            throw new HttpException("권한이 없습니다.", 401);
+        }
+        if(!review) {
+            throw new HttpException("리뷰가 존재하지 않습니다.", 404);
+        }
+
+        // review의 images를 가져옴
+        let reviewImages = review.images;
+        console.log("=>(review_model.resolver.ts:114) reviewImages", reviewImages);
+        // review의 images와 images를 비교하여 삭제할 이미지를 찾음
+        let deleteImages = reviewImages.filter(reviewImage => !images.includes(reviewImage));
+        console.log("=>(review_model.resolver.ts:117) deleteImages", deleteImages);
+        console.log("=>(review_model.resolver.ts:117) deleteImages", typeof(deleteImages));
+
+        try {
+            //다중 파일 업로드
+            let s3ObjectData = [];
+            if (file.length > 0) {
+                for (let i = 0; i < file.length; i++) {
+                    let awsObjectData = await this.commonModelService.uploadImage(await file[i].file);
+                    s3ObjectData.push(
+                        {'key': awsObjectData.key, 'url': awsObjectData.url})
+                }
+            }
+            //, 구분으로 배열 생성
+            let newImageArray = images.split(',');
+
+            //s3ObjectData가 있을 경우 url만 newImageArray 추가
+            if (s3ObjectData.length > 0) {
+                s3ObjectData.forEach((s3ObjectData) => {
+                    newImageArray.push(s3ObjectData.url);
+                })
+            }
+
+            console.log("=>(review_model.resolver.ts:142) newImageArray", newImageArray);
+
+            //updateReview 실행
+            let data = await this.reviewModelService.updateReview(idx, newImageArray, s3ObjectData, deleteImages,
+                content, campaignIdx, itemIdx, submitIdx, rate, authUser.idx);
+
+        } catch (error) {
+            console.log("=>(review_model.resolver.ts:146) updateReview error", error);
             throw new HttpException(error.message, 500)
         }
     }
