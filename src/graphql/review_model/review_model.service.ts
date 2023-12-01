@@ -92,7 +92,7 @@ export class ReviewModelService {
                     }else{
                         if (jsonImages.length > 0) {
                             jsonImages.map((image) => {
-                                images.push(image.url);
+                                images.push(image);
                             })
                         }
                     }
