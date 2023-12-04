@@ -28,7 +28,7 @@ async function bootstrap() {
     optionsSuccessStatus: 200,
   });
 
-  app.use(graphqlUploadExpress({maxFileSize:1000000, maxFiles: 5})) // 일반 업로드 파일 사용시 주석처리
+  app.use(graphqlUploadExpress({maxFileSize:10000000, maxFiles: 5})) // 일반 업로드 파일 사용시 주석처리
 
   // // Set the config options
   // const adminConfig: ServiceAccount = {
