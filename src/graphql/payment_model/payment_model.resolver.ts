@@ -55,7 +55,10 @@ export class PaymentModelResolver {
             })
             //재고 체크후 결제 confirm
             // authUser.idx set
-            let memberIdx = authUser ? authUser.idx : 15120;
+            let memberIdx = authUser ? authUser.idx : 0;
+            if(memberIdx == 0){
+                throw new HttpException("로그인이 필요합니다.", 404);
+            }
             console.log("=>(payment_model.resolver.ts:59) memberIdx", memberIdx);
 
             const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, memberIdx);
@@ -76,9 +79,8 @@ export class PaymentModelResolver {
                     }
                 }
             }
-
             if (response.status === 1) {
-                //submitItem.payTotal == response.data.price;
+
                 if ((submitItem.payTotal) != response.price) {
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
@@ -87,6 +89,7 @@ export class PaymentModelResolver {
 
                 //재고 차감
                 if (itemSchduleIdx.length > 0) {
+                    console.log("=>(payment_model.resolver.ts:101) updateCampaignItemSchduleStock", '카드사용 재고차감 시작');
                     const result = await this.submitModelService.updateCampaignItemSchduleStock(
                         itemSchduleIdx,
                         submitItem.nop,
@@ -96,6 +99,7 @@ export class PaymentModelResolver {
                         memberIdx, // memberIdx
                         submitItem.idx
                     )
+
                 }
             }
 

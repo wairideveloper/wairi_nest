@@ -101,38 +101,6 @@ export class Madein20ModelService {
         // }
         console.log("=>(madein20_model.service.ts:sendPartnerAlimtalk) response", response);
     }
-
-    private setParams(data: any, templateCode: string, phone: string) {
-        switch (templateCode) {
-            case 'EHu0hjNSYvP3y0ZSxSd2' :
-                return {
-                    phone: phone,
-                    params: {
-                        '이름': data.id? data.id+' 님' : '',
-                        '채널주소': data.channelUrl? data.channelUrl : '',
-                    }
-                }
-            case '2jSKar7G587ZpGo6ZsKa' :
-                return {
-                    phone: phone,
-                    name: data.corpName,
-                    params: {
-                        '업체이름' : data.corpName? data.corpName : '',
-                        '이름': data.name? data.name : '',
-                        '캠페인이름': data.campaignName? data.campaignName : '',
-                        '이용일자': data.name? data.name : '',
-                        '인원': data.name? data.name : '',
-                        '채널주소': data.channelUrl? data.channelUrl : '',
-                        '캠페인페이지승인링크': data.channelUrl? data.channelUrl : '',
-                        '2일 후 낮 12시': data.channelUrl? data.channelUrl : '',
-                        '자동신청마감시간': data.channelUrl? data.channelUrl : '',
-                        '입금가': data.channelUrl? data.channelUrl : '',
-                    }
-                }
-        }
-    }
-
-
     async sendAlimtalk(phoneList: any[], templateCode: string, params = []) {
         phoneList.map( async (phone) => {
             console.log(phone)
@@ -155,5 +123,157 @@ export class Madein20ModelService {
                 throw new Error('Failed to send Alimtalk: ' + error.message);
             }
         })
+    }
+
+    private setParams(data: any, templateCode: string, phone: string) {
+        switch (templateCode) {
+            case 'EHu0hjNSYvP3y0ZSxSd2' :
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.id? data.id+' 님' : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                    }
+                }
+            case '2jSKar7G587ZpGo6ZsKa' : // 캠페인 신청 알림 (파트너)
+                return {
+                    phone: phone,
+                    name: data.corpName,
+                    params: {
+                        '업체이름' : data.corpName? data.corpName : '',
+                        '이름': data.name? data.name : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '캠페인페이지승인링크': data.channelUrl? data.channelUrl : '',
+                        '2일 후 낮 12시': data.channelUrl? data.channelUrl : '',
+                        '자동신청마감시간': data.channelUrl? data.channelUrl : '',
+                        '입금가': data.channelUrl? data.channelUrl : '',
+                    }
+                }
+            case 'ZBQ0QxY7WI99M8UrfAHq' : // 캠페인 신청 대기 알림 (회원)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '자동신청마감시간': data.channelUrl? data.channelUrl : ''
+                    }
+                }
+            case '72o88NAj9Gla9C1gIMLJ' : // 캠페인 신청 취소 알림 (파트너)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '취소사유': data.channelUrl? data.channelUrl : ''
+                    }
+                }
+            case 'kjR290Pm0Xac0NzLZNU2' : // 인플루언서 회원정보 변경 신청 완료 알림 (인플루언서 발송)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '변경내용': data.campaignName? data.campaignName : '', //Todo 벼경내용 개행 문자로
+                    }
+                }
+            case 'kh0k73yd51k3jIk506VV' : // 캠페인 선정 알림 (승인) (인플루언서 발송)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '신청내역링크': data.channelUrl? data.channelUrl : '',
+                        '결제마감일': data.channelUrl? data.channelUrl : '',
+                    }
+                }
+            case '148DrKHkbs2HhJSH1vfX' : // 이용 완료 알림 (인스타그래머)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '업로드기간': data.channelUrl? data.channelUrl : '',
+                        '업로드 링크': data.channelUrl? data.channelUrl : '',
+                        '가이드라인 링크': data.channelUrl? data.channelUrl : '',
+                        '게시링크': data.channelUrl? data.channelUrl : '',
+                    }
+                }
+            case 'SuOwsMM3rmA5dlC3ao5M' : // 이용 완료 알림 (블로거)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '업로드기간': data.channelUrl? data.channelUrl : '',
+                        '업로드 링크': data.channelUrl? data.channelUrl : '',
+                        '가이드라인 링크': data.channelUrl? data.channelUrl : '',
+                        '게시링크': data.channelUrl? data.channelUrl : '',
+                    }
+                }
+            case '591d648Ltv7Kow01x5YI' : // 이용 완료 알림 (유튜버)
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '업로드기간': data.channelUrl? data.channelUrl : '',
+                        '업로드링크': data.channelUrl? data.channelUrl : '',
+                        '가이드라인링크': data.channelUrl? data.channelUrl : ''
+                    }
+                }
+            case '6z33tsC3tk0071tIjnHx' : // 캠페인 결제 리마인드 알림
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '결제마감일': data.channelUrl? data.channelUrl : '',
+                        '신청내역페이지URL': data.channelUrl? data.channelUrl : ''
+                    }
+                }
+            case 'cOS69z2IOW5l3BK7kl0K' : // 포스팅 완료 알림
+                return {
+                    phone: phone,
+                    params: {
+                        '이름': data.name? data.name : '',
+                        '업체이름': data.campaignName? data.campaignName : '',
+                        '캠페인이름': data.campaignName? data.campaignName : '',
+                        '이용일자': data.name? data.name : '',
+                        '인원': data.name? data.name : '',
+                        '채널주소': data.channelUrl? data.channelUrl : '',
+                        '콘텐츠URL': data.channelUrl? data.channelUrl : ''
+                    }
+                }
+        }
     }
 }
