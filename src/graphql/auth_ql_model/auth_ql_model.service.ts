@@ -589,6 +589,7 @@ export class AuthQlModelService {
             4: apple
              */
             let memberCheck = await this.memberService.findSocialId(data.email, data.id, data.social_type);
+            memberCheck = bufferToString(memberCheck);
             console.log("=>(auth_ql_model.service.ts:570) memberCheck", memberCheck);
             const passwd = await hashPassword(data.id.toString());
 

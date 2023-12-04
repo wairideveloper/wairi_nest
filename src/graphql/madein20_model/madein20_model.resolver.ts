@@ -1,6 +1,7 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { Madein20ModelService } from './madein20_model.service';
 import {ReceiverInput} from "./dto/receiver.input";
+import {HttpException} from "@nestjs/common";
 @Resolver('Madein20Model')
 export class Madein20ModelResolver {
   constructor(private readonly madein20ModelService: Madein20ModelService) {}
@@ -17,18 +18,18 @@ export class Madein20ModelResolver {
                 idx : 1234,
                 name : '테스트 알림톡',
                 channelUrl : 'test'
+
             }
             //test code
 
-
             // return await this.madein20ModelService.partnerConfig(575);
-            return await this.madein20ModelService.sendManagerAlimtalk(data, 'test','EHu0hjNSYvP3y0ZSxSd2');
+            return await this.madein20ModelService.sendPartnerAlimtalk(data, '2jSKar7G587ZpGo6ZsKa','test', 654);
+            return await this.madein20ModelService.sendPartnerAlimtalk(data, 'EHu0hjNSYvP3y0ZSxSd2','test', 653);
+            return await this.madein20ModelService.sendManagerAlimtalk(data, 'EHu0hjNSYvP3y0ZSxSd2','test');
 
-            const response = await this.madein20ModelService.sendAlimtalk(receiverInput,templateCode);
-            return response;
         }catch (error){
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
   }
 }

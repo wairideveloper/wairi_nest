@@ -1,6 +1,6 @@
 import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {SubmitModelService} from './submit_model.service';
-import {UseGuards} from "@nestjs/common";
+import {HttpException, UseGuards} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
@@ -128,6 +128,7 @@ export class SubmitModelResolver {
             }
         } catch (error) {
             console.log("=>(submit_model.resolver.ts:56) error", error)
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -143,7 +144,7 @@ export class SubmitModelResolver {
             return data;
         }catch(error){
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -159,7 +160,7 @@ export class SubmitModelResolver {
             return data;
         }catch (error) {
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -187,7 +188,7 @@ export class SubmitModelResolver {
             }
         }catch (error) {
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -214,7 +215,7 @@ export class SubmitModelResolver {
               }
        }catch (error) {
            console.log(error)
-           throw error;
+           throw new HttpException(error.message, error.status);
        }
     }
 
@@ -230,7 +231,7 @@ export class SubmitModelResolver {
             return data;
         }catch (error) {
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -257,7 +258,7 @@ export class SubmitModelResolver {
             }
         }catch (error) {
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -283,7 +284,7 @@ export class SubmitModelResolver {
             }
         }catch (error) {
             console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
