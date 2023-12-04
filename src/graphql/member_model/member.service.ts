@@ -186,6 +186,7 @@ export class MembersService {
             .andWhere(`${AES_DECRYPT('name')} = :username`, {username: username})
             .andWhere('type = 1')
             .andWhere('status in (1,4,9)')
+            .andWhere('social_type is null')
             .getRawOne();
     }
 
