@@ -184,6 +184,8 @@ export class MembersService {
             .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
             .where(`${AES_DECRYPT('phone')} = :phone`, {phone: phone})
             .andWhere(`${AES_DECRYPT('name')} = :username`, {username: username})
+            .andWhere('type = 1')
+            .andWhere('status in (1,4,9)')
             .getRawOne();
     }
 

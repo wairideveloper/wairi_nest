@@ -83,7 +83,7 @@ export class Madein20ModelService {
         console.log("=>(madein20_model.service.ts:sendManagerAlimtalk) response", response);
     }
 
-    async sendPartnerAlimtalk(data: any, templateCode: string, division: string, campaignIdx: number) {
+    async sendPartnerAlimtalk(data: any, templateCode: string, division: string = '', campaignIdx: number) {
         let phoneList = await this.partnerConfig(campaignIdx);
         let partner = await this.partnerRepository.createQueryBuilder('partner')
             .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
@@ -94,9 +94,11 @@ export class Madein20ModelService {
         partner = bufferToString(partner)
         data.corpName = partner.corpName;
         data.campaignName = partner.campaignName;
-// console.log("=>(madein20_model.service.ts:97) data", data);
-// return
+
         const response = await this.sendAlimtalk(phoneList, templateCode, data)
+        // if(response.code != 1){
+        //
+        // }
         console.log("=>(madein20_model.service.ts:sendPartnerAlimtalk) response", response);
     }
 
