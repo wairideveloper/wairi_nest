@@ -196,7 +196,7 @@ export class SubmitModelService {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .update(CampaignSubmit)
             .set({
-                status: 950,
+                status: 900,
                 statusDate900: getUnixTimeStamp(),
                 cancelReason: reason,
                 cancelUser: 1
