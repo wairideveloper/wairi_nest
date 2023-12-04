@@ -67,10 +67,12 @@ export class CommonModelService {
             const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
 
             if (res.$metadata.httpStatusCode === 200) {
-                const url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
-
+                let url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
+                //aws s3에 저장된 파일의 url을 반환
+                url = url.split('?')[0];
                 return {
                     key : encodeFileName,
+                    // url : `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}amazonaws.com/${encodeFileName}`
                     url : url
                 };
             }
