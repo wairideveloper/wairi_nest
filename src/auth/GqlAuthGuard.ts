@@ -1,15 +1,24 @@
 import {ExecutionContext, HttpException, Injectable, UnauthorizedException} from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
-import { AuthGuard } from '@nestjs/passport';
+import {GqlExecutionContext} from '@nestjs/graphql';
+import {AuthGuard} from '@nestjs/passport';
 import * as process from 'process';
 import {Request} from "express";
-import { JwtService } from '@nestjs/jwt';
+import {JwtService} from '@nestjs/jwt';
 import {ExecutionContextHost} from "@nestjs/core/helpers/execution-context-host";
 import {Reflector} from "@nestjs/core";
+import {Member} from "../../entity/entities/Member";
+import {InjectRepository} from "@nestjs/typeorm";
+import {CampaignReview} from "../../entity/entities/CampaignReview";
+import {Repository} from "typeorm";
+
 @Injectable()
 export class GqlAuthGuard extends AuthGuard('jwt') {
 
-    constructor(private jwtService: JwtService) {
+    constructor(
+        private jwtService: JwtService,
+        @InjectRepository(Member)
+        private readonly memberRepository: Repository<Member>,
+    ) {
         super();
     }
 
@@ -28,13 +37,19 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
         req.user = this.validateToken(token);
         return true;
     }
+
     validateToken(token: string) {
         // console.log("-> token", token);
         const secretKey = process.env.JWT_SECRET;
         // console.log("-> secretKey", secretKey);
 
         try {
-            const user = this.jwtService.verify(token, { secret: secretKey });
+            const user = this.jwtService.verify(token, {secret: secretKey});
+            //db에서 유저 정보를 가져옵니다.
+            const DBUser = this.memberRepository.findOne({where : {idx : user.idx}});
+            if(!DBUser){
+                throw new HttpException('유효하지 않은 토큰입니다.', 401);
+            }
             console.log("-> user", user);
             return user;
         } catch (e) {

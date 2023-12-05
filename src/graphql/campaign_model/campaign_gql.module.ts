@@ -14,11 +14,12 @@ import {CampaignRecent} from "../../../entity/entities/CampaignRecent";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {CampaignFav} from "../../../entity/entities/CampaignFav";
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
+import {Member} from "../../../entity/entities/Member";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Campaign,CampaignItem,CampaignImage,Cate,
         CateArea,Partner,CampaignReview,CampaignRecent, CampaignItemSchedule, CampaignFav,
-        CampaignSubmit
+        CampaignSubmit,Member
     ])],
     providers: [CampaignResolver,CampaignService,JwtService],
 })

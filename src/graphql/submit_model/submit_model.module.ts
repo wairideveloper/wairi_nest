@@ -16,11 +16,12 @@ import {CampaignRecent} from "../../../entity/entities/CampaignRecent";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {CampaignFav} from "../../../entity/entities/CampaignFav";
 import {Payment} from "../../../entity/entities/Payment";
+import {Member} from "../../../entity/entities/Member";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
-            CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment
+            CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService]
