@@ -26,7 +26,7 @@ export class PaymentModelResolver {
     }
 
     @Mutation()
-    @UseGuards(GqlAuthGuard) //로그인 체크
+    // @UseGuards(GqlAuthGuard) //로그인 체크
     async confirmStock(
         @Args('confirmPaymentInput') confirmPaymentInput: ConfirmPaymentInput,
         @AuthUser() authUser: Member
@@ -41,7 +41,11 @@ export class PaymentModelResolver {
 
             const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
                 submitItem.itemIdx, submitItem.startDate, submitItem.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
+            console.log("=>(payment_model.resolver.ts:44) campaignItemSchdule", campaignItemSchdule);
 
+            if(campaignItemSchdule.length == 0){
+                throw new HttpException("신청 가능한 스케쥴이 없습니다.", 404);
+            }
             let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {
                 // stock 확인 nop > stock
