@@ -40,6 +40,7 @@ export class ReviewModelService {
                     "campaignReview.content_a as content_a",
                     "campaignReview.rate as rate",
                     "campaignReview.images as images",
+                    "campaignReview.aws_use_yn as aws_use_yn",
                     // "campaignReviewImage.key as awsKey",
                     // "campaignReviewImage.url as url",
                 ])
@@ -80,9 +81,11 @@ export class ReviewModelService {
                     //images
                     let jsonImages = JSON.parse(item.images);
                     let images = [];
+
                     if(item.aws_use_yn == 'N') {
                         jsonImages.map((image) => {
                             //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
+
                             if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
                                 images.push('https://wairi.co.kr/img/review/' + image);
                             } else {
@@ -99,7 +102,6 @@ export class ReviewModelService {
                     item.images = images;
                 })
             }
-            console.log("=>(review_model.service.ts getReviews:80) data", data);
             return new Pagination({
                 data,
                 total,
