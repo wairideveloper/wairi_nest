@@ -84,13 +84,10 @@ export class PaymentModelResolver {
                 }
             }
 
-
             console.log("=>(payment_model.resolver.ts:90) itemSchduleIdx", itemSchduleIdx);
-console.log("=>(payment_model.resolver.ts:86) response", response);
-console.log("=>(payment_model.resolver.ts:86) submitItem", submitItem);
-console.log("=>(payment_model.resolver.ts:87) response.price", response.price);
-
-
+            console.log("=>(payment_model.resolver.ts:86) response", response);
+            console.log("=>(payment_model.resolver.ts:86) submitItem", submitItem);
+            console.log("=>(payment_model.resolver.ts:87) response.price", response.price);
 
             if (response.status === 1) {
 

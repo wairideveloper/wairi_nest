@@ -34,7 +34,7 @@ export class ReviewModelService {
                     "campaignReview.idx as idx",
                     "campaignItem.idx as itemIdx",
                     "campaignItem.name as itemName",
-                    "member.idx as memberIdx",
+                    "campaignReview.memberIdx as memberIdx",
                     "campaignReview.regdate as regdate",
                     "campaignReview.content as content",
                     "campaignReview.content_a as content_a",
