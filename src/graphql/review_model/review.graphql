@@ -10,10 +10,15 @@ type Review{
     regdate: String
     regdate_a: String
     memberName: String
-    images: [String]
+    images: [ReviewImage]
     itemName: String
     name: String
     awsKey: String
+    url: String
+}
+
+type ReviewImage{
+    key: String
     url: String
 }
 
