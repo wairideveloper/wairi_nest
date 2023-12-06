@@ -160,7 +160,7 @@ export class MembersService {
             .addSelect('passwd')
             .where('id = :id', {id: id})
             // status -9 는 탈퇴회원
-            .andWhere('status != -9')
+            // .andWhere('status != -9')
             .getRawOne();
 
         return result;
