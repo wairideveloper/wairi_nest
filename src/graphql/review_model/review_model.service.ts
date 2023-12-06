@@ -85,13 +85,14 @@ export class ReviewModelService {
 
                     if (item.aws_use_yn == 'N') {
                         jsonImages.map((image) => {
-                            //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
-
-                            if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
-                                images.push('https://wairi.co.kr/img/review/' + image);
-                            } else {
-                                images.push(image);
-                            }
+                            let object = {
+                                key: null,
+                                url: null
+                            };
+                            jsonImages.map((image) => {
+                                object.url = 'https://wairi.co.kr/img/review/' + image;
+                                images.push(object);
+                            })
                         })
                     } else {
                         if (jsonImages.length > 0) {
@@ -465,14 +466,16 @@ export class ReviewModelService {
                     // console.log("=>(review_model.service.ts:455) jsonImages", jsonImages);
                     let images = [];
                     if (item.aws_use_yn == 'N') {
-                        jsonImages.map((image) => {
-                            //파일주소에 "https://wairi.s3.ap-northeast-2.amazonaws.com/" 포함되어있는지 체크
-                            if (image.indexOf("https://wairi.s3.ap-northeast-2.amazonaws.com/") === -1) {
-                                images.push('https://wairi.co.kr/img/review/' + image);
-                            } else {
-                                images.push(image);
-                            }
-                        })
+                        if (jsonImages.length > 0) {
+                            let object = {
+                                key: null,
+                                url: null
+                            };
+                            jsonImages.map((image) => {
+                                object.url = 'https://wairi.co.kr/img/review/' + image;
+                                images.push(object);
+                            })
+                        }
                     } else {
                         if (jsonImages.length > 0) {
                             jsonImages.map((image) => {

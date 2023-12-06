@@ -1,8 +1,8 @@
 type Review{
     idx: Int!
     memberIdx: Int!
-    itemIdx: Int!
-    submitIdx: Int!
+    itemIdx: Int
+    submitIdx: Int
     rate: Int!
     image: String
     content: String
