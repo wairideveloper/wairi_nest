@@ -448,6 +448,9 @@ export class AuthQlModelService {
         try {
             let data = await this.memberService.findById(id);
             data = bufferToString(data);
+            if(!data){
+                throw new HttpException('회원정보가 없습니다.', 404);
+            }
             if(data.status == -9){
                 throw new HttpException('탈퇴한 회원입니다.', 404);
             }
