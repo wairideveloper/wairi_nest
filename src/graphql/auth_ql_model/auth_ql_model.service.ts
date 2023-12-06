@@ -448,6 +448,9 @@ export class AuthQlModelService {
         try {
             let data = await this.memberService.findById(id);
             data = bufferToString(data);
+            if(data.status == -9){
+                throw new HttpException('탈퇴한 회원입니다.', 404);
+            }
             console.log("=>(auth_ql_model.service.ts:433) data", data);
             let channel = await this.memberService.findChannel(data.idx);
             channel = bufferToString(channel);

@@ -267,7 +267,7 @@ export class AuthQlModelResolver {
             return await this.authQlModelService.getMemberInfo(id);
         } catch (error) {
             customLogger(this.logger, id, error);
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
