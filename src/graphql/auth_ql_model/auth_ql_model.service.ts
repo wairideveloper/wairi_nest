@@ -452,7 +452,7 @@ export class AuthQlModelService {
                 throw new HttpException('회원정보가 없습니다.', 404);
             }
             if(data.status == -9){
-                throw new HttpException('탈퇴한 회원입니다.', 404);
+                throw new HttpException('탈퇴한 회원입니다.', 406);
             }
             console.log("=>(auth_ql_model.service.ts:433) data", data);
             let channel = await this.memberService.findChannel(data.idx);
