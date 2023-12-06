@@ -65,6 +65,7 @@ import {Popup} from "../entity/entities/Popup";
 import {Withdrawal} from "../entity/entities/Withdrawal";
 import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
 import {Admin} from "../entity/entities/Admin";
+import {ApolloServerErrorCode} from "@apollo/server/errors";
 
 @Module({
     imports: [
@@ -163,6 +164,22 @@ import {Admin} from "../entity/entities/Admin";
                 };
                 return graphQLFormattedError;
             },
+            // formatError: (formattedError, error) => {
+            //     // Return a different error message
+            //     if (
+            //         formattedError.extensions.code ===
+            //         ApolloServerErrorCode.GRAPHQL_VALIDATION_FAILED
+            //     ) {
+            //         return {
+            //             ...formattedError,
+            //             message: "Your query doesn't match the schema. Try double-checking it!",
+            //         };
+            //     }
+            //
+            //     // Otherwise return the formatted error. This error can also
+            //     // be manipulated in other ways, as long as it's returned.
+            //     return formattedError;
+            // },
         }),
         // MembersModule,
         MemberModule,

@@ -40,22 +40,48 @@ extend type Query {
     getMyReviews(take: Int!,page:Int!): Reviews
 }
 
+input CreateReviewInput{
+    content: String!,
+    campaignIdx: Int!,
+    itemIdx: Int!,
+    submitIdx: Int!,
+    rate: Int!,
+    images: String
+}
+
+input UpdateReviewInput{
+    idx:Int!,
+    content: String!,
+    campaignIdx: Int!,
+    itemIdx: Int!,
+    submitIdx: Int!,
+    rate: Int!,
+    images: String,
+    deleteImages: String
+}
+
 extend type Mutation {
-    createReview(files: [Upload],
-        content: String!,
-        campaignIdx: Int!,
-        itemIdx: Int!,
-        submitIdx: Int!,
-        rate: Int!,
+#    createReview(files: [Upload],
+#        content: String!,
+#        campaignIdx: Int!,
+#        itemIdx: Int!,
+#        submitIdx: Int!,
+#        rate: Int!,
+#    ): GraphqlHttpResponse
+    createReview(
+        createReviewInput: CreateReviewInput
     ): GraphqlHttpResponse
-    updateReview(idx:Int!,
-        images: String!,
-        files: [Upload],
-        content: String!,
-        campaignIdx: Int!,
-        itemIdx: Int!,
-        submitIdx: Int!,
-        rate: Int!,
+#    updateReview(idx:Int!,
+#        images: String!,
+#        files: [Upload],
+#        content: String!,
+#        campaignIdx: Int!,
+#        itemIdx: Int!,
+#        submitIdx: Int!,
+#        rate: Int!,
+#    ): GraphqlHttpResponse
+    updateReview(
+        updateReviewInput: UpdateReviewInput
     ): GraphqlHttpResponse
     deleteReview(idx:Int!): deleteReviewResponse
     deleteImage: deleteReviewResponse

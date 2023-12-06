@@ -256,10 +256,10 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
         // transaction start
 
         //s3ObjectData = [{'key': awsObjectData.key, 'url': awsObjectData.url}] 에서 url 배열로 만듬
-        let images = [];
-        s3ObjectData.map((item) => {
-            images.push(item.url);
-        })
+        // let images = [];
+        // s3ObjectData.map((item) => {
+        //     images.push(item.url);
+        // })
 
         const queryRunner = this.reviewRepository.manager.connection.createQueryRunner();
         await queryRunner.connect();
@@ -277,7 +277,7 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
                     submitIdx : submitIdx,
                     content : content,
                     rate : rate,
-                    images : JSON.stringify(images),
+                    images : JSON.stringify(s3ObjectData),
                     aws_use_yn : 'Y',
                     regdate: () => `"${now}"`,
                 })
@@ -320,7 +320,7 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
         }
     }
 
-    async updateReview(idx: number, newImageArray: string[], s3ObjectData: any[], deleteImages: any[] , content: string, campaignIdx: number, itemIdx: number, submitIdx: number, rate: number, memberIdx: number) {
+    async updateReview(idx: number, newImageArray: any[], s3ObjectData: any[], deleteImages: any[] , content: string, campaignIdx: number, itemIdx: number, submitIdx: number, rate: number, memberIdx: number) {
         const queryRunner = this.reviewRepository.manager.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -358,19 +358,19 @@ console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
             let keys = [];
             for(let i=0; i<deleteImages.length; i++){
                 //deleteImages url 일치하는 key 찾기
-                await this.reviewImageRepository.createQueryBuilder("campaignReviewImage")
-                    .select("*")
-                    .where("url = :url", {url: deleteImages[i].url})
-                    .getRawMany()
-                    .then((result) => {
-                        result.map((item) => {
-                            keys.push(item.key);
-                        })
-                    });
+                // await this.reviewImageRepository.createQueryBuilder("campaignReviewImage")
+                //     .select("*")
+                //     .where("url = :url", {url: deleteImages[i].url})
+                //     .getRawMany()
+                //     .then((result) => {
+                //         result.map((item) => {
+                //             keys.push(item.key);
+                //         })
+                //     });
                 await queryRunner.manager.createQueryBuilder()
                     .delete()
                     .from(CampaignReviewImage)
-                    .where("idx = :idx", {idx: deleteImages[i].idx})
+                    .where("awskey = :awskey", {awskey: deleteImages[i]})
                     .execute();
             }
 
