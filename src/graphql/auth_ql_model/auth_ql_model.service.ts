@@ -676,7 +676,8 @@ export class AuthQlModelService {
                 .set(
                     {
                         withdrawal: data.reason,
-                        status: -9
+                        status: -9,
+                        exitdate: getNowUnix().toString(),
                     }
                 )
                 .where("idx = :idx", {idx: data.memberIdx})
