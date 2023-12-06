@@ -220,7 +220,7 @@ export class ReviewModelService {
                 .getRawMany()
                 .then((result) => {
                     result.map((item) => {
-                        s3ImageKeys.push(item.key);
+                        s3ImageKeys.push(item.awskey);
                     })
                 });
             console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
