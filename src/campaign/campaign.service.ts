@@ -150,8 +150,37 @@ export class CampaignService {
             .groupBy('campaignSubmit.campaignIdx')
             .getQuery();
 
+        //최근 3개월 승인률 % 계산
+        let recentSubmitCount = this.campaignSubmit
+            .createQueryBuilder()
+            .subQuery()
+            .select([
+                'campaignSubmit.campaignIdx as campaignIdx',
+                'COUNT(*) AS submitCount'
+            ])
+            .from(CampaignSubmit, 'campaignSubmit')
+            .where('campaignSubmit.status >= 400')
+            .andWhere('campaignSubmit.status <= 700')
+            .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+            .groupBy('campaignSubmit.campaignIdx')
+            .getQuery();
+
+        let recentSubmitCountTotal = this.campaignSubmit
+            .createQueryBuilder()
+            .subQuery()
+            .select([
+                'campaignSubmit.campaignIdx as campaignIdx',
+                'COUNT(*) AS submitCount'
+            ])
+            .from(CampaignSubmit, 'campaignSubmit')
+            .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+            .groupBy('campaignSubmit.campaignIdx')
+            .getQuery();
+
         query = this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
+            .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
+            .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
@@ -160,6 +189,8 @@ export class CampaignService {
             .leftJoin('campaign.partner', 'partner')
             .select([
                 'campaignSubmit.submitCount',
+                // % 계산
+                'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
                 'campaign.idx as idx',
                 'campaign.name as name',
                 'campaign.weight as weight',
@@ -169,10 +200,6 @@ export class CampaignService {
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
                 'cateArea.idx as cateAreaIdx',
-                //최근 3개월 승인률 계산
-                'ROUND((SELECT COUNT(*) FROM campaignSubmit WHERE campaignSubmit.campaignIdx = campaign.idx AND campaignSubmit.status >= 400 AND campaignSubmit.status <= 700 AND campaignSubmit.regdate >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))) / (SELECT COUNT(*) FROM campaignSubmit WHERE campaignSubmit.campaignIdx = campaign.idx AND campaignSubmit.regdate >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))) * 100, 0) AS approvalRate',
-
-
 
             ])
             .where('campaign.remove = :remove', {remove: 0})
