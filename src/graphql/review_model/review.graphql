@@ -61,7 +61,7 @@ input UpdateReviewInput{
     content: String!,
     campaignIdx: Int!,
     itemIdx: Int!,
-    submitIdx: Int!,
+    submitIdx: Int,
     rate: Int!,
     images: String,
     deleteImages: String
