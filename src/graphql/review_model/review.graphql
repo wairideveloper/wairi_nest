@@ -1,6 +1,8 @@
 type Review{
     idx: Int!
     memberIdx: Int!
+    campaignIdx: Int
+    campaignName: String
     itemIdx: Int
     submitIdx: Int
     rate: Int!

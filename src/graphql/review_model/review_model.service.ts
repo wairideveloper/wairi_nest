@@ -413,9 +413,12 @@ export class ReviewModelService {
             let data = await this.reviewRepository.createQueryBuilder("campaignReview")
                 .leftJoin("campaignReview.member", "member")
                 .leftJoin("campaignReview.campaignItem", "campaignItem")
+                .leftJoin("campaignReview.campaign", "campaign")
                 // .leftJoin('campaignReviewImage', 'campaignReviewImage', 'campaignReviewImage.reviewIdx = campaignReview.idx')
                 .select([
                     "campaignReview.idx as idx",
+                    "campaign.idx as campaignIdx",
+                    "campaign.name as campaignName",
                     "campaignItem.idx as itemIdx",
                     "campaignItem.name as itemName",
                     "member.idx as memberIdx",
