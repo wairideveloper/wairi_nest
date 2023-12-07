@@ -62,7 +62,7 @@ export class CampaignService {
                     .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
-            }else{
+            }else if(sort == 'popular'){
                 let submitCount = this.campaignSubmitRepository
                     .createQueryBuilder()
                     .subQuery()
@@ -98,6 +98,75 @@ export class CampaignService {
                     .andWhere('partner.status = :status', {status: 1})
                     .andWhere('campaignItem.endDate > UNIX_TIMESTAMP(NOW())')
                     .orderBy("submitCount", 'DESC')
+                    .addOrderBy('weight', 'DESC')
+                    .groupBy('campaign.idx')
+                    .limit(8)
+                    .getRawMany()
+            }else{
+                let submitCount = this.campaignSubmitRepository
+                    .createQueryBuilder()
+                    .subQuery()
+                    .select([
+                        'campaignSubmit.campaignIdx as campaignIdx',
+                        'COUNT(*) AS submitCount'
+                    ])
+                    .from(CampaignSubmit, 'campaignSubmit')
+                    .where('campaignSubmit.status > 0')
+                    .andWhere('campaignSubmit.status < 900')
+                    .groupBy('campaignSubmit.campaignIdx')
+                    .getQuery();
+
+                let recentSubmitCount = this.campaignSubmitRepository
+                    .createQueryBuilder()
+                    .subQuery()
+                    .select([
+                        'campaignSubmit.campaignIdx as campaignIdx',
+                        'COUNT(*) AS submitCount'
+                    ])
+                    .from(CampaignSubmit, 'campaignSubmit')
+                    .where('campaignSubmit.status >= 400')
+                    .andWhere('campaignSubmit.status <= 700')
+                    .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+                    .groupBy('campaignSubmit.campaignIdx')
+                    .getQuery();
+
+                let recentSubmitCountTotal = this.campaignSubmitRepository
+                    .createQueryBuilder()
+                    .subQuery()
+                    .select([
+                        'campaignSubmit.campaignIdx as campaignIdx',
+                        'COUNT(*) AS submitCount'
+                    ])
+                    .from(CampaignSubmit, 'campaignSubmit')
+                    .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+                    .groupBy('campaignSubmit.campaignIdx')
+                    .getQuery();
+
+                campaign = await this.campaignRepository
+                    .createQueryBuilder('campaign')
+                    .select([
+                        'campaign.idx as idx',
+                        'campaign.name as name',
+                        'campaign.status as status',
+                        'campaign.regdate as regdate',
+                        'campaign.weight as weight',
+                        'campaign.cateIdx as cateIdx',
+                        'campaign.cateAreaIdx as cateAreaIdx',
+                        'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
+                        'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                    ])
+                    .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
+                    .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
+                    .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
+                    .leftJoin('campaign.campaignItem', 'campaignItem')
+                    .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                    .leftJoin('campaign.partner', 'partner')
+                    .where('campaign.remove = :remove', {remove: 0})
+                    .andWhere('campaignItem.remove = :cr', {cr: 0})
+                    .andWhere('campaign.status = 200')
+                    .andWhere('partner.status = :status', {status: 1})
+                    .andWhere('campaignItem.endDate > UNIX_TIMESTAMP(NOW())')
+                    .orderBy("approvalRate", 'DESC')
                     .addOrderBy('weight', 'DESC')
                     .groupBy('campaign.idx')
                     .limit(8)

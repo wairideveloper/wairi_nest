@@ -21,6 +21,7 @@ type Category{
 }
 
 type Product{
+    approvalRate: Int
     idx: Int
     name: String
     status: Int
