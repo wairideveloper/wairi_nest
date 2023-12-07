@@ -169,6 +169,11 @@ export class CampaignService {
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
                 'cateArea.idx as cateAreaIdx',
+                //최근 3개월 승인률 계산
+                'ROUND((SELECT COUNT(*) FROM campaignSubmit WHERE campaignSubmit.campaignIdx = campaign.idx AND campaignSubmit.status >= 400 AND campaignSubmit.status <= 700 AND campaignSubmit.regdate >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))) / (SELECT COUNT(*) FROM campaignSubmit WHERE campaignSubmit.campaignIdx = campaign.idx AND campaignSubmit.regdate >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))) * 100, 0) AS approvalRate',
+
+
+
             ])
             .where('campaign.remove = :remove', {remove: 0})
             .andWhere('campaign.status >= :t', {t: 200})

@@ -29,6 +29,7 @@ type Campaign {
     production_guide: String
     caution: String
     submitCount:String
+    approvalRate:String
 }
 
 type CampaignDetail{
