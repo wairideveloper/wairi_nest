@@ -12,6 +12,8 @@ import {
     getUnixTimeStampByDate
 } from "../../util/common";
 import {CampaignService} from "../../campaign/campaign.service";
+import {Madein20ModelService} from "../madein20_model/madein20_model.service";
+import {MembersService} from "../member_model/member.service";
 
 class CreateCampaignSubmitInput {
     campaignIdx: number;
@@ -40,7 +42,9 @@ class DraftCompleteInput {
 export class SubmitModelResolver {
     constructor(
         private readonly submitModelService: SubmitModelService,
-        private readonly campaignsService: CampaignService
+        private readonly campaignsService: CampaignService,
+        private readonly madein20ModelService: Madein20ModelService,
+        private readonly membersService: MembersService,
     ) {
     }
 
@@ -50,6 +54,17 @@ export class SubmitModelResolver {
         @Args('createCampaignSubmitInput') createCampaignSubmitInput: CreateCampaignSubmitInput,
         @AuthUser() authUser: Member,
     ) {
+        // let data = {
+        //     name : authUser.name,
+        //     partnerName : '업체이름',
+        //     // campaignName : campaign.name,
+        //     // dayOfUse : `${startDate} ~ ${endDate}`,
+        //     nop: createCampaignSubmitInput.nop,
+        //     channelUrl : createCampaignSubmitInput.submitChannel,
+        //     deadline : getUnixTimeStampAfter3Days(),
+        // }
+        // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
+        // return
         try{
             let checked = true;
             let sid = "";
@@ -112,6 +127,17 @@ export class SubmitModelResolver {
             console.log("=>(submit_model.resolver.ts:99) data", data);
 
             if(data) {
+                //캠페인 신청 알림
+                let data = {
+                    name : authUser.name,
+                    partnerName : '업체이름',
+                    campaignName : campaign.name,
+                    dayOfUse : `${startDate} ~ ${endDate}`,
+                    nop: createCampaignSubmitInput.nop,
+                    channelUrl : createCampaignSubmitInput.submitChannel,
+                    deadline : getUnixTimeStampAfter3Days(),
+                }
+                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
                 return {
                     code: 200,
                     message: 'success',

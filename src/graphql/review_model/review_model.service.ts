@@ -417,6 +417,7 @@ export class ReviewModelService {
                 // .leftJoin('campaignReviewImage', 'campaignReviewImage', 'campaignReviewImage.reviewIdx = campaignReview.idx')
                 .select([
                     "campaignReview.idx as idx",
+                    "campaignReview.submitIdx as submitIdx",
                     "campaign.idx as campaignIdx",
                     "campaign.name as campaignName",
                     "campaignItem.idx as itemIdx",

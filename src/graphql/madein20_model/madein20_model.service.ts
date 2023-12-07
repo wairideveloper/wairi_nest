@@ -77,6 +77,17 @@ export class Madein20ModelService {
         return phoneList;
     }
 
+    async sendUserAlimtalk(phone: any ,data: any, templateCode: string, division: string = '') {
+
+        try {
+            const response = await this.sendAlimtalk([phone], templateCode, data)
+            console.log("=>(madein20_model.service.ts:84) response", response);
+        } catch (error) {
+            this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(data));
+            this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
+            throw new Error('Failed to send Alimtalk: ' + error.message);
+        }
+    }
     async sendManagerAlimtalk(data: any, templateCode: string, division: string) {
         let phoneList = await this.managerConfig();
         const response = await this.sendAlimtalk(phoneList, templateCode, data)
@@ -157,12 +168,12 @@ export class Madein20ModelService {
                     phone: phone,
                     params: {
                         '이름': data.name? data.name : '',
-                        '업체이름': data.campaignName? data.campaignName : '',
+                        '업체이름': data.partnerName? data.partnerName : '',
                         '캠페인이름': data.campaignName? data.campaignName : '',
-                        '이용일자': data.name? data.name : '',
-                        '인원': data.name? data.name : '',
+                        '이용일자': data.dayOfUse? data.dayOfUse : '',
+                        '인원': data.nop? data.nop : '',
                         '채널주소': data.channelUrl? data.channelUrl : '',
-                        '자동신청마감시간': data.channelUrl? data.channelUrl : ''
+                        '자동신청마감시간': data.deadline? data.deadline : ''
                     }
                 }
             case '72o88NAj9Gla9C1gIMLJ' : // 캠페인 신청 취소 알림 (파트너)

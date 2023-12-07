@@ -37,6 +37,7 @@ export class AuthService {
             idx: member.idx,
             username: member.name,
             memberType: member.type,
+            phone: member.phone
         };
         console.log("-> member.type", member.type);
         console.log(payload)

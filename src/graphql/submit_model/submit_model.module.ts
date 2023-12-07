@@ -17,13 +17,19 @@ import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedul
 import {CampaignFav} from "../../../entity/entities/CampaignFav";
 import {Payment} from "../../../entity/entities/Payment";
 import {Member} from "../../../entity/entities/Member";
+import {Madein20ModelService} from "../madein20_model/madein20_model.service";
+import {MembersService} from "../member_model/member.service";
+import {Admin} from "../../../entity/entities/Admin";
+import {MemberChannel} from "../../../entity/entities/MemberChannel";
+import {Config} from "../../../entity/entities/Config";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
-            CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member
+            CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member, Admin,
+            MemberChannel,Config
         ]
     )],
-  providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService]
+  providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService]
 })
 export class SubmitModelModule {}

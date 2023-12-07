@@ -60,6 +60,7 @@ export class AuthQlModelService {
                     idx: member.idx,
                     username: member.name,
                     memberType: member.type,
+                    phone: member.phone,
                 };
                 const access_token = await this.jwtService.signAsync(payload, {
                     expiresIn: process.env.JWT_EXPIRATION_TIME,
