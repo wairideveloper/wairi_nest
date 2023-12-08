@@ -159,6 +159,7 @@ export class MembersService {
             .addSelect(`(${FROM_UNIXTIME('lastSignin')})`, 'lastSignin')
             .addSelect('passwd')
             .where('id = :id', {id: id})
+            .andWhere('status != -9')
             // status -9 는 탈퇴회원
             // .andWhere('status != -9')
             .getRawOne();
