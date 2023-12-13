@@ -123,7 +123,6 @@ export class Member {
     @Column('text', {name: 'withdrawal'})
     withdrawal: string;
 
-
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
 
@@ -163,4 +162,5 @@ export class Member {
     //     this.isTest = 0;
     //     this.agreeMsg = 0;
     // }
+    username: any;
 }

@@ -5,8 +5,8 @@ import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {
-    _getChannelName,
-    genSid,
+    _getChannelName, bufferToString,
+    genSid, getAfter3Days,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days,
     getUnixTimeStampByDate
@@ -54,17 +54,26 @@ export class SubmitModelResolver {
         @Args('createCampaignSubmitInput') createCampaignSubmitInput: CreateCampaignSubmitInput,
         @AuthUser() authUser: Member,
     ) {
-        // let data = {
-        //     name : authUser.name,
-        //     partnerName : '업체이름',
-        //     // campaignName : campaign.name,
-        //     // dayOfUse : `${startDate} ~ ${endDate}`,
-        //     nop: createCampaignSubmitInput.nop,
-        //     channelUrl : createCampaignSubmitInput.submitChannel,
-        //     deadline : getUnixTimeStampAfter3Days(),
-        // }
-        // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
-        // return
+        let campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
+        let campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
+        let partner = await this.membersService.getPartner(campaign.partnerIdx);
+        //캠페인 신청 알림
+        let data = {
+            name : authUser.username,
+            partnerName : partner.corpName,
+            campaignName : campaign.name,
+            dayOfUse : `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+            nop: createCampaignSubmitInput.nop,
+            channelUrl : createCampaignSubmitInput.submitChannel,
+            deadline : getAfter3Days(),
+        }
+        await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
+        return {
+            code: 200,
+            message: 'success',
+            data: null
+        }
+
         try{
             let checked = true;
             let sid = "";
@@ -127,10 +136,11 @@ export class SubmitModelResolver {
             console.log("=>(submit_model.resolver.ts:99) data", data);
 
             if(data) {
+                const partner = await this.membersService.getPartner(campaignItem.partnerIdx);
                 //캠페인 신청 알림
                 let data = {
                     name : authUser.name,
-                    partnerName : '업체이름',
+                    partnerName : partner.corpName,
                     campaignName : campaign.name,
                     dayOfUse : `${startDate} ~ ${endDate}`,
                     nop: createCampaignSubmitInput.nop,

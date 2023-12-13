@@ -387,8 +387,7 @@ export class CampaignService {
     }
 
     async getCampaign(id: number) {
-        console.log('getCampaign' + id)
-        return await this.campaignRepository.createQueryBuilder('campaign')
+        let data = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .select(
                 [
@@ -403,6 +402,7 @@ export class CampaignService {
             )
             .where('campaign.idx = :idx', {idx: id})
             .getRawOne()
+        return bufferToString(data);
     }
 
     async getCampaignItem(id: number) {
@@ -990,6 +990,7 @@ export class CampaignService {
                     'campaign.idx as idx',
                     'campaign.name as name',
                     'campaign.weight as weight',
+                    'campaign.status as status',
                     'min(campaignItem.priceOrig) as lowestPriceOrig',
                     'min(campaignItem.calcType1) as lowestPriceCalcType1',
                     'min(campaignItem.calcType2) as lowestPriceCalcType2',

@@ -16,6 +16,7 @@ import {SignupInput} from '../auth_ql_model/dto/signupInput';
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
+import {Partner} from "../../../entity/entities/Partner";
 import * as moment from "moment/moment";
 
 @Injectable()
@@ -29,6 +30,8 @@ export class MembersService {
         private campaignReviewRepository: Repository<CampaignReview>,
         @InjectRepository(Config)
         private configRepository: Repository<Config>,
+        @InjectRepository(Partner)
+        private partnerRepository: Repository<Partner>,
     ) {
     }
 
@@ -511,5 +514,14 @@ export class MembersService {
         }catch (e) {
             console.log(e)
         }
+    }
+
+    async getPartner(partnerIdx) {
+        let data = await this.partnerRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('idx = :idx', {idx: partnerIdx})
+            .getRawOne();
+        return bufferToString(data);
     }
 }

@@ -9,11 +9,14 @@ import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
 // import {Config} from "aws-sdk";
 import {JwtService} from "@nestjs/jwt";
+import {Partner} from "../../../entity/entities/Partner";
 
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Member, MemberChannel, CampaignReview,Config]),
+        TypeOrmModule.forFeature([
+            Member, MemberChannel, CampaignReview,Config, Partner
+        ]),
     ],
     providers: [CommonModelResolver, CommonModelService, MembersService, JwtService]
 })

@@ -107,6 +107,11 @@ export const getUnixTimeStampAfter3Days = () => {
     return moment().add(3, 'days').unix();
 }
 
+//현재시간 3일후 날짜
+export const getAfter3Days = () => {
+    return moment().add(3, 'days').format('YYYY-MM-DD');
+}
+
 // Asia/Seoul 'YYYY-MM-DD'을 9시간 더한 유닉스 타임 스템프 변환
 export const getUnixTimeStampByDate = (date: string) => {
     return moment(date).add(9, 'hours').unix();

@@ -7,10 +7,11 @@ import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
 import {JwtService} from "@nestjs/jwt";
+import {Partner} from "../../../entity/entities/Partner";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Member, MemberChannel,
-        CampaignReview, Config
+        CampaignReview, Config, Partner
     ])],
     providers: [MemberResolver,MembersService,JwtService],
 })
