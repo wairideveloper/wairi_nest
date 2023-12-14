@@ -54,26 +54,6 @@ export class SubmitModelResolver {
         @Args('createCampaignSubmitInput') createCampaignSubmitInput: CreateCampaignSubmitInput,
         @AuthUser() authUser: Member,
     ) {
-        let campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
-        let campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
-        let partner = await this.membersService.getPartner(campaign.partnerIdx);
-        //캠페인 신청 알림
-        let data = {
-            name : authUser.username,
-            partnerName : partner.corpName,
-            campaignName : campaign.name,
-            dayOfUse : `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
-            nop: createCampaignSubmitInput.nop,
-            channelUrl : createCampaignSubmitInput.submitChannel,
-            deadline : getAfter3Days(),
-        }
-        await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
-        return {
-            code: 200,
-            message: 'success',
-            data: null
-        }
-
         try{
             let checked = true;
             let sid = "";
@@ -136,16 +116,19 @@ export class SubmitModelResolver {
             console.log("=>(submit_model.resolver.ts:99) data", data);
 
             if(data) {
-                const partner = await this.membersService.getPartner(campaignItem.partnerIdx);
+                //캠페인 신청 알림
+                let campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
+                let campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
+                let partner = await this.membersService.getPartner(campaign.partnerIdx);
                 //캠페인 신청 알림
                 let data = {
-                    name : authUser.name,
+                    name : authUser.username,
                     partnerName : partner.corpName,
                     campaignName : campaign.name,
-                    dayOfUse : `${startDate} ~ ${endDate}`,
+                    dayOfUse : `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
                     nop: createCampaignSubmitInput.nop,
                     channelUrl : createCampaignSubmitInput.submitChannel,
-                    deadline : getUnixTimeStampAfter3Days(),
+                    deadline : getAfter3Days(),
                 }
                 await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
                 return {
