@@ -23,8 +23,8 @@ export class Madein20ModelResolver {
             //test code
 
             // return await this.madein20ModelService.partnerConfig(575);
-            return await this.madein20ModelService.sendPartnerAlimtalk(data, '2jSKar7G587ZpGo6ZsKa','test', 654);
-            return await this.madein20ModelService.sendPartnerAlimtalk(data, 'EHu0hjNSYvP3y0ZSxSd2','test', 653);
+            return await this.madein20ModelService.sendPartnerAlimtalk(data, '2jSKar7G587ZpGo6ZsKa',654);
+            return await this.madein20ModelService.sendPartnerAlimtalk(data, 'EHu0hjNSYvP3y0ZSxSd2', 653);
             return await this.madein20ModelService.sendManagerAlimtalk(data, 'EHu0hjNSYvP3y0ZSxSd2','test');
 
         }catch (error){

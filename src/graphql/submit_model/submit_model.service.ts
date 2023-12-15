@@ -176,7 +176,6 @@ export class SubmitModelService {
             .where("campaignSubmit.sid = :sid", {sid: sid})
             .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
-        console.log("=>(submit_model.service.ts:179) submit", submit);
 
         if(!submit){
             return {

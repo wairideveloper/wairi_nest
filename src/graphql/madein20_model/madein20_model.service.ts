@@ -94,23 +94,25 @@ export class Madein20ModelService {
         console.log("=>(madein20_model.service.ts:sendManagerAlimtalk) response", response);
     }
 
-    async sendPartnerAlimtalk(data: any, templateCode: string, division: string = '', campaignIdx: number) {
-        let phoneList = await this.partnerConfig(campaignIdx);
-        let partner = await this.partnerRepository.createQueryBuilder('partner')
-            .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
-            .where('campaign.idx = :idx', {idx: campaignIdx})
-            .select('partner.corpName', 'corpName')
-            .addSelect('campaign.name', 'campaignName')
-            .getRawOne();
-        partner = bufferToString(partner)
-        data.corpName = partner.corpName;
-        data.campaignName = partner.campaignName;
+    async sendPartnerAlimtalk(data: any, templateCode: string, campaignIdx: number, division: string = '') {
+        try {
+            let phoneList = await this.partnerConfig(campaignIdx);
+            console.log(phoneList)
+            let partner = await this.partnerRepository.createQueryBuilder('partner')
+                .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
+                .where('campaign.idx = :idx', {idx: campaignIdx})
+                .select('partner.corpName', 'corpName')
+                .addSelect('campaign.name', 'campaignName')
+                .getRawOne();
+            partner = bufferToString(partner)
+            data.corpName = partner.corpName;
+            data.campaignName = partner.campaignName;
 
-        const response = await this.sendAlimtalk(phoneList, templateCode, data)
-        // if(response.code != 1){
-        //
-        // }
-        console.log("=>(madein20_model.service.ts:sendPartnerAlimtalk) response", response);
+            // const response = await this.sendAlimtalk(phoneList, templateCode, data)
+            return await this.sendAlimtalk(['01082308203'], templateCode, data)
+        }catch (e) {
+            throw new Error('Failed to send sendPartnerAlimtalk: ' + e.message);
+        }
     }
     async sendAlimtalk(phoneList: any[], templateCode: string, params = []) {
         phoneList.map( async (phone) => {
@@ -119,7 +121,6 @@ export class Madein20ModelService {
             console.log("=>(madein20_model.service.ts:77) setParams", setParams);
             let axioData = {
                 channelId: this.madein20ClientId,
-                // templateCode: 'CA3Yum81n7dReQ8c6knU',
                 templateCode: templateCode,
                 receivers: [setParams],
                 // alt: false
@@ -154,12 +155,12 @@ export class Madein20ModelService {
                         '업체이름' : data.corpName? data.corpName : '',
                         '이름': data.name? data.name : '',
                         '캠페인이름': data.campaignName? data.campaignName : '',
-                        '이용일자': data.name? data.name : '',
-                        '인원': data.name? data.name : '',
+                        '이용일자': data.dayOfUse? data.dayOfUse : '',
+                        '인원': data.nop? data.nop : '',
                         '채널주소': data.channelUrl? data.channelUrl : '',
-                        '캠페인페이지승인링크': data.channelUrl? data.channelUrl : '',
+                        '캠페인페이지승인링크': data.approvalLink? data.approvalLink : '',
                         '2일 후 낮 12시': data.channelUrl? data.channelUrl : '',
-                        '자동신청마감시간': data.channelUrl? data.channelUrl : '',
+                        '자동신청마감시간': data.deadline? data.deadline : '',
                         '입금가': data.channelUrl? data.channelUrl : '',
                     }
                 }
@@ -181,12 +182,12 @@ export class Madein20ModelService {
                     phone: phone,
                     params: {
                         '이름': data.name? data.name : '',
-                        '업체이름': data.campaignName? data.campaignName : '',
+                        '업체이름': data.partnerName? data.partnerName : '',
                         '캠페인이름': data.campaignName? data.campaignName : '',
-                        '이용일자': data.name? data.name : '',
-                        '인원': data.name? data.name : '',
+                        '이용일자': data.dayOfUse? data.dayOfUse : '',
+                        '인원': data.nop? data.nop : '',
                         '채널주소': data.channelUrl? data.channelUrl : '',
-                        '취소사유': data.channelUrl? data.channelUrl : ''
+                        '취소사유': data.reason? data.reason : ''
                     }
                 }
             case 'kjR290Pm0Xac0NzLZNU2' : // 인플루언서 회원정보 변경 신청 완료 알림 (인플루언서 발송)
@@ -194,7 +195,8 @@ export class Madein20ModelService {
                     phone: phone,
                     params: {
                         '이름': data.name? data.name : '',
-                        '변경내용': data.campaignName? data.campaignName : '', //Todo 벼경내용 개행 문자로
+                        //내용을 개행 문자로 변경
+                        '변경내용': data.changes? data.changes : '',
                     }
                 }
             case 'kh0k73yd51k3jIk506VV' : // 캠페인 선정 알림 (승인) (인플루언서 발송)

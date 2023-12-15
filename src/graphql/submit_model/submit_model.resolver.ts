@@ -6,7 +6,7 @@ import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {
     _getChannelName, bufferToString,
-    genSid, getAfter3Days,
+    genSid, getAfter3Days, getChannelName,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days,
     getUnixTimeStampByDate
@@ -54,7 +54,7 @@ export class SubmitModelResolver {
         @Args('createCampaignSubmitInput') createCampaignSubmitInput: CreateCampaignSubmitInput,
         @AuthUser() authUser: Member,
     ) {
-        try{
+        try {
             let checked = true;
             let sid = "";
             while (checked) {
@@ -69,7 +69,6 @@ export class SubmitModelResolver {
             // const checkMonthDuplicateSubmit = await this.submitModelService.checkMonthDuplicateSubmit(authUser.idx, createCampaignSubmitInput.campaignIdx);
             // 같은 캠페인 토탈 3번 거절
             // const checkMonthDuplicateReject = await this.submitModelService.checkMonthDuplicateReject(authUser.idx, createCampaignSubmitInput.campaignIdx);
-
             const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
             const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
 
@@ -79,11 +78,10 @@ export class SubmitModelResolver {
             const startDate = getUnixTimeStampByDate(createCampaignSubmitInput.startDate);
             const endDate = getUnixTimeStampByDate(createCampaignSubmitInput.endDate);
             // const pay = campaignItem.priceOrig * (campaignItem.dc11/100) * createCampaignSubmitInput.nop;
-            const pay = campaignItem.priceOrig * (campaignItem.dc11/100);
+            const pay = campaignItem.priceOrig * (campaignItem.dc11 / 100);
 
             //createCampaignSubmitInput.endDate - createCampaignSubmitInput.startDate
             const nights = (endDate - startDate) / 86400;
-            console.log("=>(submit_model.resolver.ts:68) nights", nights);
 
             let inputData = {
                 sid: sid,
@@ -101,7 +99,7 @@ export class SubmitModelResolver {
                 submitChannel: createCampaignSubmitInput.submitChannel,
                 subContent2: createCampaignSubmitInput.subContent2,
                 memberIdx: authUser.idx,
-                regdate : getUnixTimeStamp(),
+                regdate: getUnixTimeStamp(),
                 autoCancelDate: getUnixTimeStampAfter3Days(), // 3일 후 자동 취소
                 campaignName: campaign.name,
                 itemName: campaignItem.name,
@@ -113,24 +111,34 @@ export class SubmitModelResolver {
             console.log('==========> 🤩 : ' + inputData);
 
             let data = await this.submitModelService.createCampaignSubmit(inputData);
-            console.log("=>(submit_model.resolver.ts:99) data", data);
 
-            if(data) {
+            if (data) {
                 //캠페인 신청 알림
                 let campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
                 let campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
                 let partner = await this.membersService.getPartner(campaign.partnerIdx);
-                //캠페인 신청 알림
-                let data = {
-                    name : authUser.username,
-                    partnerName : partner.corpName,
-                    campaignName : campaign.name,
-                    dayOfUse : `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
-                    nop: createCampaignSubmitInput.nop,
-                    channelUrl : createCampaignSubmitInput.submitChannel,
-                    deadline : getAfter3Days(),
+                // let submitChannel = await this.membersService.getMemberSubmitChannel(createCampaignSubmitInput.submitChannel,authUser.idx);
+                let submitChannel = await this.membersService.getMemberSubmitChannel(createCampaignSubmitInput.submitChannel,15634);
+                if(!submitChannel){
+                    return {
+                        code: 400,
+                        message: '채널 정보가 존재하지 않습니다.',
+                        data: null
+                    }
                 }
-                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, data, 'ZBQ0QxY7WI99M8UrfAHq');
+                console.log(submitChannel)
+                let param = {
+                    name: authUser.username,
+                    partnerName: partner.corpName,
+                    campaignName: campaign.name,
+                    dayOfUse: `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+                    nop: createCampaignSubmitInput.nop,
+                    channelUrl: submitChannel.link,
+                    approvalLink: `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
+                    deadline: getAfter3Days(),
+                }
+                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
+                await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
                 return {
                     code: 200,
                     message: 'success',
@@ -157,11 +165,11 @@ export class SubmitModelResolver {
         @Args('take') take: number,
         @Args('page') page: number,
         @AuthUser() authUser: Member,
-    ){
-        try{
+    ) {
+        try {
             let data = await this.submitModelService.getSubmitList(authUser.idx, take, page);
             return data;
-        }catch(error){
+        } catch (error) {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }
@@ -173,11 +181,11 @@ export class SubmitModelResolver {
         @Args('sid') sid: string,
         @Args('reason') reason: string,
         @AuthUser() authUser: Member,
-    ){
-        try{
-            let data = await this.submitModelService.getSubmitDetail(sid, 12328);
+    ) {
+        try {
+            let data = await this.submitModelService.getSubmitDetail(sid, authUser.idx);
             return data;
-        }catch (error) {
+        } catch (error) {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }
@@ -189,14 +197,31 @@ export class SubmitModelResolver {
         @Args('sid') sid: string,
         @Args('reason') reason: string,
         @AuthUser() authUser: Member,
-    ){
-        try{
+    ) {
+        try {
             let data = await this.submitModelService.cancellationRequest(sid, authUser.idx, reason);
             if (data) {
+                //캠페인 신청 취소 알림
+                let submit = await this.submitModelService.getSubmitDetail(sid, authUser.idx);
+                let campaign = await this.campaignsService.getCampaign(submit.campaignIdx);
+                let campaignItem = await this.campaignsService.getCampaignItemByIdx(submit.itemIdx);
+                let partner = await this.membersService.getPartner(campaign.partnerIdx);
+                let submitChannel = await this.membersService.getMemberSubmitChannel(submit.submitChannel,authUser.idx);
+                let data = {
+                    name: authUser.username,
+                    partnerName: partner.corpName,
+                    campaignName: campaign.name,
+                    dayOfUse: `${submit.startDate} ~ ${submit.endDate}`,
+                    nop: submit.nop,
+                    channelUrl: submitChannel.link,
+                    reason: reason
+                }
+                await this.madein20ModelService.sendPartnerAlimtalk(data, '72o88NAj9Gla9C1gIMLJ', campaign.idx);
+
                 return {
                     code: 200,
                     message: 'success',
-                    data: null
+                    data: data
                 }
             } else {
                 return {
@@ -205,7 +230,7 @@ export class SubmitModelResolver {
                     data: null
                 }
             }
-        }catch (error) {
+        } catch (error) {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }
@@ -216,26 +241,26 @@ export class SubmitModelResolver {
     async draftRegistration(
         @Args('draftRegistrationInput') draftRegistrationInput: DraftRegistrationInput,
         @AuthUser() authUser: Member,
-    ){
-       try{
-              let data = await this.submitModelService.draftRegistration(
-                  draftRegistrationInput.sid, draftRegistrationInput.postRemarks, authUser.idx);
-              console.log("=>(submit_model.resolver.ts:194) data", data);
-              if (data.affected === 1) {
+    ) {
+        try {
+            let data = await this.submitModelService.draftRegistration(
+                draftRegistrationInput.sid, draftRegistrationInput.postRemarks, authUser.idx);
+            console.log("=>(submit_model.resolver.ts:194) data", data);
+            if (data.affected === 1) {
                 return {
-                     code: 200,
-                     message: '초안 등록이 완료되었습니다.',
+                    code: 200,
+                    message: '초안 등록이 완료되었습니다.',
                 }
-              } else {
+            } else {
                 return {
-                     code: 400,
-                     message: '초안 등록이 실패하였습니다.',
+                    code: 400,
+                    message: '초안 등록이 실패하였습니다.',
                 }
-              }
-       }catch (error) {
-           console.log(error)
-           throw new HttpException(error.message, error.status);
-       }
+            }
+        } catch (error) {
+            console.log(error)
+            throw new HttpException(error.message, error.status);
+        }
     }
 
     @Query()
@@ -243,12 +268,12 @@ export class SubmitModelResolver {
     async getDraftDetail(
         @Args('sid') sid: string,
         @AuthUser() authUser: Member,
-    ){
-        try{
+    ) {
+        try {
             let data = await this.submitModelService.getDraftDetail(sid, authUser.idx);
             console.log("=>(submit_model.resolver.ts:220) data", data);
             return data;
-        }catch (error) {
+        } catch (error) {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }
@@ -259,8 +284,8 @@ export class SubmitModelResolver {
     async updateDraftRegistration(
         @Args('draftRegistrationInput') draftRegistrationInput: DraftRegistrationInput,
         @AuthUser() authUser: Member,
-    ){
-        try{
+    ) {
+        try {
             let data = await this.submitModelService.updateDraftRegistration(
                 draftRegistrationInput.sid, draftRegistrationInput.postRemarks, authUser.idx);
             console.log("=>(submit_model.resolver.ts:220) data", data);
@@ -275,7 +300,7 @@ export class SubmitModelResolver {
                     message: '초안 수정이 실패하였습니다.',
                 }
             }
-        }catch (error) {
+        } catch (error) {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }
@@ -286,8 +311,8 @@ export class SubmitModelResolver {
     async completeDraftRegistration(
         @Args('draftCompleteInput') draftCompleteInput: DraftCompleteInput,
         @AuthUser() authUser: Member,
-    ){
-        try{
+    ) {
+        try {
             let data = await this.submitModelService.completeDraftRegistration(
                 draftCompleteInput.sid, draftCompleteInput.url, authUser.idx);
             if (data.affected === 1) {
@@ -301,7 +326,7 @@ export class SubmitModelResolver {
                     message: '초안 수정이 실패하였습니다.',
                 }
             }
-        }catch (error) {
+        } catch (error) {
             console.log(error)
             throw new HttpException(error.message, error.status);
         }

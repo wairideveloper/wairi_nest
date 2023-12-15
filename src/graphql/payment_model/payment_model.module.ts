@@ -9,6 +9,7 @@ import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {JwtService} from "@nestjs/jwt";
 import {Payment} from "../../../entity/entities/Payment";
+import {Member} from "../../../entity/entities/Member";
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import {Payment} from "../../../entity/entities/Payment";
           CampaignItem,
           CampaignItemSchedule,
           CampaignSubmit,
-          Payment
+          Payment,
+          Member
       ]),
   ],
   providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService]

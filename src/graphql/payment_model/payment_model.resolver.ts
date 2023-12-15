@@ -26,7 +26,7 @@ export class PaymentModelResolver {
     }
 
     @Mutation()
-    // @UseGuards(GqlAuthGuard) //로그인 체크
+    @UseGuards(GqlAuthGuard) //로그인 체크
     async confirmStock(
         @Args('confirmPaymentInput') confirmPaymentInput: ConfirmPaymentInput,
         @AuthUser() authUser: Member
@@ -59,6 +59,7 @@ export class PaymentModelResolver {
             })
             //재고 체크후 결제 confirm
             // authUser.idx set
+            console.log(authUser)
             let memberIdx = authUser ? authUser.idx : 0;
             if(memberIdx == 0){
                 throw new HttpException("로그인이 필요합니다.", 404);

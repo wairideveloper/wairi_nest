@@ -15,6 +15,7 @@ import {validate} from "class-validator";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {LoginInput} from "../auth_ql_model/dto/loginInput";
+import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 
 class CeateMemberChannelInput {
     type: number;
@@ -27,7 +28,7 @@ class UpdateMemberChannelInput {
     idx: number;
     type: number;
     link: string;
-    interests: string;
+    interests: number;
     channelName?: string;
 }
 
@@ -35,7 +36,8 @@ class UpdateMemberChannelInput {
 @Resolver('Member')
 export class MemberResolver {
     constructor(
-        private readonly membersService: MembersService
+        private readonly membersService: MembersService,
+        private readonly madein20ModelService: Madein20ModelService
     ) {
         console.log('MemberResolver')
     }
@@ -174,6 +176,21 @@ export class MemberResolver {
                 if(getChannel){
                     getChannel = bufferToString(getChannel);
                 }
+
+                //개행문자 \n 추가
+                let html = "";
+                updateMemberChannelInput.channelName ? html += `채널명 : ${updateMemberChannelInput.channelName} \n` : "";
+                updateMemberChannelInput.link ? html += `   링크 : ${updateMemberChannelInput.link} \n` : "";
+                updateMemberChannelInput.interests ? html += `   관심분야 : ${changeInterestsText(updateMemberChannelInput.interests)} \n` : "";
+
+
+                let param = {
+                    name: authUser.username,
+                    changes: html
+                }
+
+                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'kjR290Pm0Xac0NzLZNU2');
+
                 return {
                     code: 200,
                     message: '채널 수정 성공',

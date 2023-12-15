@@ -8,11 +8,14 @@ import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
 import {JwtService} from "@nestjs/jwt";
 import {Partner} from "../../../entity/entities/Partner";
+import {Madein20ModelService} from "../madein20_model/madein20_model.service";
+import {Admin} from "../../../entity/entities/Admin";
+import {Campaign} from "../../../entity/entities/Campaign";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Member, MemberChannel,
-        CampaignReview, Config, Partner
+        CampaignReview, Config, Partner, Admin, Campaign
     ])],
-    providers: [MemberResolver,MembersService,JwtService],
+    providers: [MemberResolver,MembersService,JwtService, Madein20ModelService],
 })
 export class MemberModule {}

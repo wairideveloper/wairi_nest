@@ -283,6 +283,24 @@ export const genSid = (submitIdx) => {
     // return Number(sid);
 }
 
+export const getChannelName = (channel: number) => {
+    // 1.블로그 2.youtube 3.인스타그램 4.틱톡 5.티스토리 9.기타
+    switch (channel) {
+        case 1:
+            return '네이버 블로그';
+        case 2:
+            return '유튜브';
+        case 3:
+            return '인스타그램';
+        case 4:
+            return '틱톡';
+        case 5:
+            return '티스토리';
+        case 9:
+            return '기타';
+    }
+}
+
 export const _getChannelName = (channels: number) => {
     let channelNames = [];
     // @ts-ignore
