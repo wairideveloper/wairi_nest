@@ -63,7 +63,7 @@ export class Madein20ModelService {
         receivers = bufferToString(receivers)
         //JSON 으로 변환
         if(!receivers.noteReceivers){
-            throw new Error('Failed to send Alimtalk: ' + 'noteReceivers is null');
+            throw new Error('partnerConfig : ' + '파트너 연락처 is null');
         }
         receivers = JSON.parse(receivers.noteReceivers)
         //수신동의 여부 확인
@@ -81,7 +81,7 @@ export class Madein20ModelService {
 
         try {
             const response = await this.sendAlimtalk([phone], templateCode, data)
-            console.log("=>(madein20_model.service.ts:84) response", response);
+            console.log("=>(madein20_model.service.ts:84) sendUserAlimtalk", response);
         } catch (error) {
             this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(data));
             this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
@@ -118,7 +118,7 @@ export class Madein20ModelService {
         phoneList.map( async (phone) => {
             console.log(phone)
             let setParams = this.setParams(params, templateCode, phone);
-            console.log("=>(madein20_model.service.ts:77) setParams", setParams);
+            console.log("=>(madein20_model.service.ts:77)  sendAlimtalk setParams", setParams);
             let axioData = {
                 channelId: this.madein20ClientId,
                 templateCode: templateCode,
@@ -128,7 +128,7 @@ export class Madein20ModelService {
             try {
                 let headers = this.headers;
                 const response = await axios.post(this.url, axioData, {headers});
-                console.log("-> response", response.data);
+                console.log("-> sendAlimtalk response", response.data);
             } catch (error) {
                 this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));
                 this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
