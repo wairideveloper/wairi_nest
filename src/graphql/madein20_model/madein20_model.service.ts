@@ -129,6 +129,7 @@ export class Madein20ModelService {
                 let headers = this.headers;
                 const response = await axios.post(this.url, axioData, {headers});
                 console.log("-> sendAlimtalk response", response.data);
+                console.log("-> sendAlimtalk axioData", setParams);
             } catch (error) {
                 this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));
                 this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
