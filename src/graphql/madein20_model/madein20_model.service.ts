@@ -108,7 +108,8 @@ export class Madein20ModelService {
     async sendPartnerAlimtalk(data: any, templateCode: string, campaignIdx: number, division: string = '') {
         try {
             let phoneList = await this.partnerConfig(campaignIdx);
-            console.log(phoneList)
+            console.log("=>(madein20_model.service.ts:111) phoneList : ", phoneList);
+
             let partner = await this.partnerRepository.createQueryBuilder('partner')
                 .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
                 .where('campaign.idx = :idx', {idx: campaignIdx})
@@ -135,7 +136,6 @@ export class Madein20ModelService {
                 channelId: this.madein20ClientId,
                 templateCode: templateCode,
                 receivers: [setParams],
-                // alt: false
             };
             try {
                 let headers = this.headers;
