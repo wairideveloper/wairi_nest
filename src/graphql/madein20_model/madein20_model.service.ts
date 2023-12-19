@@ -56,6 +56,13 @@ export class Madein20ModelService {
 
     async partnerConfig(campaignIdx: number) {
         // 파트너 연락처 정보 가져오기
+        let partner = await this.partnerRepository.createQueryBuilder('partner')
+            .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
+            .where('campaign.idx = :idx', {idx: campaignIdx})
+            .select(`(${AES_DECRYPT('contactPhone')})`, 'contactPhone')
+            .getRawOne();
+        partner = bufferToString(partner)
+
         let receivers = await this.campaignRepository.createQueryBuilder('campaign')
             .where('campaign.idx = :idx', {idx: campaignIdx})
             .select('noteReceivers')
@@ -63,12 +70,12 @@ export class Madein20ModelService {
         receivers = bufferToString(receivers)
         //JSON 으로 변환
         if(!receivers.noteReceivers){
-            throw new Error('partnerConfig : ' + '파트너 연락처 is null');
+            console.log("=>(madein20_model.service.ts:74) receivers.noteReceivers: ", '추가연락처 없음');
         }
         receivers = JSON.parse(receivers.noteReceivers)
         //수신동의 여부 확인
 
-        let phoneList = [];
+        let phoneList = [partner.contactPhone];
         receivers.forEach((item) => {
             if (item.receiveSms == 1 && item.phone) {
                 phoneList.push(item.phone)
