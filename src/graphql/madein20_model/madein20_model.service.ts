@@ -75,7 +75,11 @@ export class Madein20ModelService {
         receivers = JSON.parse(receivers.noteReceivers)
         //수신동의 여부 확인
 
-        let phoneList = [partner.contactPhone];
+        let contactPhone = partner.contactPhone? partner.contactPhone : '';
+        if(contactPhone){
+            receivers.push({phone: contactPhone, receiveSms: 1})
+        }
+        let phoneList = [];
         receivers.forEach((item) => {
             if (item.receiveSms == 1 && item.phone) {
                 phoneList.push(item.phone)
