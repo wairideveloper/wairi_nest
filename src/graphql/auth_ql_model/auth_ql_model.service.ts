@@ -563,7 +563,8 @@ export class AuthQlModelService {
             const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
 
             if (update) {
-                let updateMember = await this.memberService.findById(member.id);
+                //secession
+                let updateMember = await this.memberService.findByIdSecession(member.id);
                 updateMember = bufferToString(updateMember);
                 return updateMember
             }
