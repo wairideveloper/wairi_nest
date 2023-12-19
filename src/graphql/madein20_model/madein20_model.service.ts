@@ -119,8 +119,9 @@ export class Madein20ModelService {
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
 
-            // const response = await this.sendAlimtalk(phoneList, templateCode, data)
-            return await this.sendAlimtalk(['01082308203'], templateCode, data)
+            const response = await this.sendAlimtalk(phoneList, templateCode, data)
+            console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
+            // return await this.sendAlimtalk(['01082308203'], templateCode, data)
         }catch (e) {
             throw new Error('Failed to send sendPartnerAlimtalk: ' + e.message);
         }
