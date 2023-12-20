@@ -44,6 +44,7 @@ type CampaignSubmit{
     autoCancelDate: String
     postRemarks: String
     postUrl: String
+    isPostSummary: Int
 }
 
 type Submits implements Pagination {

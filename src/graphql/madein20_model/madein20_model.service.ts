@@ -302,4 +302,8 @@ export class Madein20ModelService {
                 }
         }
     }
+
+    async growthType() {
+        return 'test'
+    }
 }

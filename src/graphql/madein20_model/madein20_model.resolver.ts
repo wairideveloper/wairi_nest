@@ -7,6 +7,18 @@ export class Madein20ModelResolver {
   constructor(private readonly madein20ModelService: Madein20ModelService) {}
 
 
+    @Query()
+    async growthType(){
+        try{
+            await this.madein20ModelService.growthType();
+            return {
+                message : '성공',
+                code : 200
+            }
+        }catch (error){
+            throw new HttpException(error.message, error.status);
+        }
+    }
   @Mutation()
     async sendAlimtalk(
         @Args('receiverInput') receiverInput: ReceiverInput,
@@ -18,7 +30,6 @@ export class Madein20ModelResolver {
                 idx : 1234,
                 name : '테스트 알림톡',
                 channelUrl : 'test'
-
             }
             //test code
 
