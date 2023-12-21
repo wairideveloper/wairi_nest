@@ -1,6 +1,7 @@
-import {Column, Entity, PrimaryGeneratedColumn, BeforeInsert, ManyToMany, OneToMany} from 'typeorm';
+import {Column, Entity, PrimaryGeneratedColumn, BeforeInsert, ManyToMany, OneToMany, JoinColumn} from 'typeorm';
 import {EncryptionTransformer} from 'typeorm-encrypted';
 import {CampaignReview} from "./CampaignReview";
+import {MemberChannel} from "./MemberChannel";
 
 @Entity('member', {schema: 'wairi'})
 export class Member {
@@ -125,6 +126,12 @@ export class Member {
 
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
+
+    @OneToMany(() => MemberChannel, (memberChannel) => memberChannel.member)
+    @JoinColumn({ name: 'idx', referencedColumnName: 'memberIdx' })
+    memberChannel: MemberChannel[];
+
+
 
     // @BeforeInsert()
     // beforeInsertActions() {

@@ -31,9 +31,14 @@ export class CampaignResolver {
     }
 
     @Query()
-    async search(@Args('keyword', {type: () => String}) keyword: string) {
+    async search(
+        @Args('keyword', {type: () => String}) keyword: string,
+        @Args('take', {type: () => Int}) take: number,
+        @Args('page', {type: () => Int}) page: number,
+
+    ) {
         try {
-            let data = await this.campaignsService.search(keyword);
+            let data = await this.campaignsService.search(keyword, take, page);
             //json 형식으로 변환
 
             // console.log(data)

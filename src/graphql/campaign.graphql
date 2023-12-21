@@ -183,7 +183,7 @@ extend type Query {
     getCampaignItemSchedule(idx:Int!): CampaignItemSchedule
 
     #캠페인 검색
-    search(keyword: String!): Campaigns!
+    search(keyword: String!,take:Int, page:Int): Campaigns!
 
     login(idx:Int!): returnLogin!
 }

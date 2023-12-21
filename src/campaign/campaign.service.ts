@@ -55,8 +55,8 @@ export class CampaignService {
         this.additionalDiscountRate = 0;
     }
 
-    async search(keyword: string) {
-        const {take, page} = {take: 10, page: 1};
+    async search(keyword: string, take: number = 10, page: number = 1) {
+        // const {take, page} = {take: 10, page: 1};
         let data = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.campaignImage', 'campaignImage')

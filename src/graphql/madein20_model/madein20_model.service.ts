@@ -13,6 +13,7 @@ import {Repository} from "typeorm";
 import {AES_DECRYPT, bufferToString} from "../../util/common";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
+import {Member} from "../../../entity/entities/Member";
 
 @Injectable()
 export class Madein20ModelService {
@@ -30,6 +31,8 @@ export class Madein20ModelService {
         private campaignRepository: Repository<Campaign>,
         @InjectRepository(CampaignItem)
         private campaignItemRepository: Repository<CampaignItem>,
+        @InjectRepository(Member)
+        private memberRepository: Repository<Member>,
     ) {
         // client id
         this.madein20ClientId = "@wairi";
@@ -307,7 +310,21 @@ export class Madein20ModelService {
     }
 
     async growthType() {
-        return 'test'
+        try {
+            let member = await this.memberRepository.createQueryBuilder('member')
+                .leftJoin('member.memberChannel', 'memberChannel')
+                //mc.level = 2 AND m.type = 1 AND  m.status in (1,9);
+                .where('memberChannel.level = :level', {level: 2})
+                .andWhere('member.type = :type', {type: 1})
+                .andWhere('member.status in (:status)', {status: [1, 9]})
+                .select([
+                    'member.idx'
+                ])
+                .getRawMany();
+            console.log("=>(madein20_model.service.ts:323) member", member);
+        }catch (e) {
+            throw new Error('growthType: ' + e.message);
+        }
     }
 
     async campaignInfo(campaignIdx: number) {

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Member} from "./Member";
 
 @Entity("memberChannel", { schema: "wairi" })
 export class MemberChannel {
@@ -26,4 +27,8 @@ export class MemberChannel {
   @Column("int", { name: "interests" })
   interests: any;
     date: string;
+
+  @ManyToOne(() => Member, (member) => member.memberChannel)
+  @JoinColumn({ name: 'memberIdx', referencedColumnName: 'idx' })
+  member: Member;
 }
