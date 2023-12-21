@@ -79,10 +79,17 @@ export class SubmitModelResolver {
             const startDate = getUnixTimeStampByDate(createCampaignSubmitInput.startDate);
             const endDate = getUnixTimeStampByDate(createCampaignSubmitInput.endDate);
             // const pay = campaignItem.priceOrig * (campaignItem.dc11/100) * createCampaignSubmitInput.nop;
-            const pay = campaignItem.priceOrig * (campaignItem.dc11 / 100);
+            let pay = campaignItem.priceOrig * (campaignItem.dc11 / 100);
 
             //createCampaignSubmitInput.endDate - createCampaignSubmitInput.startDate
             const nights = (endDate - startDate) / 86400;
+
+            if(campaignItem.minDays > 1){
+                let minDays = campaignItem.minDays - 1;
+                //nights 를 minDays 로 나눠 개수
+                let count = Math.floor(nights / minDays);
+                pay = pay * count;
+            }
 
             let inputData = {
                 sid: sid,
