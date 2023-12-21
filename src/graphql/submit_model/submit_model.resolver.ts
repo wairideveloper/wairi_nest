@@ -168,6 +168,7 @@ export class SubmitModelResolver {
         @AuthUser() authUser: Member,
     ) {
         try {
+            console.log("=>(submit_model.resolver.ts:172) getSubmitList 반복호출 : ", '반복호출');
             let data = await this.submitModelService.getSubmitList(authUser.idx, take, page);
             return data;
         } catch (error) {
