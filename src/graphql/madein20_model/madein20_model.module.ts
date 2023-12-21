@@ -6,11 +6,12 @@ import {Admin} from "../../../entity/entities/Admin";
 import {Partner} from "../../../entity/entities/Partner";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {Member} from "../../../entity/entities/Member";
+import {CampaignItem} from "../../../entity/entities/CampaignItem";
 
 @Module({
   imports: [
       TypeOrmModule.forFeature([
-          Admin, Partner, Campaign, Member
+          Admin, Partner, Campaign, Member, CampaignItem
       ]),
   ],
   providers: [Madein20ModelResolver, Madein20ModelService]

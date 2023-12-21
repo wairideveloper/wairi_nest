@@ -50,6 +50,7 @@ type FirebaseResponse {
 type Query{
     getRecommendedSearchWords(type:String, limit:Int): [SearchWord]!
     growthType: GraphqlHttpResponse
+    campaignInfoUpdate(campaignIdx:Int): GraphqlHttpResponse
 }
 
 type Mutation {

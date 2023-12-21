@@ -11,10 +11,11 @@ import {Partner} from "../../../entity/entities/Partner";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 import {Admin} from "../../../entity/entities/Admin";
 import {Campaign} from "../../../entity/entities/Campaign";
+import {CampaignItem} from "../../../entity/entities/CampaignItem";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Member, MemberChannel,
-        CampaignReview, Config, Partner, Admin, Campaign
+        CampaignReview, Config, Partner, Admin, Campaign, CampaignItem
     ])],
     providers: [MemberResolver,MembersService,JwtService, Madein20ModelService],
 })

@@ -87,6 +87,15 @@ export class Campaign {
     @Column("longtext", {name: "options", nullable: true})
     options: string | null;
 
+    @Column("text", {name: "info"})
+    info: string | null;
+
+    @Column("text", {name: "production_guide"})
+    production_guide: string | null;
+
+    @Column("text", {name: "caution"})
+    caution: string | null;
+
     @Column("int", {name: "discount", comment: "일반 할인율"})
     discount: number;
 

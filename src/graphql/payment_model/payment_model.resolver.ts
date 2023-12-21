@@ -38,6 +38,7 @@ export class PaymentModelResolver {
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
+            //
 
             const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
                 submitItem.itemIdx, submitItem.startDate, submitItem.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
