@@ -373,6 +373,7 @@ export class SubmitModelService {
             .update(CampaignSubmit)
             .set({
                 postUrl: url,
+                status : 700,
                 // statusDate700: getUnixTimeStamp()
             })
             .where("campaignSubmit.sid = :sid", {sid: sid})
