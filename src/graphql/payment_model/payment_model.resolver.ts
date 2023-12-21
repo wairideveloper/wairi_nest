@@ -32,6 +32,7 @@ export class PaymentModelResolver {
         @AuthUser() authUser: Member
     ) {
         console.log("=>(payment_model.resolver.ts:34) confirmPaymentInput.sid", confirmPaymentInput.sid);
+        console.log("=>(payment_model.resolver.ts:36) confirmStock 유저정보 : ", authUser);
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
 
