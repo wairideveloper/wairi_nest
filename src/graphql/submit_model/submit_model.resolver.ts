@@ -55,6 +55,7 @@ export class SubmitModelResolver {
         @AuthUser() authUser: Member,
     ) {
         try {
+            console.log("=>(submit_model.resolver.ts:59) 신청하기 ", '신청하기 시작' );
             let checked = true;
             let sid = "";
             while (checked) {
