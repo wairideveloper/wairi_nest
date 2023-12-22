@@ -117,6 +117,11 @@ export const getUnixTimeStampByDate9 = (date: string) => {
     return moment(date).add(9, 'hours').unix();
 }
 
+// Asia/Seoul 'YYYY-MM-DD'을 9시간 뺀 유닉스 타임 스템프 변환
+export const getUnixTimeStampByDate9Sub = (date: string) => {
+    return moment(date).subtract(9, 'hours').unix();
+}
+
 export const getUnixTimeStampByDate = (date: string) => {
     return moment(date).unix();
 }

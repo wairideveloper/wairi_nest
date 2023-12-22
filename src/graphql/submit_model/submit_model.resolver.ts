@@ -9,7 +9,7 @@ import {
     genSid, getAfter3Days, getChannelName,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days,
-    getUnixTimeStampByDate
+    getUnixTimeStampByDate, getUnixTimeStampByDate9Sub
 } from "../../util/common";
 import {CampaignService} from "../../campaign/campaign.service";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
@@ -76,8 +76,8 @@ export class SubmitModelResolver {
             //일자별
             campaignItem.channelNames = _getChannelName(campaignItem.channels);
 
-            const startDate = getUnixTimeStampByDate(createCampaignSubmitInput.startDate);
-            const endDate = getUnixTimeStampByDate(createCampaignSubmitInput.endDate);
+            const startDate = getUnixTimeStampByDate9Sub(createCampaignSubmitInput.startDate);
+            const endDate = getUnixTimeStampByDate9Sub(createCampaignSubmitInput.endDate);
             // const pay = campaignItem.priceOrig * (campaignItem.dc11/100) * createCampaignSubmitInput.nop;
             let pay = campaignItem.priceOrig * (campaignItem.dc11 / 100);
 
