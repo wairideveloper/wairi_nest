@@ -90,7 +90,7 @@ import {ApolloServerErrorCode} from "@apollo/server/errors";
                 Payment, Popup, Withdrawal, CampaignReviewImage, Admin
             ],
             synchronize: false,
-            charset: 'UTF8_GENERAL_CI',
+            charset: 'utf8mb4',
             // extra: {
             //     charset: "utf8mb4"
             // },
