@@ -28,6 +28,15 @@ type GraphqlHttpResponse {
     message: String
 }
 
+type GrowthTypeResponse{
+    data: GrowthType
+}
+
+type GrowthType{
+    idx: [Int]!
+    phone: [String]
+}
+
 type SearchWord {
     idx: Int!
     name: String
@@ -49,7 +58,7 @@ type FirebaseResponse {
 
 type Query{
     getRecommendedSearchWords(type:String, limit:Int): [SearchWord]!
-    growthType: GraphqlHttpResponse
+    growthType: GrowthTypeResponse
     campaignInfoUpdate(campaignIdx:Int): GraphqlHttpResponse
 }
 

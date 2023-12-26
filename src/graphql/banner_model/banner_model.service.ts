@@ -18,7 +18,8 @@ export class BannerModelService {
     }
     async getBanner() {
         try{
-            let data = await this.bannerRepository.find()
+            //pageCode 1  , order ordering desc
+            let data = await this.bannerRepository.find({where: {pageCode: 1}, order: {ordering: "DESC"}})
             if(data){
                 data = bufferToString(data)
             }

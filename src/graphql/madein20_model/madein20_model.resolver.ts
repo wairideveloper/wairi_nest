@@ -45,10 +45,6 @@ export class Madein20ModelResolver {
                 }
                 await this.madein20ModelService.updateCampaignInfo(whereInIdx[i], info, infoGuide, infoRefund);
             }
-
-
-
-
             return {
                 message : '성공',
                 code : 200
@@ -61,10 +57,12 @@ export class Madein20ModelResolver {
     @Query()
     async growthType(){
         try{
-            await this.madein20ModelService.growthType();
+            let data = await this.madein20ModelService.growthType();
+
             return {
                 message : '성공',
-                code : 200
+                code : 200,
+                data: data
             }
         }catch (error){
             throw new HttpException(error.message, error.status);

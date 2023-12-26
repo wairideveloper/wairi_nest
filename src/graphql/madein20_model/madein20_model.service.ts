@@ -309,6 +309,11 @@ export class Madein20ModelService {
         }
     }
 
+    /**
+     * Retrieves the growth type of members based on specific conditions.
+     * @returns {Promise<void>} - A promise that resolves with the growth type data.
+     * @throws {Error} - If there is an error retrieving the growth type data.
+     */
     async growthType() {
         try {
             let member = await this.memberRepository.createQueryBuilder('member')
@@ -318,10 +323,21 @@ export class Madein20ModelService {
                 .andWhere('member.type = :type', {type: 1})
                 .andWhere('member.status in (:status)', {status: [1, 9]})
                 .select([
-                    'member.idx'
+                    `DISTINCT(CAST(AES_DECRYPT(UNHEX(member.phone),"@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")as char)) as phone`,
+                    'member.idx as idx',
                 ])
                 .getRawMany();
-            console.log("=>(madein20_model.service.ts:323) member", member);
+            member = bufferToString(member);
+            const phone = member.map((item) => {
+                return item.phone
+            })
+            const idx = member.map((item) => {
+                return item.idx
+            })
+            return {
+                phone: phone,
+                idx: idx
+            }
         }catch (e) {
             throw new Error('growthType: ' + e.message);
         }
