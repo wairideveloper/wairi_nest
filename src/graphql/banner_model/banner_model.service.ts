@@ -32,7 +32,6 @@ export class BannerModelService {
     async getPopup() {
         try{
             // idx 85번 팝업만 노출 베타기간
-
             let data = await this.popupRepository.find({where: {idx: 85}, order: {idx: "DESC"}})
 
             // let data = await this.popupRepository.find({where: {display: 1}, order: {idx: "DESC"}})

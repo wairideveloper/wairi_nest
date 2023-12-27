@@ -128,7 +128,7 @@ export class AuthQlModelService {
                 // link: data.link,
                 agree: data.agree,
                 level: 1,
-                status: 4,
+                status: 1,
                 regdate: getNowUnix(),
                 lastSignin: getNowUnix(),
             }
