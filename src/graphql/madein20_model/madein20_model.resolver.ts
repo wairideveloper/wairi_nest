@@ -59,6 +59,21 @@ export class Madein20ModelResolver {
         try{
             let data = await this.madein20ModelService.growthType();
 
+            let phoneList = data.phone;
+            console.log("=>(madein20_model.resolver.ts:63) phoneList", phoneList);
+
+            let phone = '01082308203'
+            await this.madein20ModelService.sendAlimtalk([phone], 'S6xbU9c065tUSq1VquOa');
+
+            //Todo : phoneList 를 루프를 돌며 알림톡 발송
+
+            let memberIdxList = data.idx;
+            console.log("=>(madein20_model.resolver.ts:65) memberIdxList", memberIdxList);
+
+            //Todo : memberChannel level -1 로 변경
+
+
+
             return {
                 message : '성공',
                 code : 200,

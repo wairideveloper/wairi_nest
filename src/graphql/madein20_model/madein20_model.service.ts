@@ -158,6 +158,10 @@ export class Madein20ModelService {
 
     private setParams(data: any, templateCode: string, phone: string) {
         switch (templateCode) {
+            case 'S6xbU9c065tUSq1VquOa' :
+                return {
+                    phone: phone,
+                }
             case 'EHu0hjNSYvP3y0ZSxSd2' :
                 return {
                     phone: phone,
@@ -309,6 +313,43 @@ export class Madein20ModelService {
         }
     }
 
+    async campaignInfo(campaignIdx: number) {
+        let campaign = await this.campaignRepository.createQueryBuilder('campaign')
+            .where('campaign.status = :status', {status: 200})
+            .andWhere('campaign.remove = :remove', {remove: 0})
+            .andWhere('campaign.info = :info', {info: ''})
+            .select('campaign.idx', 'idx')
+            .getRawMany();
+        console.log("=>(madein20_model.service.ts:318) campaign", campaign);
+
+        return campaign;
+    }
+
+    async campaignItemInfo(campaignIdx : number) {
+        let campaignItem = await this.campaignItemRepository.createQueryBuilder('campaignItem')
+            .where('campaignItem.campaignIdx = :campaignIdx', {campaignIdx: campaignIdx})
+            .select('campaignItem.info', 'info')
+            .addSelect('campaignItem.infoGuide', 'infoGuide')
+            .addSelect('campaignItem.infoRefund1', 'infoRefund1')
+            .getRawMany();
+
+        return bufferToString(campaignItem);
+    }
+
+    async updateCampaignInfo(campaignIdx: number, info: string, infoGuide: string, infoRefund: string) {
+        let campaign = await this.campaignRepository.createQueryBuilder('campaign')
+            .update()
+            .set({
+                info: info,
+                production_guide: infoGuide,
+                caution: infoRefund
+            })
+            .where('campaign.idx = :idx', {idx: campaignIdx})
+            .execute();
+        console.log("=>(madein20_model.service.ts:342) campaign", campaign);
+        return campaign;
+    }
+
     /**
      * Retrieves the growth type of members based on specific conditions.
      * @returns {Promise<void>} - A promise that resolves with the growth type data.
@@ -341,44 +382,5 @@ export class Madein20ModelService {
         }catch (e) {
             throw new Error('growthType: ' + e.message);
         }
-    }
-
-    async campaignInfo(campaignIdx: number) {
-        let campaign = await this.campaignRepository.createQueryBuilder('campaign')
-            .where('campaign.status = :status', {status: 200})
-            .andWhere('campaign.remove = :remove', {remove: 0})
-            .andWhere('campaign.info = :info', {info: ''})
-            .select('campaign.idx', 'idx')
-            .getRawMany();
-        console.log("=>(madein20_model.service.ts:318) campaign", campaign);
-
-        return campaign;
-    }
-
-
-    async campaignItemInfo(campaignIdx : number) {
-        let campaignItem = await this.campaignItemRepository.createQueryBuilder('campaignItem')
-            .where('campaignItem.campaignIdx = :campaignIdx', {campaignIdx: campaignIdx})
-            .select('campaignItem.info', 'info')
-            .addSelect('campaignItem.infoGuide', 'infoGuide')
-            .addSelect('campaignItem.infoRefund1', 'infoRefund1')
-            .getRawMany();
-
-        return bufferToString(campaignItem);
-    }
-
-    async updateCampaignInfo(campaignIdx: number, info: string, infoGuide: string, infoRefund: string) {
-        let campaign = await this.campaignRepository.createQueryBuilder('campaign')
-            .update()
-            .set({
-                info: info,
-                production_guide: infoGuide,
-                caution: infoRefund
-            })
-            .where('campaign.idx = :idx', {idx: campaignIdx})
-            .execute();
-        console.log("=>(madein20_model.service.ts:342) campaign", campaign);
-        return campaign;
-
     }
 }

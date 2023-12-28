@@ -45,7 +45,7 @@ export class AuthQlModelService {
 
     async login(id: string, password: string) {
         try {
-            let member = await this.memberService.findById(id);
+            let member = await this.memberService.findByIdSecession(id);
             member = bufferToString(member);
             if (!member) {
                 throw new HttpException('회원정보 없음', 404);
