@@ -69,18 +69,20 @@ export class Madein20ModelService {
             .getRawOne();
         partner = bufferToString(partner)
 
-        let receivers = await this.campaignRepository.createQueryBuilder('campaign')
+        let receivers = []
+        let receiverData = await this.partnerRepository.createQueryBuilder('partner')
             .where('campaign.idx = :idx', {idx: campaignIdx})
             .select('noteReceivers')
             .getRawOne();
-        receivers = bufferToString(receivers)
+        receiverData = bufferToString(receiverData)
         //JSON 으로 변환
-        if(!receivers.noteReceivers){
+        if(!receiverData.noteReceivers){
             console.log("=>(madein20_model.service.ts:74) receivers.noteReceivers: ", '추가연락처 없음');
+        }else{
+            receivers = JSON.parse(receiverData.noteReceivers)
         }
-        receivers = JSON.parse(receivers.noteReceivers)
-        //수신동의 여부 확인
 
+        //수신동의 여부 확인
         let contactPhone = partner.contactPhone? partner.contactPhone : false;
         if(contactPhone){
             receivers.push({phone: contactPhone, receiveSms: 1})
