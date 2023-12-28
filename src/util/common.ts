@@ -105,7 +105,7 @@ export const getUnixTimeStamp = () => {
 //현제 날짜 Y-m-d 00:00:00 을 타임스템프로 변환
 export const getUnixTimeStampByYmd = () => {
     let now = moment().format('YYYY-MM-DD 00:00:00');
-    return moment(now).unix();
+    return moment(now).subtract(9, 'hours').unix();
 }
 
 //현재시간 유닉스 타임스템프 3일 후
