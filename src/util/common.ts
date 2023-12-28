@@ -102,6 +102,12 @@ export const getUnixTimeStamp = () => {
     return moment().unix();
 }
 
+//현제 날짜 Y-m-d 00:00:00 을 타임스템프로 변환
+export const getUnixTimeStampByYmd = () => {
+    let now = moment().format('YYYY-MM-DD 00:00:00');
+    return moment(now).unix();
+}
+
 //현재시간 유닉스 타임스템프 3일 후
 export const getUnixTimeStampAfter3Days = () => {
     return moment().add(3, 'days').unix();

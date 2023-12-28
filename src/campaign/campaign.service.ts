@@ -16,7 +16,14 @@ import {CampaignRecent} from "../../entity/entities/CampaignRecent";
 import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
 import {CampaignSubmit} from "../../entity/entities/CampaignSubmit";
 import {CampaignFav} from "../../entity/entities/CampaignFav";
-import {bufferToString, FROM_UNIXDATE, FROM_UNIXTIME, getUnixTimeStamp, getYmd} from "../util/common"
+import {
+    bufferToString,
+    FROM_UNIXDATE,
+    FROM_UNIXTIME,
+    getUnixTimeStamp,
+    getUnixTimeStampByYmd,
+    getYmd
+} from "../util/common"
 import * as moment from 'moment';
 
 @Injectable()
@@ -296,9 +303,11 @@ export class CampaignService {
                 .addSelect('campaignItemSchedule.priceDeposit * campaignItem.dc11 / 100 AS discountPriceDeposit')
                 .leftJoin('campaignItemSchedule.campaignItem', 'campaignItem')
                 .where('campaignItemSchedule.itemIdx IN (:...idx)', {idx: campaignItemIdx})
-                .andWhere('campaignItemSchedule.date >= :now', {now: getUnixTimeStamp()})
+                .andWhere('campaignItemSchedule.date >= :now', {now: getUnixTimeStampByYmd()})
                 .getRawMany();
             campaignItemSchedule = bufferToString(campaignItemSchedule);
+            console.log("=>(campaign.service.ts:310) getUnixTimeStampByYmd()", getUnixTimeStampByYmd());
+            // console.log("=>(campaign.service.ts:302) campaignItemSchedule", campaignItemSchedule);
 
             campaignItem.forEach((item) => {
                 let channelNames = [];

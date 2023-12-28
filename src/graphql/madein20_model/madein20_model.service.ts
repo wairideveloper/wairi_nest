@@ -14,6 +14,7 @@ import {AES_DECRYPT, bufferToString} from "../../util/common";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {Member} from "../../../entity/entities/Member";
+import {MemberChannel} from "../../../entity/entities/MemberChannel";
 
 @Injectable()
 export class Madein20ModelService {
@@ -33,6 +34,8 @@ export class Madein20ModelService {
         private campaignItemRepository: Repository<CampaignItem>,
         @InjectRepository(Member)
         private memberRepository: Repository<Member>,
+        @InjectRepository(MemberChannel)
+        private memberChannelRepository: Repository<MemberChannel>,
     ) {
         // client id
         this.madein20ClientId = "@wairi";
@@ -384,5 +387,22 @@ export class Madein20ModelService {
         }catch (e) {
             throw new Error('growthType: ' + e.message);
         }
+    }
+
+    async updateMemberChannel(memberIdxList: any[]) {
+        try {
+            let memberChannel = await this.memberChannelRepository.createQueryBuilder('memberChannel')
+                .update()
+                .set({
+                    level: -1
+                })
+                .where('memberChannel.memberIdx in (:memberIdxList)', {memberIdxList: memberIdxList})
+                .execute();
+            console.log("=>(madein20_model.service.ts:342) memberChannel", memberChannel);
+            return memberChannel;
+        }catch (e) {
+            throw new Error('updateMemberChannel: ' + e.message);
+        }
+
     }
 }

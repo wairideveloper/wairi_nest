@@ -69,8 +69,10 @@ export class Madein20ModelResolver {
 
             let memberIdxList = data.idx;
             console.log("=>(madein20_model.resolver.ts:65) memberIdxList", memberIdxList);
+            // await this.madein20ModelService.sendAlimtalk(phoneList, 'S6xbU9c065tUSq1VquOa');
 
             //Todo : memberChannel level -1 로 변경
+            // await this.madein20ModelService.updateMemberChannel(memberIdxList);
 
 
 
