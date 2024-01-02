@@ -48,6 +48,17 @@ export class SubmitModelResolver {
     ) {
     }
 
+
+    //  campaignIdx: number;
+    //     itemIdx: number;
+    //     nop: number;
+    //     startDate: string;
+    //     endDate: string;
+    //     price: number;
+    //     // type: number;
+    //     submitChannel: number;
+    //     subContent2: string;
+    //     agreeContent: string;
     @Mutation()
     @UseGuards(GqlAuthGuard)
     async createCampaignSubmit(
@@ -55,6 +66,36 @@ export class SubmitModelResolver {
         @AuthUser() authUser: Member,
     ) {
         try {
+            const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
+            const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
+
+            //Todo 수익분배 월별 제한인원 신청하기 전에 체크
+            if(campaignItem.sellType == 3){
+                //신청 시작일 기준  년 가져오기
+                let year = createCampaignSubmitInput.startDate.split('-')[0];
+                //신청 시작일 기준  월 가져오기
+                let month = createCampaignSubmitInput.startDate.split('-')[1];
+                //$month 월의 첫날 Y-m-d 00:00:00 가져와서 타임으로 변환
+                let startDate = getUnixTimeStampByDate(`${year}-${month}-01 00:00:00`);
+
+                //해당월의 마지막날 찾기 asia/seoul
+                let lastDay = new Date(Number(year), Number(month), 0);
+                // +9시간
+                lastDay.setHours(lastDay.getHours() + 9);
+                //$month 월의 lastDay Y-m-d 00:00:00 가져와서 타임으로 변환
+                let endDate = getUnixTimeStampByDate(`${year}-${month}-${lastDay.getDate()} 00:00:00`);
+
+                let check = await this.submitModelService.checkSubmitLimitMonth(campaignItem.idx, startDate, endDate);
+                console.log("=>(submit_model.resolver.ts:93) 월별 제한인원 체크 : ", check);
+                if(check >= campaignItem.profit_distribution){
+                    return {
+                        code: 400,
+                        message: '해당 캠페인은 월별 제한인원을 초과하였습니다.',
+                        data: null
+                    }
+                }
+            }
+
             console.log("=>(submit_model.resolver.ts:59) 신청하기 ", '신청하기 시작' );
             let checked = true;
             let sid = "";
@@ -70,8 +111,8 @@ export class SubmitModelResolver {
             // const checkMonthDuplicateSubmit = await this.submitModelService.checkMonthDuplicateSubmit(authUser.idx, createCampaignSubmitInput.campaignIdx);
             // 같은 캠페인 토탈 3번 거절
             // const checkMonthDuplicateReject = await this.submitModelService.checkMonthDuplicateReject(authUser.idx, createCampaignSubmitInput.campaignIdx);
-            const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
-            const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
+            // const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
+            // const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
 
             //일자별
             campaignItem.channelNames = _getChannelName(campaignItem.channels);

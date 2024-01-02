@@ -963,7 +963,7 @@ export class CampaignService {
     }
 
     async getCampaignItemByIdx(idx: number) {
-        return await this.campaignItemRepository.createQueryBuilder('campaignItem')
+        let data = await this.campaignItemRepository.createQueryBuilder('campaignItem')
             .leftJoin('campaignItem.campaign', 'campaign')
             .select('campaignItem.*')
             .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
@@ -971,6 +971,7 @@ export class CampaignService {
             .where('campaignItem.remove = :remove', {remove: 0})
             .andWhere('campaignItem.idx = :idx', {idx: idx})
             .getRawOne();
+        return bufferToString(data);
     }
 
     async delCampaignFav(idx: number, campaignIdx: number) {

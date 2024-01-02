@@ -440,4 +440,27 @@ export class SubmitModelService {
 
         return data;
     }
+
+    async checkSubmitLimitMonth(idx, startDate: number, endDate: number) {
+        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+            .select('*')
+            .where("campaignSubmit.idx = :idx", {idx: idx})
+            .andWhere(new Brackets(qb => {
+                qb.where('campaignSubmit.status = 100')
+                    .orWhere('campaignSubmit.status = 200')
+                    .orWhere('campaignSubmit.status = 300')
+                    .orWhere('campaignSubmit.status = 400')
+                    .orWhere('campaignSubmit.status = 500')
+                    .orWhere('campaignSubmit.status = 700')
+                    .orWhere('campaignSubmit.status = 950')
+            }))
+            .andWhere(new Brackets(qb => {
+                qb.where('campaignSubmit.startDate >= :startDate', {startDate: startDate})
+                    .orWhere('campaignSubmit.endDate <= :endDate', {endDate: endDate})
+            }))
+            .getCount();
+
+        return data;
+
+    }
 }
