@@ -76,7 +76,7 @@ export class Madein20ModelService {
         let receiverData = await this.partnerRepository.createQueryBuilder('partner')
             .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
             .where('campaign.idx = :idx', {idx: campaignIdx})
-            .select('noteReceivers')
+            .select('partner.noteReceivers')
             .getRawOne();
         receiverData = bufferToString(receiverData)
         //JSON 으로 변환
