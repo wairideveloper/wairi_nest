@@ -76,14 +76,13 @@ export class SubmitModelResolver {
                 //신청 시작일 기준  월 가져오기
                 let month = createCampaignSubmitInput.startDate.split('-')[1];
                 //$month 월의 첫날 Y-m-d 00:00:00 가져와서 타임으로 변환
-                let startDate = getUnixTimeStampByDate(`${year}-${month}-01 00:00:00`);
+                let startDate = getUnixTimeStampByDate9Sub(`${year}-${month}-01 00:00:00`);
 
                 //해당월의 마지막날 찾기 asia/seoul
                 let lastDay = new Date(Number(year), Number(month), 0);
-                // +9시간
-                lastDay.setHours(lastDay.getHours() + 9);
+
                 //$month 월의 lastDay Y-m-d 00:00:00 가져와서 타임으로 변환
-                let endDate = getUnixTimeStampByDate(`${year}-${month}-${lastDay.getDate()} 00:00:00`);
+                let endDate = getUnixTimeStampByDate9Sub(`${year}-${month}-${lastDay.getDate()} 00:00:00`);
 
                 let check = await this.submitModelService.checkSubmitLimitMonth(campaignItem.idx, startDate, endDate);
                 console.log("=>(submit_model.resolver.ts:93) 월별 제한인원 체크 : ", check);
