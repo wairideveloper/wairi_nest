@@ -74,6 +74,7 @@ export class Madein20ModelService {
 
         let receivers = []
         let receiverData = await this.partnerRepository.createQueryBuilder('partner')
+            .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
             .where('campaign.idx = :idx', {idx: campaignIdx})
             .select('noteReceivers')
             .getRawOne();
