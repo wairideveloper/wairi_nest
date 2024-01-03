@@ -444,7 +444,7 @@ export class SubmitModelService {
     async checkSubmitLimitMonth(idx, startDate: number, endDate: number) {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .select('*')
-            .where("campaignSubmit.idx = :idx", {idx: idx})
+            .where("campaignSubmit.itemIdx = :idx", {idx: idx})
             .andWhere(new Brackets(qb => {
                 qb.where('campaignSubmit.status = 100')
                     .orWhere('campaignSubmit.status = 200')
