@@ -66,6 +66,8 @@ import {Withdrawal} from "../entity/entities/Withdrawal";
 import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
 import {Admin} from "../entity/entities/Admin";
 import {ApolloServerErrorCode} from "@apollo/server/errors";
+import { ApiplexModule } from './graphql/apiplex/apiplex.module';
+import { ApiplexCallbackModule } from './apiplex_callback/apiplex_callback.module';
 
 @Module({
     imports: [
@@ -129,6 +131,7 @@ import {ApolloServerErrorCode} from "@apollo/server/errors";
                 // FirebaseModule,
                 SubmitModelModule,
                 ReviewModelModule,
+                ApiplexModule
             ],
             typePaths: ['./**/*.graphql'],
             definitions: {
@@ -203,7 +206,9 @@ import {ApolloServerErrorCode} from "@apollo/server/errors";
         // FirebaseModule,
         SubmitModelModule,
         ReviewModelModule,
-        BootpayModule
+        BootpayModule,
+        ApiplexModule,
+        ApiplexCallbackModule
     ],
     controllers: [AppController],
     providers: [

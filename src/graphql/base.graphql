@@ -60,6 +60,7 @@ type Query{
     getRecommendedSearchWords(type:String, limit:Int): [SearchWord]!
     growthType: GrowthTypeResponse
     campaignInfoUpdate(campaignIdx:Int): GraphqlHttpResponse
+    testapiplex: GraphqlHttpResponse
 }
 
 type Mutation {

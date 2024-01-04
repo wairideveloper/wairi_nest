@@ -461,6 +461,5 @@ export class SubmitModelService {
             .getCount();
 
         return data;
-
     }
 }
