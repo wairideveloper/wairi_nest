@@ -52,7 +52,6 @@ export class ReviewModelService {
                 .limit(take)
                 .getRawMany();
             data = bufferToString(data)
-
             let total = await this.reviewRepository.createQueryBuilder("campaignReview")
                 .select('*')
                 .where("campaignReview.campaignIdx = :idx", {idx: idx})
@@ -81,6 +80,7 @@ export class ReviewModelService {
 
                     //images
                     let jsonImages = JSON.parse(item.images);
+                    console.log("=>(review_model.service.ts:83) jsonImages", jsonImages);
                     let images = [];
 
                     if (item.aws_use_yn == 'N') {
@@ -89,10 +89,8 @@ export class ReviewModelService {
                                 key: null,
                                 url: null
                             };
-                            jsonImages.map((image) => {
                                 object.url = 'https://wairi.co.kr/img/review/' + image;
                                 images.push(object);
-                            })
                         })
                     } else {
                         if (jsonImages.length > 0) {
