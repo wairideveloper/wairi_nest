@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiplexCallbackService } from './apiplex_callback.service';
-import { CreateApiplexCallbackDto } from './dto/create-apiplex_callback.dto';
-import { UpdateApiplexCallbackDto } from './dto/update-apiplex_callback.dto';
 
 @Controller('apiplex-callback')
 export class ApiplexCallbackController {
@@ -48,15 +46,6 @@ export class ApiplexCallbackController {
     console.log("=>(apiplex_callback.controller.ts:13) 'dsfsf'", this.kakaoCode);
     // kakaocode show
     return this.kakaoCode;
-  }
-  @Post()
-  create(@Body() createApiplexCallbackDto: CreateApiplexCallbackDto) {
-    return this.apiplexCallbackService.create(createApiplexCallbackDto);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateApiplexCallbackDto: UpdateApiplexCallbackDto) {
-    return this.apiplexCallbackService.update(+id, updateApiplexCallbackDto);
   }
 
   @Delete(':id')
