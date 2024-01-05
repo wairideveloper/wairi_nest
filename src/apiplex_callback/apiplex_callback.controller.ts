@@ -61,10 +61,11 @@ async alimtalk_callback(
         console.log("=>(apiplex_callback.controller.ts:57) 실패", result.code);
       }
 
-      return {
-        code: '100',
-        desc: 'success'
-      }
+      //Response body (고객사 ➡ API PLEX)
+        return {
+            "code": "100",
+            "desc": "success"
+        };
    }catch (e) {
         console.log("=>(apiplex_callback.controller.ts:51) e", e);
    }

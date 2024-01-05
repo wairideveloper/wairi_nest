@@ -28,7 +28,7 @@ export class ApiplexCallbackService {
   async alimtalk_callback(msg_key: string, code: any, done_date: string, echo_to_webhook: any)
   {
     let result = await this.notificationTalkRepository.createQueryBuilder('notification_talk')
-        .update(NotificationTalk)
+        .update()
         .set({ status: code, done_date: done_date })
         .where("template_code = :template_code", { template_code: code })
         .andWhere("echo_to_webhook = :echo_to_webhook", { echo_to_webhook: echo_to_webhook })
