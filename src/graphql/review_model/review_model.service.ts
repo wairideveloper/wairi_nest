@@ -80,7 +80,6 @@ export class ReviewModelService {
 
                     //images
                     let jsonImages = JSON.parse(item.images);
-                    console.log("=>(review_model.service.ts:83) jsonImages", jsonImages);
                     let images = [];
 
                     if (item.aws_use_yn == 'N') {
@@ -158,7 +157,6 @@ export class ReviewModelService {
                     // console.log("=>(review_model.service.ts:158) jsonImages", jsonImages);
                     if (jsonImages.length > 0) {
                         jsonImages.map((image) => {
-                            console.log("=>(review_model.service.ts:162) image", image);
                             images.push(image);
                         })
 
@@ -188,7 +186,6 @@ export class ReviewModelService {
                 const date_a = FROM_UNIXTIME_JS_YY_MM_DD(data.regdate_a);
                 data.regdate_a = date_a;
             }
-            console.log("=>(review_model.service.ts getReview:184) data", data);
             return data;
         } catch (error) {
             console.log("=>(review_model.service.ts:153) error", error);
@@ -222,7 +219,6 @@ export class ReviewModelService {
                         s3ImageKeys.push(item.awskey);
                     })
                 });
-            console.log("=>(review_model.service.ts:219) s3ImageKeys", s3ImageKeys);
             //reivew DB 삭제
             await queryRunner.manager.createQueryBuilder()
                 .delete()
