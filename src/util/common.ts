@@ -140,6 +140,11 @@ export const getymd = () => {
     return moment().format('YYMMDD');
 }
 
+//현재시간 Y-m-d H:i:s
+export const getNowYmdHis = () => {
+    return moment().format('YYYY-MM-DD HH:mm:ss');
+}
+
 //jwt 토큰 확인 referer
 export const verifyToken = (req) => {
     if(req.headers.authorization) {

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {NotificationTalk} from "../../entity/entities/NotificationTalk";
 import {Repository} from "typeorm";
-import {Campaign} from "../../entity/entities/Campaign";
 
 @Injectable()
 export class ApiplexCallbackService {
@@ -29,10 +28,11 @@ export class ApiplexCallbackService {
   {
     let result = await this.notificationTalkRepository.createQueryBuilder('notification_talk')
         .update()
-        .set({ status: code, done_date: done_date })
-        .where("template_code = :template_code", { template_code: code })
+        .set({ status: code , done_date: done_date})
+        .where("template_code = :template_code", { template_code: msg_key })
         .andWhere("echo_to_webhook = :echo_to_webhook", { echo_to_webhook: echo_to_webhook })
         .execute();
+    console.log("=>(apiplex_callback.service.ts:36) result", result);
 
     return result;
   }

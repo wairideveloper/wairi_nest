@@ -26,12 +26,12 @@ export class NotificationTalk {
   @Column("longtext", { name: "data" })
   data: string;
 
-  @Column("varchar", { name: "created_at" })
+  @Column("datetime", { name: "created_at" })
   created_at: string;
 
-  @Column("varchar", { name: "updated_at" })
+  @Column("datetime", { name: "updated_at" })
   updated_at: string;
 
-  @Column("varchar", { name: "done_date" })
+  @Column("datetime", { name: "done_date" })
   done_date: string;
 }

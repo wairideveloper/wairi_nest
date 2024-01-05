@@ -68,6 +68,7 @@ import {Admin} from "../entity/entities/Admin";
 import {ApolloServerErrorCode} from "@apollo/server/errors";
 import { ApiplexModule } from './graphql/apiplex/apiplex.module';
 import { ApiplexCallbackModule } from './apiplex_callback/apiplex_callback.module';
+import {NotificationTalk} from "../entity/entities/NotificationTalk";
 
 @Module({
     imports: [
@@ -89,7 +90,7 @@ import { ApiplexCallbackModule } from './apiplex_callback/apiplex_callback.modul
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
-                Payment, Popup, Withdrawal, CampaignReviewImage, Admin
+                Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk
             ],
             synchronize: false,
             charset: 'utf8mb4',
