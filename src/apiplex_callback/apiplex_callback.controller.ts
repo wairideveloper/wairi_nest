@@ -47,8 +47,21 @@ export class ApiplexCallbackController {
   ) {
     // curl 요청의 본문 데이터 수신
    console.log("=>(apiplex_callback.controller.ts:51) body", body);
+   console.log("=>(apiplex_callback.controller.ts:51) body", body.results);
 
-
+   try{
+      if(body.results.code == 0){
+        const msg_key = body.results.msg_key;
+        const code = body.results.code;
+        const done_date = body.results.done_date;
+        const echo_to_webhook = body.results.echo_to_webhook;
+        this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
+      }else{
+        console.log("=>(apiplex_callback.controller.ts:57) 실패", body.results.code);
+      }
+   }catch (e) {
+        console.log("=>(apiplex_callback.controller.ts:51) e", e);
+   }
     // kakaocode show
     return this.kakaoCode;
   }
