@@ -46,9 +46,6 @@ async alimtalk_callback(
       @Body() body: any
   ) {
     // curl 요청의 본문 데이터 수신
-   console.log("=>(apiplex_callback.controller.ts:51) body", body);
-   console.log("=>(apiplex_callback.controller.ts:51) body", body.results);
-
    const result = body.results[0];
 
    try{
