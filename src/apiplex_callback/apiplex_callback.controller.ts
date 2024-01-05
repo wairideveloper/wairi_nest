@@ -42,8 +42,13 @@ export class ApiplexCallbackController {
   *  }
   */
   @Post('alimtalk_callback')
-  alimtalk_callback() {
-    console.log("=>(apiplex_callback.controller.ts:13) 'dsfsf'", this.kakaoCode);
+  alimtalk_callback(
+      @Body() body: any
+  ) {
+    // curl 요청의 본문 데이터 수신
+   console.log("=>(apiplex_callback.controller.ts:51) body", body);
+
+
     // kakaocode show
     return this.kakaoCode;
   }
