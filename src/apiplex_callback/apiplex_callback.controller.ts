@@ -49,15 +49,22 @@ export class ApiplexCallbackController {
    console.log("=>(apiplex_callback.controller.ts:51) body", body);
    console.log("=>(apiplex_callback.controller.ts:51) body", body.results);
 
+   const result = body.results[0];
+
    try{
-      if(body.results.code == '0'){
-        const msg_key = body.results.msg_key;
-        const code = body.results.code;
-        const done_date = body.results.done_date;
-        const echo_to_webhook = body.results.echo_to_webhook;
+      if(result.code == '0'){
+        const msg_key = result.msg_key;
+        const code = result.code;
+        const done_date = result.done_date;
+        const echo_to_webhook = result.echo_to_webhook;
         this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
       }else{
-        console.log("=>(apiplex_callback.controller.ts:57) 실패", body.results.code);
+        console.log("=>(apiplex_callback.controller.ts:57) 실패", result.code);
+      }
+
+      return {
+        code: '100',
+        desc: 'success'
       }
    }catch (e) {
         console.log("=>(apiplex_callback.controller.ts:51) e", e);
