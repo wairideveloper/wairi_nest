@@ -54,7 +54,7 @@ export class ApiplexCallbackController {
    try{
       if(result.code == '0'){
         const msg_key = result.msg_key;
-        const code = result.code;
+        const code = this.kakaoCode[result.code];
         const done_date = result.done_date;
         const echo_to_webhook = result.echo_to_webhook;
         this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
