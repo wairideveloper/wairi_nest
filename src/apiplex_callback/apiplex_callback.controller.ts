@@ -41,7 +41,7 @@ export class ApiplexCallbackController {
   *    "desc": "success"
   *  }
   */
-  @Get('alimtalk_callback')
+  @Post('alimtalk_callback')
   alimtalk_callback() {
     console.log("=>(apiplex_callback.controller.ts:13) 'dsfsf'", this.kakaoCode);
     // kakaocode show
