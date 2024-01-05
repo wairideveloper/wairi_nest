@@ -83,7 +83,6 @@ export class CampaignResolver {
         @Args('sort', {type: () => Int}) sort?: string,
     ) {
         try {
-            console.log("=>(campaign.resolver.ts:82 getCampaigns) sort", sort);
             const list = await this.campaignsService.mainList(take, page, cate, cateArea, sort);
             return list
         } catch (error) {
