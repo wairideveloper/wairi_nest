@@ -1,7 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import {InjectRepository} from "@nestjs/typeorm";
+import {NotificationTalk} from "../../entity/entities/NotificationTalk";
+import {Repository} from "typeorm";
+import {Campaign} from "../../entity/entities/Campaign";
 
 @Injectable()
 export class ApiplexCallbackService {
+
+  constructor(
+      @InjectRepository(NotificationTalk)
+      private readonly notificationTalkRepository: Repository<NotificationTalk>
+  ) {
+  }
 
   findAll() {
     return `This action returns all apiplexCallback`;
@@ -15,11 +25,15 @@ export class ApiplexCallbackService {
     return `This action removes a #${id} apiplexCallback`;
   }
 
-  alimtalk_callback(msg_key: string, code: any, done_date: string, echo_to_webhook: any)
+  async alimtalk_callback(msg_key: string, code: any, done_date: string, echo_to_webhook: any)
   {
-    console.log("=>(apiplex_callback.service.ts:51) msg_key", msg_key);
-    console.log("=>(apiplex_callback.service.ts:51) code", code);
-    console.log("=>(apiplex_callback.service.ts:51) done_date", done_date);
-    console.log("=>(apiplex_callback.service.ts:51) echo_to_webhook", echo_to_webhook);
+    let result = await this.notificationTalkRepository.createQueryBuilder('notification_talk')
+        .update(NotificationTalk)
+        .set({ status: code, done_date: done_date })
+        .where("template_code = :template_code", { template_code: code })
+        .andWhere("echo_to_webhook = :echo_to_webhook", { echo_to_webhook: echo_to_webhook })
+        .execute();
+
+    return result;
   }
 }

@@ -42,7 +42,7 @@ export class ApiplexCallbackController {
   *  }
   */
   @Post('alimtalk_callback')
-  alimtalk_callback(
+async alimtalk_callback(
       @Body() body: any
   ) {
     // curl 요청의 본문 데이터 수신
@@ -57,7 +57,9 @@ export class ApiplexCallbackController {
         const code = this.kakaoCode[result.code];
         const done_date = result.done_date;
         const echo_to_webhook = result.echo_to_webhook;
-        this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
+        let res = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
+        // 업데이트 확인
+        console.log("=>(apiplex_callback.controller.ts:57) res", res);
       }else{
         console.log("=>(apiplex_callback.controller.ts:57) 실패", result.code);
       }
