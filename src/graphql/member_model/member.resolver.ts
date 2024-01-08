@@ -16,6 +16,7 @@ import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {LoginInput} from "../auth_ql_model/dto/loginInput";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
+import {ApiplexService} from "../apiplex/apiplex.service";
 
 class CeateMemberChannelInput {
     type: number;
@@ -37,7 +38,8 @@ class UpdateMemberChannelInput {
 export class MemberResolver {
     constructor(
         private readonly membersService: MembersService,
-        private readonly madein20ModelService: Madein20ModelService
+        private readonly madein20ModelService: Madein20ModelService,
+        private readonly apiPlexService: ApiplexService
     ) {
         console.log('MemberResolver')
     }
@@ -109,7 +111,7 @@ export class MemberResolver {
     @Mutation((returns) => Member)
     @UseGuards(GqlAuthGuard)
     async createMemberChannel(@AuthUser() authUser: Member,
-                           @Args('createMemberChannelInput',) createMemberChannelInput: CeateMemberChannelInput
+                              @Args('createMemberChannelInput',) createMemberChannelInput: CeateMemberChannelInput
     ) {
         try {
             let data = {
@@ -119,22 +121,33 @@ export class MemberResolver {
                 interests: changeInterestsIndex(createMemberChannelInput.interests),
                 channelName: ""
             }
-            if(createMemberChannelInput.type == 9){
+            if (createMemberChannelInput.type == 9) {
                 data['channelName'] = createMemberChannelInput.channelName;
             }
 
             const createChannel = await this.membersService.setMemberChannel(data);
             const channelIdx = createChannel.raw.insertId;
-            if(channelIdx == undefined){
+            if (channelIdx == undefined) {
                 return {
                     code: 500,
                     message: '채널 등록 실패',
                 }
             }
             let getChannel = await this.membersService.getMemberChannel(channelIdx);
-            if(getChannel){
+            if (getChannel) {
                 getChannel = bufferToString(getChannel);
             }
+
+            //Todo : 알림톡 발송
+            if (authUser.phone) {
+                let param = {
+                    "이름": authUser.username ? authUser.username : "",
+                    "채널주소": createMemberChannelInput.link,
+                }
+                // @ts-ignore
+                await this.apiPlexService.sendUserAlimtalk('EHu0hjNSYvP3', authUser.phone, param)
+            }
+
             return {
                 code: 200,
                 message: '채널 등록 성공',
@@ -155,7 +168,7 @@ export class MemberResolver {
     @Mutation((returns) => Member)
     @UseGuards(GqlAuthGuard)
     async updateMemberChannel(@AuthUser() authUser: Member,
-                                @Args('updateMemberChannelInput',) updateMemberChannelInput: UpdateMemberChannelInput
+                              @Args('updateMemberChannelInput',) updateMemberChannelInput: UpdateMemberChannelInput
     ) {
         try {
             let data = {
@@ -166,14 +179,14 @@ export class MemberResolver {
                 interests: updateMemberChannelInput.interests,
                 channelName: ""
             }
-            if(updateMemberChannelInput.type == 9){
+            if (updateMemberChannelInput.type == 9) {
                 data['channelName'] = updateMemberChannelInput.channelName;
             }
 
             const channel = await this.membersService.updateMemberChannel(data);
-            if(channel.affected > 0){
+            if (channel.affected > 0) {
                 let getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
-                if(getChannel){
+                if (getChannel) {
                     getChannel = bufferToString(getChannel);
                 }
 
@@ -202,7 +215,7 @@ export class MemberResolver {
                     regdate: FROM_UNIXTIME_JS(getChannel.regdate),
                     level: getChannel.level,
                 }
-            }else{
+            } else {
                 return {
                     code: 500,
                     message: '채널 수정 실패',
@@ -227,31 +240,31 @@ export class MemberResolver {
             }
             const channel = await this.membersService.deleteMemberChannel(data);
             console.log("-> channel", channel);
-            if(channel.affected > 0){
+            if (channel.affected > 0) {
                 return {
                     code: 200,
                     message: '채널 삭제 성공',
                     idx: channelIdx
                 }
-            }else{
+            } else {
                 return {
                     code: 500,
                     message: '채널 삭제 실패',
                     idx: channelIdx
                 }
             }
-        }catch (error) {
+        } catch (error) {
             throw new HttpException(error.message, 500);
         }
     }
 
     @Query()
     @UseGuards(GqlAuthGuard)
-    async getMemberChannel(@AuthUser() authUser: Member){
-        try{
+    async getMemberChannel(@AuthUser() authUser: Member) {
+        try {
             let data = await this.membersService.getMemberChannelAll(authUser.idx);
             // let data = await this.membersService.getMemberChannelAll(15807);
-            if(data.length > 0){
+            if (data.length > 0) {
                 data = bufferToString(data);
             }
             data.forEach((element, index) => {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, Res} from '@nestjs/common';
 import { ApiplexCallbackService } from './apiplex_callback.service';
 import {now} from "moment";
 import {getNowYmdHis} from "../util/common";
@@ -45,17 +45,9 @@ export class ApiplexCallbackController {
   */
   @Post('alimtalk_callback')
 async alimtalk_callback(
-      @Body() body: any
+      @Body() body: any,
+      @Res() res: Response
   ) {
-    // const msg_key = 'TSNQ2d5djV3p';
-    // const code = this.kakaoCode['8'];
-    // const done_date = getNowYmdHis();
-    // const echo_to_webhook = '01082308203_1704439966';
-    // try {
-    //   let res = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
-    // }catch (e) {
-    //   console.log("=>(apiplex_callback.controller.ts:51) e", e);
-    // }
    const result = body.results[0];
 
    try{
@@ -65,18 +57,21 @@ async alimtalk_callback(
         const done_date = result.done_date;
         const echo_to_webhook = result.echo_to_webhook;
 
-        let res = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
+        let updateResult = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
         // 업데이트 확인
-        console.log("=>(apiplex_callback.controller.ts:57) res", res);
+        console.log("=>(apiplex_callback.controller.ts:57) res", updateResult);
       }else{
         console.log("=>(apiplex_callback.controller.ts:57) 실패", result.code);
       }
 
       //Response body (고객사 ➡ API PLEX)
-        return {
+        let data = {
             "code": "100",
             "desc": "success"
         };
+     // @ts-ignore
+     res.header('Content-Type', 'application/json')
+         .send(JSON.stringify(data));
    }catch (e) {
         console.log("=>(apiplex_callback.controller.ts:51) e", e);
    }

@@ -8,13 +8,15 @@ import {Campaign} from "../../../entity/entities/Campaign";
 import {Member} from "../../../entity/entities/Member";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
+import {ApiplexService} from "../apiplex/apiplex.service";
+import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 
 @Module({
   imports: [
       TypeOrmModule.forFeature([
-          Admin, Partner, Campaign, Member, CampaignItem, MemberChannel
+          Admin, Partner, Campaign, Member, CampaignItem, MemberChannel, NotificationTalk
       ]),
   ],
-  providers: [Madein20ModelResolver, Madein20ModelService]
+  providers: [Madein20ModelResolver, Madein20ModelService, ApiplexService]
 })
 export class Madein20ModelModule {}

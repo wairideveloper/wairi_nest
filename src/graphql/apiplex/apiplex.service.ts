@@ -3,6 +3,11 @@ import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import axios from "axios";
+import {AES_DECRYPT, bufferToString} from "../../util/common";
+import {Admin} from "../../../entity/entities/Admin";
+import {Partner} from "../../../entity/entities/Partner";
+import {Campaign} from "../../../entity/entities/Campaign";
+import {CampaignItem} from "../../../entity/entities/CampaignItem";
 
 @Injectable()
 export class ApiplexService {
@@ -13,14 +18,36 @@ export class ApiplexService {
     private readonly API_PLEX_URL: string;
     private readonly authorizationHeader: string;
     private readonly headers: any;
+    private code: {
+        C100: string;
+        C500_1: string;
+        G150: string;
+        G160: string;
+        G141: string;
+        G140: string;
+        G110: string;
+        G142: string;
+        C400_1: string;
+        C400_2: string;
+        C400_3: string;
+        C404_1: string
+    };
 
     constructor(
         @InjectRepository(NotificationTalk)
         private readonly notificationTalkRepository: Repository<NotificationTalk>,
+        @InjectRepository(Admin)
+        private adminRepository: Repository<Admin>,
+        @InjectRepository(Partner)
+        private partnerRepository: Repository<Partner>,
+        @InjectRepository(Campaign)
+        private campaignRepository: Repository<Campaign>,
+        @InjectRepository(CampaignItem)
+        private campaignItemRepository: Repository<CampaignItem>,
     ) {
-        this.API_PLEX_ID = "wairi";
-        this.API_PLEX_KEY = "1758a135-43db-481a-a367-65b4d6a666bf";
-        this.API_OUTGOING_KEY = "bba88a59f6f79c784c2ed3ce2a0c1bdacf8f0bef";
+        this.API_PLEX_ID = "wairi2";
+        this.API_PLEX_KEY = "cec2ba1f-4cef-471b-b657-aad53d2a09e5";
+        this.API_OUTGOING_KEY = "bbd6e55481976d70fb0d573d216e93093d276826";
         this.API_PLEX_URL = 'https://27ep4ci1w0.apigw.ntruss.com/at-standard/v2/send';
 
         this.authorizationHeader = this.API_PLEX_ID + ';' + this.API_PLEX_KEY
@@ -29,14 +56,33 @@ export class ApiplexService {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=utf-8'
         };
+        this.code = {
+            'C100': '성공',
+            'C400_1': '잘못된 데이터 타입',
+            'C400_2': '잘못된 요청 파라미터',
+            'C400_3': '필수 파라미터 누락',
+            'C404_1': '데이터를 찾을 수 없음',
+            'C500_1': '서버 내부 에러',
+            'G110': 'API UNIQUE ID 예외 (잘못된 URL)',
+            'G140': '발신번호 예외',
+            'G141': '수신번호 예외',
+            'G142': '잘못된 echo_to_webhook	256 byte 초과 또는 type error',
+            'G150': '여신 부족',
+            'G160': '1회 발송 최대 수 초과'
+        }
     }
 
     async test() {
         try {
+            let param = {
+                "이름": "test",
+                "채널주소": "htps://pf.kakao.com/_xgxbxjK",
+            }
             let headers = this.headers;
-            let axioData = this.setConfig("bus_remind_cu", "테스트", {
-                receiver_number: "01082308203"
-            });
+            let setConfigTemplate = this.setConfigTemplate("EHu0hjNSYvP3", param);
+            console.log("=>(apiplex.service.ts:42) setConfigTemplate", setConfigTemplate);
+
+            let axioData = this.setConfig('EHu0hjNSYvP3', "테스트", '01082308203', setConfigTemplate);
             console.log("=>(apiplex.service.ts:41) axioData", axioData);
             let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
             console.log("=>(apiplex.service.ts:43) result", result.data.results);
@@ -45,18 +91,137 @@ export class ApiplexService {
         }
     }
 
-    private setConfig(template_code: string, at_template: string, data: any) {
+    async notificationTalkSave(data: any) {
+        try {
+            await this.notificationTalkRepository
+                .createQueryBuilder()
+                .insert()
+                .into(NotificationTalk,['status',
+                    'template_code', 'echo_to_webhook', 'message', 'receiver_number', 'data', 'created_at'])
+                .values(data)
+                .execute();
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async sendUserAlimtalk(template_code: string, phone: string, param: any) {
+        try {
+            let headers = this.headers;
+            let setConfigTemplate = this.setConfigTemplate(template_code, param);
+            let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
+            console.log("=>(apiplex.service.ts:58) axioData", axioData);
+            let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
+            console.log("=>(apiplex.service.ts:60) result", result.data.results);
+        } catch (e) {
+            console.log("=>(apiplex.service.ts:62) e", e);
+        }
+    }
+
+    async sendAlimtalk(phoneList: any[], template_code: string, params = []) {
+        phoneList.map(async (phone) => {
+            console.log(phone)
+            try {
+                let headers = this.headers;
+                let setConfigTemplate = this.setConfigTemplate(template_code, params);
+                console.log("=>(apiplex.service.ts:84) setConfigTemplate", setConfigTemplate);
+                let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
+                console.log("=>(apiplex.service.ts:86) axioData", axioData);
+                let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
+                console.log("=>(apiplex.service.ts:87) result", result.data.results);
+                if (result.data.results[0].code == 'C100') {
+                    let data = {
+                        status: this.code[result.data.results.code],
+                        template_code: template_code,
+                        echo_to_webhook: axioData.msg_data[0].echo_to_webhook,
+                        message: setConfigTemplate,
+                        receiver_number: phone,
+                        data: JSON.stringify(axioData),
+                        created_at: new Date()
+                    }
+                    console.log("=>(apiplex.service.ts:144) data", data);
+
+                    await this.notificationTalkSave(data)
+                }
+            } catch (error) {
+                this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));
+                this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
+                throw new Error('Failed to send Alimtalk: ' + error.message);
+            }
+        })
+    }
+
+    async sendPartnerAlimtalk(templateCode: string, data: any, campaignIdx: number, division: string = '') {
+        try {
+            let phoneList = await this.partnerConfig(campaignIdx);
+            console.log("=>(apiplex.service.ts:98) phoneList", phoneList);
+
+            let partner = await this.partnerRepository.createQueryBuilder('partner')
+                .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
+                .where('campaign.idx = :idx', {idx: campaignIdx})
+                .select('partner.corpName', 'corpName')
+                .addSelect('campaign.name', 'campaignName')
+                .getRawOne();
+            partner = bufferToString(partner)
+            data.corpName = partner.corpName;
+            data.campaignName = partner.campaignName;
+            phoneList = ['01082308203'] // 테스트
+            const response = await this.sendAlimtalk(phoneList, templateCode, data)
+            console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
+        } catch (e) {
+            throw new Error('Failed to send sendPartnerAlimtalk: ' + e.message);
+        }
+    }
+
+    async partnerConfig(campaignIdx: number) {
+        // 파트너 연락처 정보 가져오기
+        let partner = await this.partnerRepository.createQueryBuilder('partner')
+            .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
+            .where('campaign.idx = :idx', {idx: campaignIdx})
+            .select(`(${AES_DECRYPT('contactPhone')})`, 'contactPhone')
+            .getRawOne();
+        partner = bufferToString(partner)
+
+        let receivers = []
+        let receiverData = await this.partnerRepository.createQueryBuilder('partner')
+            .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
+            .where('campaign.idx = :idx', {idx: campaignIdx})
+            .select('partner.noteReceivers')
+            .getRawOne();
+        receiverData = bufferToString(receiverData)
+        //JSON 으로 변환
+        if (!receiverData.noteReceivers) {
+            console.log("=>(madein20_model.service.ts:74) receivers.noteReceivers: ", '추가연락처 없음');
+        } else {
+            receivers = JSON.parse(receiverData.noteReceivers)
+        }
+
+        //수신동의 여부 확인
+        let contactPhone = partner.contactPhone ? partner.contactPhone : false;
+        if (contactPhone) {
+            receivers.push({phone: contactPhone, receiveSms: 1})
+        }
+        let phoneList = [];
+        receivers.forEach((item) => {
+            if (item.receiveSms == 1 && item.phone) {
+                phoneList.push(item.phone)
+            }
+        })
+        return phoneList;
+    }
+
+    private setConfig(template_code: string, at_template: string, receiver_number: string, data: any) {
         const resultArray = {
             msg_type: "AT",
             msg_data: [
                 {
                     msg_key: template_code,
                     sender_number: "01027561810",
-                    receiver_number: data.receiver_number,
-                    msg: this.TSNQ2d5djV3p(data),
+                    receiver_number: receiver_number,
+                    msg: data,
                     sender_key: this.API_OUTGOING_KEY,
                     template_code: template_code,
-                    echo_to_webhook: `${data.receiver_number}_${Math.floor(Date.now() / 1000)}`
+                    echo_to_webhook: `${receiver_number}_${Math.floor(Date.now() / 1000)}`
                 }
             ]
         };
@@ -65,35 +230,42 @@ export class ApiplexService {
     }
 
     setConfigTemplate(template_code: any, data: any) {
+        let msg = "";
         switch (template_code) {
+            case "EHu0hjNSYvP3":
+                msg = this.EHu0hjNSYvP3(data);
+                break;
+            case "ZBQ0QxY7WI99":
+                msg = this.ZBQ0QxY7WI99(data);
+                break;
+            case "2jSKar7G587Z":
+                msg = this._2jSKar7G587Z(data);
+                break;
             // case "TSNQ2d5djV3p":
             //     return this.TSNQ2d5djV3p(data);
             // case "O8lCBd2pFwH3":
             //     return this.O8lCBd2pFwH3(data);
-            case "QAr29G3li770":
-                return this.QAr29G3li770(data);
+            // case "QAr29G3li770":
+            //     return this.QAr29G3li770(data);
             // case "6z33tsC3tk00":
             //     return this._6z33tsC3tk00(data);
-            case "EHu0hjNSYvP3":
-                return this.EHu0hjNSYvP3(data);
-            case "8memDED3j3Vi":
-                return this._8memDED3j3Vi(data);
-            case "ZBQ0QxY7WI99":
-                return this.ZBQ0QxY7WI99(data);
-            case "kh0k73yd51k3":
-                return this.kh0k73yd51k3(data);
-            case "3EcHBTO90739":
-                return this._3EcHBTO90739(data);
+            // case "8memDED3j3Vi":
+            //     return this._8memDED3j3Vi(data);
+            // case "kh0k73yd51k3":
+            //     return this.kh0k73yd51k3(data);
+            // case "3EcHBTO90739":
+            //     return this._3EcHBTO90739(data);
             // case "592J21Ev2gxG":
             //     return this._592J21Ev2gxG(data);
-            case "NW32dCiuNxFB":
-                return this.NW32dCiuNxFB(data);
+            // case "NW32dCiuNxFB":
+            //     return this.NW32dCiuNxFB(data);
             // case "34DLjT3YHkng":
             //     return this._34DLjT3YHkng(data);
             // case "wrY1OlZVTn9h":
             //     return this.wrY1OlZVTn9h(data);
             case "kjR290Pm0Xac":
-                return this.kjR290Pm0Xac(data);
+                msg = this.kjR290Pm0Xac(data);
+                break;
             // case "3T4D4y2syOkf":
             //     return this._3T4D4y2syOkf(data);
             // case "iCAMPB02Hc0y":
@@ -105,42 +277,58 @@ export class ApiplexService {
             // case "p80879n9NqN2":
             //     return this.p80879n9NqN2(data);
             case "UOs0AyzcEtMt":
-                return this.UOs0AyzcEtMt(data);
-            case "dH4u57vZmUKK":
-                return this.dH4u57vZmUKK(data);
-            case "2jSKar7G587Z":
-                return this._2jSKar7G587Z(data);
+                msg = this.UOs0AyzcEtMt(data);
+                break;
+            // case "dH4u57vZmUKK":
+            //     return this.dH4u57vZmUKK(data);
             case "cOS69z2IOW5l":
-                return this.cOS69z2IOW5l(data);
-            case "7q0IN9T48W61":
-                return this._7q0IN9T48W61(data);
-            case "L2PYaazx89IS":
-                return this.L2PYaazx89IS(data);
-            case "148DrKHkbs2H":
-                return this._148DrKHkbs2H(data);
-            case "SuOwsMM3rmA5":
-                return this.SuOwsMM3rmA5(data);
-            case "591d648Ltv7K":
-                return this._591d648Ltv7K(data);
-            case "Q93pUznBLRSn":
-                return this.Q93pUznBLRSn(data);
-            case "54BUQgC6Eth1":
-                return this._54BUQgC6Eth1(data);
-            case "65331O165jWL":
-                return this._65331O165jWL(data);
-            case "cT3xjlY198gn":
-                return this.cT3xjlY198gn(data);
-            case "qgWf350zuBIK":
-                return this.qgWf350zuBIK(data);
-            case "0jios36HB30d":
-                return this._0jios36HB30d(data);
+                msg = this.cOS69z2IOW5l(data);
+                break;
+            // case "7q0IN9T48W61":
+            //     return this._7q0IN9T48W61(data);
+            // case "L2PYaazx89IS":
+            //     return this.L2PYaazx89IS(data);
+            // case "148DrKHkbs2H":
+            //     return this._148DrKHkbs2H(data);
+            // case "SuOwsMM3rmA5":
+            //     return this.SuOwsMM3rmA5(data);
+            // case "591d648Ltv7K":
+            //     return this._591d648Ltv7K(data);
+            // case "Q93pUznBLRSn":
+            //     return this.Q93pUznBLRSn(data);
+            // case "54BUQgC6Eth1":
+            //     return this._54BUQgC6Eth1(data);
+            // case "65331O165jWL":
+            //     return this._65331O165jWL(data);
+            // case "cT3xjlY198gn":
+            //     return this.cT3xjlY198gn(data);
+            // case "qgWf350zuBIK":
+            //     return this.qgWf350zuBIK(data);
+            // case "0jios36HB30d":
+            //     return this._0jios36HB30d(data);
             // case "9MkcN8Xnuk15":
             //     return this._9MkcN8Xnuk15(data);
             // case "Q315D117o0Yp":
             //     return this.Q315D117o0Yp(data);
             default:
+                msg = ""
                 break;
         }
+
+        return this.textTransform(msg, data);
+    }
+
+    private textTransform(msg: string, data: any) {
+        // #{key} 형태로 된 문자열을 data[key]로 치환
+        let regExp = /#{[a-zA-Z가-힣0-9]*}/g;
+        let result = msg.match(regExp);
+        if (result) {
+            result.forEach((item) => {
+                let key = item.replace(/#{|}/g, '');
+                msg = msg.replace(item, data[key]);
+            })
+        }
+        return msg;
     }
 
     //회원가입 인증번호
@@ -330,7 +518,7 @@ export class ApiplexService {
     }
 
     //캠페인 선정 알림 (거절)
-    private _34DcLjT3YHkng(data) {
+    private _34DLjT3YHkng(data) {
         return `[캠페인 선정 결과 알림]
 
 안녕하세요, #{이름}님 ‘여행 인플루언서 플랫폼 와이리’입니다.
@@ -706,5 +894,4 @@ export class ApiplexService {
  
 ※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.`
     }
-
 }

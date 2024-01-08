@@ -14,6 +14,7 @@ import {
 import {CampaignService} from "../../campaign/campaign.service";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 import {MembersService} from "../member_model/member.service";
+import {ApiplexService} from "../apiplex/apiplex.service";
 
 class CreateCampaignSubmitInput {
     campaignIdx: number;
@@ -45,6 +46,7 @@ export class SubmitModelResolver {
         private readonly campaignsService: CampaignService,
         private readonly madein20ModelService: Madein20ModelService,
         private readonly membersService: MembersService,
+        private readonly apiPlexService: ApiplexService,
     ) {
     }
 
@@ -176,17 +178,30 @@ export class SubmitModelResolver {
                 }
                 console.log(submitChannel)
                 let param = {
-                    name: authUser.username,
-                    partnerName: partner.corpName,
-                    campaignName: campaign.name,
-                    dayOfUse: `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
-                    nop: createCampaignSubmitInput.nop,
-                    channelUrl: submitChannel.link,
-                    approvalLink: `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
-                    deadline: getAfter3Days(),
+                    // name: authUser.username,
+                    // partnerName: partner.corpName,
+                    // campaignName: campaign.name,
+                    // dayOfUse: `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+                    // nop: createCampaignSubmitInput.nop,
+                    // channelUrl: submitChannel.link,
+                    // approvalLink: `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
+                    // deadline: getAfter3Days(),
+                    "이름": authUser.username,
+                    "업체이름": partner.corpName,
+                    "캠페인이름": campaign.name,
+                    "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+                    "인원": createCampaignSubmitInput.nop,
+                    "채널주소": submitChannel.link,
+                    "자동신청마감시간": getAfter3Days(),
+                    "캠페인페이지승인링크": `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
                 }
-                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
-                await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
+                // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
+                // await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
+
+                // @ts-ignore
+                await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI99',authUser.phone, param);
+                await this.apiPlexService.sendPartnerAlimtalk('2jSKar7G587ZpGo6ZsKa', param, campaign.idx);
+
                 return {
                     code: 200,
                     message: 'success',
