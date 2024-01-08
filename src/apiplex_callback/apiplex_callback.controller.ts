@@ -64,14 +64,14 @@ async alimtalk_callback(
         console.log("=>(apiplex_callback.controller.ts:57) 실패", result.code);
       }
 
-      //Response body (고객사 ➡ API PLEX)
+      //Response body (고객사 ➡ API PLEX) 리턴
         let data = {
             "code": "100",
             "desc": "success"
         };
-      // Response body (고객사 ➡ API PLEX) 정상 수신시 return data
         // @ts-ignore
-     await res.json(data);
+     res.status(200).json(data);
+
 
 
    }catch (e) {
