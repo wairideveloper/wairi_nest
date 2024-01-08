@@ -69,9 +69,11 @@ async alimtalk_callback(
             "code": "100",
             "desc": "success"
         };
-     // @ts-ignore
-     res.header('Content-Type', 'application/json')
-         .send(JSON.stringify(data));
+      // Response body (고객사 ➡ API PLEX) 정상 수신시 return data
+        // @ts-ignore
+     await res.json(data);
+
+
    }catch (e) {
         console.log("=>(apiplex_callback.controller.ts:51) e", e);
    }
