@@ -61,7 +61,7 @@ async alimtalk_callback(
         // 업데이트 확인
         console.log("=>(apiplex_callback.controller.ts:57) res", updateResult);
       }else{
-        console.log("=>(apiplex_callback.controller.ts:57) 실패", result.code);
+        console.log("=>(apiplex_callback.controller.ts:57) 실패", result);
       }
 
       //Response body (고객사 ➡ API PLEX) 리턴

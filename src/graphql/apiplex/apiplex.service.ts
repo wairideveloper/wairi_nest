@@ -9,6 +9,16 @@ import {Partner} from "../../../entity/entities/Partner";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 
+/*
+ 10 : 서비스 요청 접수
+ 20 : 서비스 전송
+ 30 : 서비스 성공
+ 40 : failback 성공
+ 60 : 실패 - 여신부족
+ 70 : 서비스 실패 - 내부적 처리 실패
+ 80 : 결과 수신 실패
+ 90 : gateway 오류
+*/
 @Injectable()
 export class ApiplexService {
     private readonly logger = new Logger(ApiplexService.name);

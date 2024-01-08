@@ -200,7 +200,7 @@ export class SubmitModelResolver {
 
                 // @ts-ignore
                 // await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI99',authUser.phone, param);
-                // await this.apiPlexService.sendPartnerAlimtalk('2jSKar7G587ZpGo6ZsKa', param, campaign.idx);
+                // await this.apiPlexService.sendPartnerAlimtalk('2jSKar7G587Z', param, campaign.idx);
 
                 return {
                     code: 200,
