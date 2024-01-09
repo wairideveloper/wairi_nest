@@ -44,7 +44,29 @@ export class SubmitModelService {
     async createCampaignSubmit(inputData: any) {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .insert()
-            .into(CampaignSubmit)
+            .into(CampaignSubmit, [
+                'sid',
+                'status',
+                'memberType',
+                'memberType2',
+                'nights',
+                'campaignIdx',
+                'itemIdx',
+                'nop',
+                'startDate',
+                'endDate',
+                'price',
+                'submitChannel',
+                'subContent2',
+                'memberIdx',
+                'regdate',
+                'autoCancelDate',
+                'campaignName',
+                'itemName',
+                'payItem',
+                'payTotal',
+                'agreeContent',
+            ])
             .values(inputData)
             .execute();
 

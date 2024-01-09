@@ -167,8 +167,8 @@ export class SubmitModelResolver {
                 let campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
                 let campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
                 let partner = await this.membersService.getPartner(campaign.partnerIdx);
-                // let submitChannel = await this.membersService.getMemberSubmitChannel(createCampaignSubmitInput.submitChannel,authUser.idx);
-                let submitChannel = await this.membersService.getMemberSubmitChannel(createCampaignSubmitInput.submitChannel,15634);
+                let submitChannel = await this.membersService.getMemberSubmitChannel(createCampaignSubmitInput.submitChannel,authUser.idx);
+                // let submitChannel = await this.membersService.getMemberSubmitChannel(createCampaignSubmitInput.submitChannel,15634);
                 if(!submitChannel){
                     return {
                         code: 400,
