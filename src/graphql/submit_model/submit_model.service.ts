@@ -14,6 +14,8 @@ import {
 } from "../../util/common";
 import {Connection} from "typeorm";
 import {ReceiptResponseParameters} from '@bootpay/backend-js/lib/response';
+import {Campaign} from "../../../entity/entities/Campaign";
+import {Partner} from "../../../entity/entities/Partner";
 
 @Injectable()
 export class SubmitModelService {
@@ -37,6 +39,10 @@ export class SubmitModelService {
         private campaignItemScheduleRepository: Repository<CampaignItemSchedule>,
         @InjectRepository(Payment)
         private paymentRepository: Repository<Payment>,
+        @InjectRepository(Campaign)
+        private campaignRepository: Repository<Campaign>,
+        @InjectRepository(Partner)
+        private partnerRepository: Repository<Partner>,
         private connection: Connection
     ) {
     }
@@ -482,6 +488,24 @@ export class SubmitModelService {
             }))
             .getCount();
 
+        return data;
+    }
+
+    async getCampaignByCampaignIdx(campaignIdx) {
+        let data = await this.campaignRepository.createQueryBuilder("campaign")
+            .select('*')
+            .where("campaign.idx = :idx", {idx: campaignIdx})
+            .getRawOne();
+        data = bufferToString(data);
+        return data;
+    }
+
+    async getPartnerByPartnerIdx(partnerIdx) {
+        let data = await this.partnerRepository.createQueryBuilder("partner")
+            .select('*')
+            .where("partner.idx = :idx", {idx: partnerIdx})
+            .getRawOne();
+        data = bufferToString(data);
         return data;
     }
 }

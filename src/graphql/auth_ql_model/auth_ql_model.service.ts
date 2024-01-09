@@ -26,6 +26,7 @@ import * as admin from 'firebase-admin';
 import {ServiceAccount} from "firebase-admin";
 import * as moment from "moment";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
+import {ApiplexService} from "../apiplex/apiplex.service";
 
 @Injectable()
 export class AuthQlModelService {
@@ -39,7 +40,8 @@ export class AuthQlModelService {
         private readonly memberService: MembersService,
         private readonly jwtService: JwtService,
         private readonly connection: Connection,
-        private readonly madein20ModelService: Madein20ModelService
+        private readonly madein20ModelService: Madein20ModelService,
+        private readonly apiPlexService: ApiplexService,
         ) {
     }
 
@@ -563,6 +565,14 @@ export class AuthQlModelService {
             const update = await this.memberService.updateMemberInfo(member.idx, data.nickname, data.email);
 
             if (update) {
+                //Todo apiplex 회원정보 수정
+                if(member.phone){
+                    let param = {
+                        "이름" : member.name,
+                        "변경내용" : "닉네임 : " + data.nickname + ", 이메일 : " + data.email,
+                    }
+                    await this.apiPlexService.sendUserAlimtalk('kjR290Pm0Xac',member.phone, param);
+                }
                 //secession
                 let updateMember = await this.memberService.findByIdSecession(member.id);
                 updateMember = bufferToString(updateMember);

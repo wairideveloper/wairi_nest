@@ -19,14 +19,17 @@ import {Config} from "../../../entity/entities/Config";
 import {Withdrawal} from "../../../entity/entities/Withdrawal";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 import {Admin} from "../../../entity/entities/Admin";
+import {ApiplexService} from "../apiplex/apiplex.service";
+import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Member, MemberChannel, Campaign, CampaignItem, CampaignImage, Cate, CateArea
-            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal, Admin
+            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal, Admin, NotificationTalk
         ]),
     ],
-    providers: [AuthQlModelResolver, AuthQlModelService, MembersService, JwtService, Madein20ModelService]
+    providers: [AuthQlModelResolver, AuthQlModelService, MembersService, JwtService,
+        Madein20ModelService, ApiplexService]
 })
 export class AuthQlModelModule {
 }

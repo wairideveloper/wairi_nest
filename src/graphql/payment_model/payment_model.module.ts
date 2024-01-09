@@ -10,6 +10,10 @@ import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedul
 import {JwtService} from "@nestjs/jwt";
 import {Payment} from "../../../entity/entities/Payment";
 import {Member} from "../../../entity/entities/Member";
+import {ApiplexService} from "../apiplex/apiplex.service";
+import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
+import {Admin} from "../../../entity/entities/Admin";
+import {Partner} from "../../../entity/entities/Partner";
 
 @Module({
   imports: [
@@ -19,9 +23,13 @@ import {Member} from "../../../entity/entities/Member";
           CampaignItemSchedule,
           CampaignSubmit,
           Payment,
-          Member
+          Member,
+          NotificationTalk,
+          Admin,
+          Partner
       ]),
   ],
-  providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService]
+  providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService,
+  ApiplexService],
 })
 export class PaymentModelModule {}

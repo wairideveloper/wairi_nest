@@ -1,11 +1,12 @@
 import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {PaymentModelService} from './payment_model.service';
 import {SubmitModelService} from "../submit_model/submit_model.service";
-import {getBootpayStatusText} from "../../util/common";
+import {getAfter3Days, getBootpayStatusText} from "../../util/common";
 import {HttpException, UseGuards} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
+import {ApiplexService} from "../apiplex/apiplex.service";
 import {auth} from "firebase-admin";
 
 
@@ -20,8 +21,11 @@ class ConfirmPaymentInput {
 
 @Resolver('PaymentModel')
 export class PaymentModelResolver {
-    constructor(private readonly paymentModelService: PaymentModelService
-        , private readonly submitModelService: SubmitModelService
+    constructor(
+        private readonly paymentModelService: PaymentModelService,
+        private readonly submitModelService: SubmitModelService,
+        private readonly apiPlexService: ApiplexService
+
     ) {
     }
 
@@ -76,6 +80,24 @@ export class PaymentModelResolver {
                 //payment insert transaction
                 const vbankDataTransaction = await this.paymentModelService.vbankDataTransaction(response, submitItem, memberIdx);
                 console.log("=>(payment_model.resolver.ts:68) vbankDataTransaction", vbankDataTransaction);
+
+                if(authUser.phone) {
+                    const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
+                    const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
+                    //Todo apiplex 가상계좌
+                    let param = {
+                        "이름": authUser.name,
+                        "가상계좌은행": response.vbank_data.bank_name,
+                        "가상계좌번호": response.vbank_data.bank_account,
+                        "캠페인이름": campaign.name,
+                        "업체이름": partner.corpName,
+                        "이용일자": submitItem.startDate + ' ~ ' + submitItem.endDate,
+                        "인원": submitItem.nop,
+                        "캠페인페이지승인링크": 'https://wairi.co.kr/extranet/campaign/submit#/' + submitItem.idx,
+                    }
+                    // @ts-ignore
+                    await this.apiPlexService.sendUserAlimtalk('UOs0AyzcEtMt', authUser.phone, param);
+                }
 
                 if (vbankDataTransaction) {
                     return {

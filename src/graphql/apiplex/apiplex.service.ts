@@ -175,7 +175,8 @@ export class ApiplexService {
             partner = bufferToString(partner)
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
-            phoneList = ['01082308203'] // 테스트
+            // 01082308203 추가
+            phoneList.push('01082308203');
             const response = await this.sendAlimtalk(phoneList, templateCode, data)
             console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
         } catch (e) {
@@ -242,12 +243,6 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
-            case "07860APt33hO": // 이용수칙 알림 (인스타)
-                msg = this._07860APt33hO(data);
-                break;
-            case "SB8647sxC1R7": // 이용수칙 알림 (블로거)
-                msg = this.SB8647sxC1R7(data);
-                break;
             case "EHu0hjNSYvP3":
                 msg = this.EHu0hjNSYvP3(data);
                 break;
@@ -257,6 +252,21 @@ export class ApiplexService {
             case "2jSKar7G587Z":
                 msg = this._2jSKar7G587Z(data);
                 break;
+            case "kjR290Pm0Xac": // changeMemberInfo
+                msg = this.kjR290Pm0Xac(data);
+                break;
+            case "UOs0AyzcEtMt": // confirmStock
+                msg = this.UOs0AyzcEtMt(data);
+                break;
+            case "cOS69z2IOW5l": // completeDraftRegistration
+                msg = this.cOS69z2IOW5l(data);
+                break;
+            // case "07860APt33hO": // 이용수칙 알림 (인스타)
+            //     msg = this._07860APt33hO(data);
+            //     break;
+            // case "SB8647sxC1R7": // 이용수칙 알림 (블로거)
+            //     msg = this.SB8647sxC1R7(data);
+            //     break;
             // case "TSNQ2d5djV3p":
             //     return this.TSNQ2d5djV3p(data);
             // case "O8lCBd2pFwH3":
@@ -279,9 +289,6 @@ export class ApiplexService {
             //     return this._34DLjT3YHkng(data);
             // case "wrY1OlZVTn9h":
             //     return this.wrY1OlZVTn9h(data);
-            case "kjR290Pm0Xac":
-                msg = this.kjR290Pm0Xac(data);
-                break;
             // case "3T4D4y2syOkf":
             //     return this._3T4D4y2syOkf(data);
             // case "iCAMPB02Hc0y":
@@ -292,14 +299,8 @@ export class ApiplexService {
             //     return this.oh2iW3G0zG2U(data);
             // case "p80879n9NqN2":
             //     return this.p80879n9NqN2(data);
-            case "UOs0AyzcEtMt":
-                msg = this.UOs0AyzcEtMt(data);
-                break;
             // case "dH4u57vZmUKK":
             //     return this.dH4u57vZmUKK(data);
-            case "cOS69z2IOW5l":
-                msg = this.cOS69z2IOW5l(data);
-                break;
             // case "7q0IN9T48W61":
             //     return this._7q0IN9T48W61(data);
             // case "L2PYaazx89IS":

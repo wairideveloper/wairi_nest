@@ -199,8 +199,8 @@ export class SubmitModelResolver {
                 await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
 
                 // @ts-ignore
-                // await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI99',authUser.phone, param);
-                // await this.apiPlexService.sendPartnerAlimtalk('2jSKar7G587Z', param, campaign.idx);
+                await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI99',authUser.phone, param);
+                await this.apiPlexService.sendPartnerAlimtalk('2jSKar7G587Z', param, campaign.idx);
 
                 return {
                     code: 200,
@@ -380,6 +380,21 @@ export class SubmitModelResolver {
             let data = await this.submitModelService.completeDraftRegistration(
                 draftCompleteInput.sid, draftCompleteInput.url, authUser.idx);
             if (data.affected === 1) {
+
+                //Todo apiplex 알림톡
+                let submit = await this.submitModelService.getSubmitDetail(draftCompleteInput.sid, authUser.idx);
+                const campaign = await this.submitModelService.getCampaignByCampaignIdx(submit.campaignIdx);
+                const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
+                // @ts-ignore
+                let param = {
+                    "업체이름" : partner.corpName,
+                    "이름" : authUser.username,
+                    "캠페인이름" : campaign.name,
+                    "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
+                    "인원" : submit.nop,
+                    "콘텐츠URL" : draftCompleteInput.url,
+                }
+                await this.apiPlexService.sendPartnerAlimtalk('cOS69z2IOW5l', param, submit.campaignIdx);
                 return {
                     code: 200,
                     message: '초안 수정이 완료되었습니다.',
