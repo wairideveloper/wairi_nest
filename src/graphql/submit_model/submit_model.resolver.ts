@@ -26,7 +26,7 @@ class CreateCampaignSubmitInput {
     // type: number;
     submitChannel: number;
     subContent2: string;
-    agreeContent: string;
+    agreeContent: number;
 }
 
 class DraftRegistrationInput {
