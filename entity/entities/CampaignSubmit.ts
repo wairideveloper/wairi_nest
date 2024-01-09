@@ -158,6 +158,10 @@ export class CampaignSubmit {
         name: "bInfContentUploadRemind",
         comment: "ext/bInfContentUploadRemind 실행여부",
     })
+
+    @Column("int", {name: "agreeContent"})
+    agreeContent: number;
+
     bInfContentUploadRemind: number;
 
     @Column("longtext", {name: "options", nullable: true})
