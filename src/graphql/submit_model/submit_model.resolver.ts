@@ -282,6 +282,19 @@ export class SubmitModelResolver {
                 }
                 await this.madein20ModelService.sendPartnerAlimtalk(data, '72o88NAj9Gla9C1gIMLJ', campaign.idx);
 
+                let at_data = {
+                    "이름": authUser.username,
+                    "업체이름": partner.corpName,
+                    "캠페인이름": campaign.name,
+                    "이용일자": `${submit.startDate} ~ ${submit.endDate}`,
+                    "인원": submit.nop,
+                    "채널주소": submitChannel.link,
+                    "취소사유": reason
+                }
+                //Todo 취소 알림톡 72o88NAj9Gla
+                await this.apiPlexService.sendPartnerAlimtalk('72o88NAj9Gla', at_data, campaign.idx);
+
+
                 return {
                     code: 200,
                     message: 'success',

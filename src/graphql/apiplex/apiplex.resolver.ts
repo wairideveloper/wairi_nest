@@ -9,6 +9,19 @@ export class ApiplexResolver {
   async testapiplex() {
     try {
       console.log("=>(apiplex.resolver.ts:11) testapiplex", 'testapiplex');
+
+      let at_data = {
+        "이름": 'authUser.username',
+        "업체이름": 'partner.corpName',
+        "캠페인이름": 'campaign.name',
+        "이용일자": '`${submit.startDate} ~ ${submit.endDate}`',
+        "인원": 'submit.nop',
+        "채널주소": 'submitChannel.link',
+        "취소사유": 'reason'
+      }
+      //Todo 취소 알림톡 72o88NAj9Gla
+      await this.apiplexService.sendPartnerAlimtalk('72o88NAj9Gla', at_data, 776);
+      return
       // const result = await this.apiplexService.test();
       let param = {
         "이름": 'test',
