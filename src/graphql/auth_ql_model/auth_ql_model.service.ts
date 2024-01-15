@@ -119,7 +119,7 @@ export class AuthQlModelService {
                     // 추천인 코드 확인
                     let member = await this.memberService.findByRecommend(data.refererRootInput);
                     if(!member){
-                        throw new HttpException('추천인 코드가 없습니다.', 404);
+                        throw new HttpException('일치하는 추천인 코드가 없습니다.', 404);
                     }
                 }
             }
@@ -146,7 +146,7 @@ export class AuthQlModelService {
                 status: 1,
                 regdate: getNowUnix(),
                 lastSignin: getNowUnix(),
-                code: code // 개인 추천코드 생성
+                code: `'${code}'` // 개인 추천코드 생성
             }
 
             const newMember = await this.memberService.create(data);
@@ -665,7 +665,7 @@ export class AuthQlModelService {
                         // 추천인 코드 확인
                         let member = await this.memberService.findByRecommend(data.refererRootInput);
                         if(!member){
-                            throw new HttpException('추천인 코드가 없습니다.', 404);
+                            throw new HttpException('일치하는 추천인 코드가 없습니다.', 404);
                         }
                     }
                 }

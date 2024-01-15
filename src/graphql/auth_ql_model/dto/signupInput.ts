@@ -60,4 +60,6 @@ export class SignupInput {
 
     @Field()
     agree: number;
+
 }
+
