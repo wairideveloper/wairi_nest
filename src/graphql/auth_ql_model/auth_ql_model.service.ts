@@ -146,7 +146,7 @@ export class AuthQlModelService {
                 status: 1,
                 regdate: getNowUnix(),
                 lastSignin: getNowUnix(),
-                code: `'${code}'` // 개인 추천코드 생성
+                code: `${code}` // 개인 추천코드 생성
             }
 
             const newMember = await this.memberService.create(data);
