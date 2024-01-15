@@ -124,6 +124,9 @@ export class Member {
     @Column('text', {name: 'withdrawal'})
     withdrawal: string;
 
+    @Column('varchar', {name: 'code'})
+    code: string;
+
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
 

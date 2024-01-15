@@ -14,6 +14,7 @@ import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 import {Admin} from "../../../entity/entities/Admin";
 import {Partner} from "../../../entity/entities/Partner";
+import {MemberChannel} from "../../../entity/entities/MemberChannel";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import {Partner} from "../../../entity/entities/Partner";
           CampaignSubmit,
           Payment,
           Member,
+          MemberChannel,
           NotificationTalk,
           Admin,
           Partner

@@ -1,13 +1,15 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
-import {Repository} from "typeorm";
+import {Connection, Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import axios from "axios";
-import {AES_DECRYPT, bufferToString} from "../../util/common";
+import {AES_DECRYPT, bufferToString, randomString} from "../../util/common";
 import {Admin} from "../../../entity/entities/Admin";
 import {Partner} from "../../../entity/entities/Partner";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
+import {Member} from "../../../entity/entities/Member";
+import {MemberChannel} from "../../../entity/entities/MemberChannel";
 
 /*
  10 : 서비스 요청 접수
@@ -44,10 +46,15 @@ export class ApiplexService {
     };
 
     constructor(
+        private connection: Connection,
         @InjectRepository(NotificationTalk)
         private readonly notificationTalkRepository: Repository<NotificationTalk>,
         @InjectRepository(Admin)
         private adminRepository: Repository<Admin>,
+        @InjectRepository(Member)
+        private memberRepository: Repository<Member>,
+        @InjectRepository(MemberChannel)
+        private memberChannelRepository: Repository<MemberChannel>,
         @InjectRepository(Partner)
         private partnerRepository: Repository<Partner>,
         @InjectRepository(Campaign)
@@ -82,6 +89,137 @@ export class ApiplexService {
         }
     }
 
+    async recommendCode() {
+        try {
+            const member = await this.memberRepository.createQueryBuilder('member')
+                .select(['idx', 'code'])
+                .where('member.status <> :status', {status: -9})
+                //code is not null
+                .andWhere('member.code IS NULL')
+                .getRawMany();
+
+            //member for문 돌면서 code 생성 후 기존 member code와 중복체크 후 중복이면 코드 재생성 후 업데이트
+            for (let i = 0; i < member.length; i++) {
+                let code = randomString();
+                let check = await this.memberRepository.createQueryBuilder('member')
+                    .where('member.code = :code', {code: code})
+                    .getRawOne();
+                if (check) {
+                    i--;
+                    continue;
+                }
+                await this.memberRepository.createQueryBuilder('member')
+                    .update()
+                    .set({code: code})
+                    .where('member.idx = :idx', {idx: member[i].idx})
+                    .execute();
+            }
+
+
+        } catch (e) {
+            throw new Error('Failed to recommendCode: ' + e.message);
+        }
+    }
+
+    async dormancy() {
+        try {
+            const query = await this.memberRepository.createQueryBuilder('member')
+            query.leftJoin('memberChannel', 'memberChannel', 'memberChannel.memberIdx = member.idx')
+            query.select('member.idx', 'idx')
+            query.where('memberChannel.level = :level', {level: 2})
+            query.andWhere('member.status <> :status', {status: -9})
+            query.groupBy('member.idx')
+            const member = await query.getRawMany();
+            console.log("=>(apiplex.service.ts:96) member", member);
+
+            const query1 = await this.memberRepository.createQueryBuilder('member')
+            query1.leftJoin('memberChannel', 'memberChannel', 'memberChannel.memberIdx = member.idx')
+            query1.select('memberChannel.idx', 'idx')
+            query1.where('memberChannel.level = :level', {level: 2})
+            query1.andWhere('member.status <> :status', {status: -9})
+            const channelIdx = await query1.getRawMany();
+            console.log("=>(apiplex.service.ts:96) channelIdx", channelIdx);
+
+            //memberChannel level
+            //0. 승인대기
+            // 1. 인플루언서
+            // 2. 성장형 인플루언서
+            // 9. 재승인요청
+            // -1. 승인거절
+            //Todo query1 결과값 idx update level = 1, status = -9
+
+            return
+            const queryRunner = this.connection.createQueryRunner();
+            await queryRunner.connect();
+            await queryRunner.startTransaction();
+            try {
+                for (const item of channelIdx) {
+                    await this.memberChannelRepository.createQueryBuilder('memberChannel')
+                        .update()
+                        .set({level: -1})
+                        .where('memberChannel.idx = :idx', {idx: item.idx})
+                        .execute();
+                }
+
+            }catch (e) {
+                await queryRunner.rollbackTransaction();
+                throw new Error('Failed to dormancy: ' + e.message);
+            }
+
+
+            // const memberIdxs = member.map((item) => {
+            //     //idx 중복제거
+            //     return item.idx;
+            // });
+            // console.log("=>(apiplex.service.ts:100) memberIdxs", memberIdxs);
+
+            const memberChannel = await this.memberChannelRepository.createQueryBuilder('memberChannel')
+                // .where('memberChannel.memberIdx IN (:...memberIdxs)', {memberIdxs: memberIdxs})
+                // .andWhere('memberChannel.level <> :level', {level: 2})
+                .where('memberChannel.level <> :level', {level: 2})
+                .select(['idx'])
+                .orderBy('idx', 'DESC')
+                .getRawMany();
+            // console.log("=>(apiplex.service.ts:111) memberChannel", memberChannel);
+
+        } catch (e) {
+            console.log("=>(apiplex.service.ts:94) e", e);
+        }
+    }
+
+    async test2(phoneList, template_code, params = []) {
+        phoneList.map(async (phone) => {
+            console.log(phone)
+            try {
+                let headers = this.headers;
+                let setConfigTemplate = this.setConfigTemplate(template_code, params);
+                console.log("=>(apiplex.service.ts:84) setConfigTemplate", setConfigTemplate);
+                let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
+                console.log("=>(apiplex.service.ts:86) axioData", axioData);
+                let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
+                console.log("=>(apiplex.service.ts:87) result", result.data.results);
+                // if (result.data.results[0].code == 'C100') {
+                //     let data = {
+                //         status: this.code[result.data.results.code],
+                //         template_code: template_code,
+                //         echo_to_webhook: axioData.msg_data[0].echo_to_webhook,
+                //         message: setConfigTemplate,
+                //         receiver_number: phone,
+                //         data: JSON.stringify(axioData),
+                //         created_at: new Date()
+                //     }
+                //     console.log("=>(apiplex.service.ts:144) data", data);
+                //
+                //     await this.notificationTalkSave(data)
+                // }
+            } catch (error) {
+                this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));
+                this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
+                throw new Error('Failed to send Alimtalk: ' + error.message);
+            }
+        })
+    }
+
     async test() {
         try {
             let param = {
@@ -106,7 +244,7 @@ export class ApiplexService {
             await this.notificationTalkRepository
                 .createQueryBuilder()
                 .insert()
-                .into(NotificationTalk,['status',
+                .into(NotificationTalk, ['status',
                     'template_code', 'echo_to_webhook', 'message', 'receiver_number', 'data', 'created_at'])
                 .values(data)
                 .execute();
@@ -243,6 +381,9 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
+            case "Q93pUipflpNd": // 미활동 인플루언서 상태값 변경
+                msg = this.Q93pUipflpNd(data);
+                break;
             case "72o88NAj9Gla": // 캠페인 신청 취소 알림
                 msg = this._72o88NAj9Gla(data);
                 break;
@@ -991,5 +1132,20 @@ export class ApiplexService {
             '\n' +
             '\n' +
             '※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.';
+    }
+
+    private Q93pUipflpNd(data: any) {
+        return '안녕하세요! 여행 인플루언서 플랫폼 와이리 입니다.\n' +
+            '기존 와이리 미활동 인플루언서 분들에게만 전달되는 알림톡입니다.\n' +
+            '\n' +
+            '저희 와이리는 여행 전용 인플루언서 플랫폼으로 엄선된 여행 인플루언서들을 모집하고 있습니다.\n' +
+            '현재 호텔 / 펜션 / 원고료 등 다양한 캠페인을 보유하고 있으며 앞으로도 더 많은 캠페인이 오픈 될 예정입니다\n' +
+            '\n' +
+            '미활동 인플루언서 분들 중 채널 재승인 요청을 해주시면 채널 검수를 통해\n' +
+            '인플루언서 승인 도와드리겠습니다\n' +
+            '*회원정보 변경→채널 재승인 요청을 통해 가능합니다.\n' +
+            '\n' +
+            '또한 와이리는 앱 출시를 앞두고 있습니다!\n' +
+            '앞으로 더 발전하는 와이리가 되겠습니다. 감사합니다.';
     }
 }

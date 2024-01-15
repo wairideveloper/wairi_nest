@@ -29,6 +29,8 @@ class SocialSignInput {
     email: string;
     nickname: string;
     name: string;
+    refererRoot: number;
+    refererRootInput: string;
     agreeMsg: number;
 }
 
@@ -336,6 +338,8 @@ export class AuthQlModelResolver {
                 email: socialSignInput.email,
                 nickname: socialSignInput.nickname,
                 name: socialSignInput.name,
+                refererRoot: socialSignInput.refererRoot,
+                refererRootInput: socialSignInput.refererRootInput,
                 agreeMsg: socialSignInput.agreeMsg,
             }
             return await this.authQlModelService.socialSignup(data);

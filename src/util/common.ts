@@ -397,7 +397,10 @@ export const dataDateTimeTransform = (data) => {
     return data;
 }
 
-export const alimtalkTemplateCode = (templateCode) => {
-    //이용 완료 알림
-
+//a~z,0~9,A~Z 를 포함한 12자리 난수 생성
+export const randomString = () => {
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let result = '';
+    for (let i = 12; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
 }

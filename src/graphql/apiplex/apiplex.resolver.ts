@@ -1,6 +1,6 @@
 import { Resolver, Query } from '@nestjs/graphql';
 import { ApiplexService } from './apiplex.service';
-import {getAfter3Days} from "../../util/common";
+import {getAfter3Days, randomString} from "../../util/common";
 @Resolver()
 export class ApiplexResolver {
   constructor(private readonly apiplexService: ApiplexService) {}
@@ -8,7 +8,15 @@ export class ApiplexResolver {
   @Query()
   async testapiplex() {
     try {
+        const result = await this.apiplexService.recommendCode();
+        // const result = await this.apiplexService.dormancy();
+      return
+
+
       console.log("=>(apiplex.resolver.ts:11) testapiplex", 'testapiplex');
+      let phoneList = ['01082308203'];
+      await this.apiplexService.test2(phoneList,'Q93pUipflpNd', []);
+      return
 
       let at_data = {
         "이름": 'authUser.username',

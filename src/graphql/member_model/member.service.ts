@@ -73,7 +73,9 @@ export class MembersService {
                     'agreeMsg',
                     'status',
                     'level',
-                    'regdate'
+                    'regdate',
+                    'lastSignin',
+                    'code'
                 ])
                 .values({
                     type: () => data.type,
@@ -92,7 +94,9 @@ export class MembersService {
                     agreeMsg: () => data.agree,
                     status: () => data.status,
                     level: () => data.level,
-                    regdate: () => data.regdate
+                    regdate: () => data.regdate,
+                    lastSignin: () => data.lastSignin,
+                    code: () => data.code
                 })
                 // .getSql();
                 // console.log("-> user", user);
@@ -500,7 +504,11 @@ export class MembersService {
         id: string,
         email: string,
         name: string,
-        agreeMsg: number) {
+        refererRoot: number,
+        refererRootInput: string,
+        agreeMsg: number,
+        code: string
+    ) {
         try {
             const now = getNowUnix();
             const passwd = await hashPassword(id.toString());
@@ -510,7 +518,7 @@ export class MembersService {
                 .createQueryBuilder()
                 .insert()
                 .into(Member, ['id', 'social_kakao', 'social_naver', 'social_google', 'social_apple', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
-                     'name', 'passwd', 'regdate', 'agreeMsg'
+                     'name', 'passwd', 'regdate', 'agreeMsg', 'refererRoot', 'refererRootInput', 'code'
                 ])
                 .values({
                     id: () => `"${id}"`,
@@ -520,7 +528,7 @@ export class MembersService {
                     social_apple: () => social_type == "4" ?`"${id}"` : null,
                     type: 1,
                     level: 0,
-                    status: 4,
+                    status: 1,
                     social_type: social_type,
                     nickname: () => name ? `"${name}"` : `"${nickname}"`,
                     email: () => AES_ENCRYPT(email),
@@ -528,7 +536,10 @@ export class MembersService {
                     name: () => name ? AES_ENCRYPT(name) : AES_ENCRYPT(nickname),
                     passwd: () => `"${passwd}"`,
                     regdate: () => `"${now}"`,
-                    agreeMsg: agreeMsg
+                    agreeMsg: agreeMsg,
+                    refererRoot: refererRoot,
+                    refererRootInput: refererRootInput,
+                    code: code
                 })
                 .execute();
 
@@ -553,6 +564,15 @@ export class MembersService {
             .select('*')
             .where('type = :submitChannel', {submitChannel: submitChannel})
             .andWhere('memberIdx = :memberIdx', {memberIdx: memberIdx})
+            .getRawOne();
+        return bufferToString(data);
+    }
+
+    async findByRecommend(code: string) {
+        let data = await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('code = :code', {code: code})
             .getRawOne();
         return bufferToString(data);
     }

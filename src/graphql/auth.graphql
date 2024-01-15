@@ -203,6 +203,8 @@ input SocialSignInput {
     email: String
     nickname: String
     name: String
+    refererRoot: Int
+    refererRootInput: String
     agreeMsg: Int
 }
 

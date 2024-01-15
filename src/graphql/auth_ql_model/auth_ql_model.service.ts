@@ -15,7 +15,7 @@ import {
     FROM_UNIXTIME,
     FROM_UNIXTIME_JS,
     getNowUnix,
-    hashPassword
+    hashPassword, randomString
 } from "../../util/common";
 import {RestClient} from "@bootpay/server-rest-client";
 import {Bootpay} from '@bootpay/backend-js'
@@ -111,7 +111,20 @@ export class AuthQlModelService {
             if (member) {
                 throw new HttpException('이미 회원정보가 있습니다.', HttpStatus.CONFLICT);
             }
-
+            if(data.refererRoot == 4 || data.refererRoot == 9){
+                if(!data.refererRootInput){
+                    throw new HttpException('필수 입력값 누락.', HttpStatus.CONFLICT);
+                }
+                if(data.refererRoot == 4){
+                    // 추천인 코드 확인
+                    let member = await this.memberService.findByRecommend(data.refererRootInput);
+                    if(!member){
+                        throw new HttpException('추천인 코드가 없습니다.', 404);
+                    }
+                }
+            }
+            //Todo 추천인 코드 생성
+            const code = await this.createRecommendCode();
             data = {
                 type: data.type,
                 id: `"${data.id}"`,
@@ -133,6 +146,7 @@ export class AuthQlModelService {
                 status: 1,
                 regdate: getNowUnix(),
                 lastSignin: getNowUnix(),
+                code: code // 개인 추천코드 생성
             }
 
             const newMember = await this.memberService.create(data);
@@ -597,6 +611,8 @@ export class AuthQlModelService {
         id: string;
         email: string;
         name: string;
+        refererRoot: number;
+        refererRootInput: string;
         agreeMsg: number;
     }) {
         try{
@@ -640,13 +656,33 @@ export class AuthQlModelService {
                 console.log("=>(auth_ql_model.service.ts:590) result", result);
                 return result;
             }else{
+
+                if(data.refererRoot == 4 || data.refererRoot == 9){
+                    if(!data.refererRootInput){
+                        throw new HttpException('필수 입력값 누락.', HttpStatus.CONFLICT);
+                    }
+                    if(data.refererRoot == 4){
+                        // 추천인 코드 확인
+                        let member = await this.memberService.findByRecommend(data.refererRootInput);
+                        if(!member){
+                            throw new HttpException('추천인 코드가 없습니다.', 404);
+                        }
+                    }
+                }
+                //Todo 추천인 코드 생성
+                const code = await this.createRecommendCode();
+
+                console.log("=>(auth_ql_model.service.ts:611) code", code);
                 let newMember = await this.memberService.createSocial(
                     data.social_type,
                     data.nickname,
                     data.id,
                     data.email,
                     data.name,
-                    data.agreeMsg
+                    data.refererRoot,
+                    data.refererRootInput,
+                    data.agreeMsg,
+                    code // 개인 추천코드 생성
                     );
                 if(newMember){
                     let member = await this.memberService.findSocialId(data.email, data.id, data.social_type);
@@ -663,6 +699,7 @@ export class AuthQlModelService {
             }
 
         }catch (error) {
+            console.log("=>(auth_ql_model.service.ts:692) error", error);
             throw new HttpException(error.message, error.status);
         }
     }
@@ -708,6 +745,18 @@ export class AuthQlModelService {
             }
         }catch (error) {
             throw new HttpException(error.message, error.status);
+        }
+    }
+
+    private async createRecommendCode() {
+        let code = randomString();
+        let checkCode = await this.memberService.findByRecommend(code);
+        console.log("=>(auth_ql_model.service.ts:747) code", code);
+        console.log("=>(auth_ql_model.service.ts:747) checkCode", checkCode);
+        if (checkCode) {
+            await this.createRecommendCode();
+        } else {
+            return code;
         }
     }
 }

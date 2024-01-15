@@ -7,10 +7,13 @@ import {Admin} from "../../../entity/entities/Admin";
 import {Partner} from "../../../entity/entities/Partner";
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
+import {Member} from "../../../entity/entities/Member";
+import {MemberChannel} from "../../../entity/entities/MemberChannel";
 
 @Module({
   imports: [TypeOrmModule.forFeature([
-      NotificationTalk, Admin, Partner, Campaign, CampaignItem
+      NotificationTalk, Admin, Partner, Campaign, CampaignItem, Member,
+      MemberChannel
   ])],
   providers: [ApiplexResolver, ApiplexService]
 })
