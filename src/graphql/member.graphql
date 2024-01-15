@@ -21,6 +21,7 @@ type Member {
     social_type: String
     memberChannel: [MemberChannel]
     campaignReview: [CampaignReview]
+    code: String
 }
 
 type MemberChannel {

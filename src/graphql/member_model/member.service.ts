@@ -165,6 +165,7 @@ export class MembersService {
             .addSelect(`(${FROM_UNIXTIME('lastUpdate')})`, 'lastUpdate')
             .addSelect(`(${FROM_UNIXTIME('lastSignin')})`, 'lastSignin')
             .addSelect('passwd')
+            .addSelect('code')
             .where('id = :id', {id: id})
             // .andWhere('status != -9')
             // status -9 는 탈퇴회원
@@ -493,6 +494,7 @@ export class MembersService {
             .addSelect(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('email')})`, 'email')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
+            .addSelect('code')
             .where(`${AES_DECRYPT('email')} = :email`, {email: email})
             .andWhere('social_type = :socialType', {socialType: socialType})
             .getRawOne();
