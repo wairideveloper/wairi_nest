@@ -541,7 +541,7 @@ export class MembersService {
                     agreeMsg: agreeMsg,
                     refererRoot: refererRoot,
                     refererRootInput: refererRootInput,
-                    code: `'${code}'` // 개인 추천코드 생성
+                    code: `${code}` // 개인 추천코드 생성
                 })
                 .execute();
 
