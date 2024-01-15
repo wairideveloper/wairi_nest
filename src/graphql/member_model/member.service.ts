@@ -96,7 +96,7 @@ export class MembersService {
                     level: () => data.level,
                     regdate: () => data.regdate,
                     lastSignin: () => data.lastSignin,
-                    code: () => data.code
+                    code: () => `"${data.code}"`
                 })
                 // .getSql();
                 // console.log("-> user", user);
