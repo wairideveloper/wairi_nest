@@ -96,6 +96,7 @@ export class AuthQlModelResolver {
     @Mutation(() => SignupResponse)
     async signup(@Args('signupInput') signupInput: SignupInput) {
         try {
+            console.log("=>(auth_ql_model.resolver.ts:100) signupInput", signupInput);
             const data = {
                 type: signupInput.type,
                 id: signupInput.id,

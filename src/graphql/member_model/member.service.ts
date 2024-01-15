@@ -107,6 +107,57 @@ export class MembersService {
         }
     }
 
+    async createSocial(
+        social_type: string,
+        nickname: string,
+        id: string,
+        email: string,
+        name: string,
+        refererRoot: number,
+        refererRootInput: string,
+        agreeMsg: number,
+        code: string
+    ) {
+        try {
+            const now = getNowUnix();
+            const passwd = await hashPassword(id.toString());
+            // 회원 닉네임 난수 생성
+            const nickname = `user_${Math.floor(Math.random() * 1000000)}`;
+            const memberInsert = await this.memberRepository
+                .createQueryBuilder()
+                .insert()
+                .into(Member, ['id', 'social_kakao', 'social_naver', 'social_google', 'social_apple', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
+                    'name', 'passwd', 'regdate', 'agreeMsg', 'refererRoot', 'refererRootInput', 'code'
+                ])
+                .values({
+                    id: () => `"${id}"`,
+                    social_kakao: () => social_type == "1" ?`"${id}"` : null,
+                    social_naver: () => social_type == "2" ?`"${id}"` : null,
+                    social_google: () => social_type == "3" ?`"${id}"` : null,
+                    social_apple: () => social_type == "4" ?`"${id}"` : null,
+                    type: 1,
+                    level: 0,
+                    status: 1,
+                    social_type: social_type,
+                    nickname: () => name ? `"${name}"` : `"${nickname}"`,
+                    email: () => AES_ENCRYPT(email),
+                    // phone: () => phone ? AES_ENCRYPT(phone) : AES_ENCRYPT(""),
+                    name: () => name ? AES_ENCRYPT(name) : AES_ENCRYPT(nickname),
+                    passwd: () => `"${passwd}"`,
+                    regdate: () => `"${now}"`,
+                    agreeMsg: agreeMsg,
+                    refererRoot: refererRoot,
+                    refererRootInput: refererRootInput,
+                    code: `${code}` // 개인 추천코드 생성
+                })
+                .execute();
+
+            return memberInsert;
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
     async findAll(skip, take) {
         return await this.memberRepository
             .createQueryBuilder()
@@ -498,57 +549,6 @@ export class MembersService {
             .where(`${AES_DECRYPT('email')} = :email`, {email: email})
             .andWhere('social_type = :socialType', {socialType: socialType})
             .getRawOne();
-    }
-
-    async createSocial(
-        social_type: string,
-        nickname: string,
-        id: string,
-        email: string,
-        name: string,
-        refererRoot: number,
-        refererRootInput: string,
-        agreeMsg: number,
-        code: string
-    ) {
-        try {
-            const now = getNowUnix();
-            const passwd = await hashPassword(id.toString());
-            // 회원 닉네임 난수 생성
-            const nickname = `user_${Math.floor(Math.random() * 1000000)}`;
-            const memberInsert = await this.memberRepository
-                .createQueryBuilder()
-                .insert()
-                .into(Member, ['id', 'social_kakao', 'social_naver', 'social_google', 'social_apple', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
-                     'name', 'passwd', 'regdate', 'agreeMsg', 'refererRoot', 'refererRootInput', 'code'
-                ])
-                .values({
-                    id: () => `"${id}"`,
-                    social_kakao: () => social_type == "1" ?`"${id}"` : null,
-                    social_naver: () => social_type == "2" ?`"${id}"` : null,
-                    social_google: () => social_type == "3" ?`"${id}"` : null,
-                    social_apple: () => social_type == "4" ?`"${id}"` : null,
-                    type: 1,
-                    level: 0,
-                    status: 1,
-                    social_type: social_type,
-                    nickname: () => name ? `"${name}"` : `"${nickname}"`,
-                    email: () => AES_ENCRYPT(email),
-                    // phone: () => phone ? AES_ENCRYPT(phone) : AES_ENCRYPT(""),
-                    name: () => name ? AES_ENCRYPT(name) : AES_ENCRYPT(nickname),
-                    passwd: () => `"${passwd}"`,
-                    regdate: () => `"${now}"`,
-                    agreeMsg: agreeMsg,
-                    refererRoot: refererRoot,
-                    refererRootInput: refererRootInput,
-                    code: `${code}` // 개인 추천코드 생성
-                })
-                .execute();
-
-            return memberInsert;
-        }catch (e) {
-            console.log(e)
-        }
     }
 
     async getPartner(partnerIdx) {
