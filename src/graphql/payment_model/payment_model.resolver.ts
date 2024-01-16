@@ -2,10 +2,11 @@ import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {PaymentModelService} from './payment_model.service';
 import {SubmitModelService} from "../submit_model/submit_model.service";
 import {
+    FROM_UNIXTIME_JS_PLUS,
     FROM_UNIXTIME_JS_YY_MM_DD,
     getAfter3Days,
     getBootpayStatusText,
-   getUnixTimeStampByYmdPlus
+    getUnixTimeStampByYmdPlus
 } from "../../util/common";
 import {HttpException, UseGuards} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
@@ -97,7 +98,7 @@ export class PaymentModelResolver {
                         "캠페인이름": campaign.name,
                         "업체이름": partner.corpName,
                         //YYYY-MM-DD 이용일자
-                        "이용일자": getUnixTimeStampByYmdPlus(submitItem.startDate) + ' ~ ' + getUnixTimeStampByYmdPlus(submitItem.endDate),
+                        "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
                         "인원": submitItem.nop,
                         "입금액": response.price,
                         "캠페인페이지승인링크": 'https://wairi.co.kr/extranet/campaign/submit#/' + submitItem.idx,

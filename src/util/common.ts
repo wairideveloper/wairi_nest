@@ -85,6 +85,11 @@ export const FROM_UNIXTIME_JS_YY_MM_DD = (column: number) => {
     return moment.unix(Number(column)).format('YY년MM월DD일');
 }
 
+//유닉스타임스템프를 javacript +9 한국 날짜로 변환 YYYY-MM-DD HH:mm:ss
+export const FROM_UNIXTIME_JS_PLUS = (column: number) => {
+    return moment.unix(Number(column)).add(9, 'hours').format('YYYY-MM-DD');
+}
+
 
 // 날짜를 유닉스 타임스템프로 변환
 export const UNIX_TIMESTAMP = (column: string) => {
