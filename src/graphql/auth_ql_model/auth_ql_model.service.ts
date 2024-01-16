@@ -124,6 +124,8 @@ export class AuthQlModelService {
                     let member = await this.memberService.findByRecommend(data.refererRootInput);
                     if(!member){
                         throw new HttpException('일치하는 추천인 코드가 없습니다.', 404);
+                    } else if(member.status == -9){
+                        throw new HttpException('탈퇴한 추천인 코드입니다.', 404);
                     }
                 }
             }
@@ -673,6 +675,8 @@ export class AuthQlModelService {
                         let member = await this.memberService.findByRecommend(data.refererRootInput);
                         if(!member){
                             throw new HttpException('일치하는 추천인 코드가 없습니다.', 404);
+                        }else if(member.status == -9){
+                            throw new HttpException('탈퇴한 추천인 코드입니다.', 404);
                         }
                     }
                 }

@@ -260,7 +260,20 @@ export class ApiplexService {
             let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
             console.log("=>(apiplex.service.ts:58) axioData", axioData);
             let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
-            console.log("=>(apiplex.service.ts:60) result", result.data.results);
+            if (result.data.results[0].code == 'C100') {
+                let data = {
+                    status: this.code[result.data.results.code],
+                    template_code: template_code,
+                    echo_to_webhook: axioData.msg_data[0].echo_to_webhook,
+                    message: setConfigTemplate,
+                    receiver_number: phone,
+                    data: JSON.stringify(axioData),
+                    created_at: new Date()
+                }
+                console.log("=>(apiplex.service.ts:144) data", data);
+
+                await this.notificationTalkSave(data)
+            }
         } catch (e) {
             console.log("=>(apiplex.service.ts:62) e", e);
         }
