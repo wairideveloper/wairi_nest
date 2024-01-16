@@ -108,6 +108,11 @@ export const getUnixTimeStampByYmd = () => {
     return moment(now).subtract(9, 'hours').unix();
 }
 
+//현제 날짜 Y-m-d 타임스템프로 변환
+export const getUnixTimeStampByYmdPlus = (unixtime) => {
+    return moment(unixtime).subtract(9, 'hours').unix();
+}
+
 //현재시간 유닉스 타임스템프 3일 후
 export const getUnixTimeStampAfter3Days = () => {
     return moment().add(3, 'days').unix();
