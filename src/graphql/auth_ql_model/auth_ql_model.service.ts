@@ -84,6 +84,10 @@ export class AuthQlModelService {
                 })
                 member.memberChannel = memberChannel;
                 console.log("=>(auth_ql_model.service.ts:80) member", member);
+
+                //lastSignin update
+                await this.memberService.updateLastSignin(member.idx);
+
                 return {
                     message: '로그인 성공',
                     access_token: access_token,
@@ -651,6 +655,9 @@ export class AuthQlModelService {
                     return memberChannel[index];
                 })
                 memberCheck.memberChannel = memberChannel;
+
+                //lastSignin update
+                await this.memberService.updateLastSignin(memberCheck.idx);
 
                 const result = await this.jwtResponse(payload, memberCheck);
                 console.log("=>(auth_ql_model.service.ts:590) result", result);

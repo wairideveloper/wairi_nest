@@ -578,4 +578,13 @@ export class MembersService {
             .getRawOne();
         return bufferToString(data);
     }
+
+    async updateLastSignin(memberIdx) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            .update()
+            .set({lastSignin: getNowUnix()})
+            .where('idx = :idx', {idx: memberIdx})
+            .execute();
+    }
 }
