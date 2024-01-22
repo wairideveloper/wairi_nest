@@ -18,7 +18,6 @@ export class UploadService {
     // private s3: S3;
     private s3_V2: S3Client;
 
-
     constructor() {
         // AWS.config.update({
         //     region: process.env.AWS_REGION,

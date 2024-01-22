@@ -1116,17 +1116,15 @@ export class ApiplexService {
 
     //인플루언서 채널 등록 승인 안내
     private Q93pUvpaEFkd(data: any) {
-        return '안녕하세요 #{이름}님 ‘여행 인플루언서 플랫폼 와이리’입니다.\n' +
+        return '안녕하세요 #{이름}님 &lsquo;여행 인플루언서 플랫폼 와이리&rsquo;입니다.\n' +
             '\n' +
             '축하드립니다 ! #{이름}님이 등록하신 #{등록한채널유형}가(이) 인플루언서로 승인되었습니다!\n' +
             '\n' +
             '와이리는 호텔/펜션/원고료 등 많은 캠페인을 보유하고 있습니다\n' +
             '앞으로 #{이름}의 많은 신청 및 활동 기대하겠습니다\n' +
             '\n' +
-            '와이리 카카오톡 채널 추가 하시면 실시간 이벤트 소식 및 카카오톡 친구 대상으로만 하는 이벤트에 참여하실 수 있습니다😊\n' +
-            '\n' +
             '다시 한번 승인을 축하드립니다 :)\n' +
-            '감사합니다.';
+            '감사합니다';
     }
 
     private _72o88NAj9Gla(data: any) {
@@ -1160,5 +1158,37 @@ export class ApiplexService {
             '\n' +
             '또한 와이리는 앱 출시를 앞두고 있습니다!\n' +
             '앞으로 더 발전하는 와이리가 되겠습니다. 감사합니다.';
+    }
+
+
+    async growthType() {
+        try{
+            let member = await this.memberRepository.createQueryBuilder('member')
+                .leftJoin('member.memberChannel', 'memberChannel')
+                //mc.level = 2 AND m.type = 1 AND  m.status in (1,9);
+                .where('memberChannel.level = :level', {level: 2})
+                .andWhere('member.type = :type', {type: 1})
+                .andWhere('member.status in (:status)', {status: [1, 9]})
+                .select([
+                    `DISTINCT(CAST(AES_DECRYPT(UNHEX(member.phone),"@F$z927U_6Cr%N3Cch8gmJ9aaY#qNzh6")as char)) as phone`,
+                    'member.idx as idx',
+                ])
+                .orderBy('member.idx', 'DESC')
+                .getRawMany();
+            member = bufferToString(member);
+
+            const phone = member.map((item) => {
+                return item.phone
+            })
+            const idx = member.map((item) => {
+                return item.idx
+            })
+            return {
+                phone: phone,
+                idx: idx
+            }
+        }catch (e){
+            console.log(e)
+        }
     }
 }

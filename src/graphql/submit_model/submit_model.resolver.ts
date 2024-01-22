@@ -195,7 +195,7 @@ export class SubmitModelResolver {
                     "자동신청마감시간": getAfter3Days(),
                     "캠페인페이지승인링크": `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
                 }
-                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
+                // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
                 await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
 
                 // @ts-ignore

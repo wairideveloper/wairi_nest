@@ -1,6 +1,7 @@
 import { Resolver, Query } from '@nestjs/graphql';
 import { ApiplexService } from './apiplex.service';
 import {getAfter3Days, randomString} from "../../util/common";
+import {HttpException} from "@nestjs/common";
 @Resolver()
 export class ApiplexResolver {
   constructor(private readonly apiplexService: ApiplexService) {}
@@ -8,15 +9,15 @@ export class ApiplexResolver {
   @Query()
   async testapiplex() {
     try {
-        const result = await this.apiplexService.recommendCode();
-        // const result = await this.apiplexService.dormancy();
-      return
-
-
-      console.log("=>(apiplex.resolver.ts:11) testapiplex", 'testapiplex');
-      let phoneList = ['01082308203'];
-      await this.apiplexService.test2(phoneList,'Q93pUipflpNd', []);
-      return
+      //   const result = await this.apiplexService.recommendCode();
+      //   // const result = await this.apiplexService.dormancy();
+      // return
+      //
+      //
+      // console.log("=>(apiplex.resolver.ts:11) testapiplex", 'testapiplex');
+      // let phoneList = ['01082308203'];
+      // await this.apiplexService.test2(phoneList,'Q93pUipflpNd', []);
+      // return
 
       let at_data = {
         "이름": 'authUser.username',
@@ -27,8 +28,12 @@ export class ApiplexResolver {
         "채널주소": 'submitChannel.link',
         "취소사유": 'reason'
       }
+
+      await this.apiplexService.sendUserAlimtalk('Q93pUvpaEFkd', '01082308203', at_data);
+      return
+
       //Todo 취소 알림톡 72o88NAj9Gla
-      await this.apiplexService.sendPartnerAlimtalk('72o88NAj9Gla', at_data, 776);
+      await this.apiplexService.sendPartnerAlimtalk('Q93pUvpaEFkd', at_data, 776);
       return
       // const result = await this.apiplexService.test();
       let param = {
@@ -51,4 +56,37 @@ export class ApiplexResolver {
       throw error;
     }
   }
+
+  @Query()
+  async growthType(){
+    try{
+      let data = await this.apiplexService.growthType();
+
+      let phoneList = data.phone;
+      let idxList = data.idx;
+console.log("=>(apiplex.resolver.ts:64) phoneList", phoneList);
+console.log("=>(apiplex.resolver.ts:65) idxList", idxList);
+      let phone = '01082308203'
+      // await this.apiplexService.sendAlimtalk([phone], 'Q93pUipflpNd');
+      //Todo : phoneList 를 루프를 돌며 알림톡 발송
+
+      // let memberIdxList = data.idx;
+      // console.log("=>(madein20_model.resolver.ts:65) memberIdxList", memberIdxList);
+      // await this.madein20ModelService.sendAlimtalk(phoneList, 'S6xbU9c065tUSq1VquOa');
+
+      //Todo : memberChannel level -1 로 변경
+      // await this.madein20ModelService.updateMemberChannel(memberIdxList);
+
+
+
+      return {
+        message : '성공',
+        code : 200,
+        // data: data
+      }
+    }catch (error){
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
 }

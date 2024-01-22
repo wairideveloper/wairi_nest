@@ -12,6 +12,8 @@ export class UploadController {
     constructor(private readonly uploadService: UploadService) {
     }
 
+
+
     @Get('test')
     async test() {
         console.log("=>(auth.controller.ts:24) dfsfd", 'sfsdf');
