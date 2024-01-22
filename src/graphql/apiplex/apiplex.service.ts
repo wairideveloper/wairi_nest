@@ -403,6 +403,9 @@ export class ApiplexService {
             case "Q93pUvpaEFkd": // 인플루언서 채널 등록 승인 안내
                 msg = this.Q93pUvpaEFkd(data);
                 break;
+            case "Q93pUvpoPjLq": // 인플루언서 채널 등록 승인 안내
+                msg = this.Q93pUvpoPjLq(data);
+                break;
             case "EHu0hjNSYvP3":
                 msg = this.EHu0hjNSYvP3(data);
                 break;
@@ -1125,6 +1128,21 @@ export class ApiplexService {
             '\n' +
             '다시 한번 승인을 축하드립니다 :)\n' +
             '감사합니다';
+    }
+
+    private Q93pUvpoPjLq(data: any) {
+        return '안녕하세요 #{이름}님 여행 인플루언서 플랫폼 와이리 입니다.\n' +
+            '\n' +
+            '축하드립니다 ! #{이름}님이 등록하신 #{등록한채널유형}가(이) 인플루언서로 승인되었습니다!\n' +
+            '\n' +
+            '와이리는 호텔/펜션/원고료 등 많은 캠페인을 보유하고 있습니다\n' +
+            '앞으로 #{이름}의 많은 신청 및 활동 기대하겠습니다\n' +
+            '\n' +
+            '와이리 카카오톡 채널 추가 하시면 실시간 이벤트 소식 및 카카오톡 친구 대상으로만 하는 이벤트에 참여하실 수 있습니다\n' +
+            '\n' +
+            '다시 한번 승인을 축하드립니다 :)\n' +
+            '\n' +
+            '감사합니다.';
     }
 
     private _72o88NAj9Gla(data: any) {

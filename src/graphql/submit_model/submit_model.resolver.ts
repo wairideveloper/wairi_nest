@@ -190,14 +190,16 @@ export class SubmitModelResolver {
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
                     // "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
-                    "이용일자": FROM_UNIXTIME_JS_PLUS(Number(createCampaignSubmitInput.startDate)) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(Number(createCampaignSubmitInput.endDate)),
+                    "이용일자": createCampaignSubmitInput.startDate + ' ~ ' + createCampaignSubmitInput.endDate,
                     "인원": createCampaignSubmitInput.nop,
                     "채널주소": submitChannel.link,
                     "자동신청마감시간": getAfter3Days(),
                     "캠페인페이지승인링크": `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
                 }
+                console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
+                console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));
                 // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
-                await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
+                // await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
 
                 // @ts-ignore
                 await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI99',authUser.phone, param);

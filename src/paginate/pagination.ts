@@ -22,3 +22,4 @@ export class Pagination<PaginationEntity> {
         this.currentPage = parseInt(String(paginationResult.currentPage));
     }
 }
+
