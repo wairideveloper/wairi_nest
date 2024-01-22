@@ -190,7 +190,7 @@ export class SubmitModelResolver {
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
                     // "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
-                    "이용일자": FROM_UNIXTIME_JS_PLUS(createCampaignSubmitInput.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(createCampaignSubmitInput.endDate),
+                    "이용일자": FROM_UNIXTIME_JS_PLUS(Number(createCampaignSubmitInput.startDate)) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(Number(createCampaignSubmitInput.endDate)),
                     "인원": createCampaignSubmitInput.nop,
                     "채널주소": submitChannel.link,
                     "자동신청마감시간": getAfter3Days(),
