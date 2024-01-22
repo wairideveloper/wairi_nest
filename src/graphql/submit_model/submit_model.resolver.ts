@@ -5,7 +5,7 @@ import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {
-    _getChannelName, bufferToString,
+    _getChannelName, bufferToString, FROM_UNIXTIME_JS_PLUS,
     genSid, getAfter3Days, getChannelName,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days,
@@ -189,7 +189,8 @@ export class SubmitModelResolver {
                     "이름": authUser.username,
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
-                    "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+                    // "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+                    "이용일자": FROM_UNIXTIME_JS_PLUS(createCampaignSubmitInput.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(createCampaignSubmitInput.endDate),
                     "인원": createCampaignSubmitInput.nop,
                     "채널주소": submitChannel.link,
                     "자동신청마감시간": getAfter3Days(),
@@ -286,7 +287,8 @@ export class SubmitModelResolver {
                     "이름": authUser.username,
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
-                    "이용일자": `${submit.startDate} ~ ${submit.endDate}`,
+                    // "이용일자": `${submit.startDate} ~ ${submit.endDate}`,
+                    "이용일자": FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),
                     "인원": submit.nop,
                     "채널주소": submitChannel.link,
                     "취소사유": reason
@@ -403,7 +405,8 @@ export class SubmitModelResolver {
                     "업체이름" : partner.corpName,
                     "이름" : authUser.username,
                     "캠페인이름" : campaign.name,
-                    "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
+                    // "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
+                    "이용일자" : FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),
                     "인원" : submit.nop,
                     "콘텐츠URL" : draftCompleteInput.url,
                 }
