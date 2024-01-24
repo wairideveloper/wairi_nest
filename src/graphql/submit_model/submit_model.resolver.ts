@@ -186,7 +186,7 @@ export class SubmitModelResolver {
                     // channelUrl: submitChannel.link,
                     // approvalLink: `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
                     // deadline: getAfter3Days(),
-                    "이름": authUser.username,
+                    "이름": authUser.username ? authUser.username : "회원",
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
                     // "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
@@ -286,7 +286,7 @@ export class SubmitModelResolver {
                 await this.madein20ModelService.sendPartnerAlimtalk(data, '72o88NAj9Gla9C1gIMLJ', campaign.idx);
 
                 let at_data = {
-                    "이름": authUser.username,
+                    "이름": authUser.username ? authUser.username : '회원',
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
                     // "이용일자": `${submit.startDate} ~ ${submit.endDate}`,
@@ -405,7 +405,7 @@ export class SubmitModelResolver {
                 // @ts-ignore
                 let param = {
                     "업체이름" : partner.corpName,
-                    "이름" : authUser.username,
+                    "이름" : authUser.username ? authUser.username : "회원",
                     "캠페인이름" : campaign.name,
                     // "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
                     "이용일자" : FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),

@@ -141,7 +141,7 @@ export class MemberResolver {
             //Todo : 알림톡 발송
             if (authUser.phone) {
                 let param = {
-                    "이름": authUser.username ? authUser.username : "",
+                    "이름": authUser.username ? authUser.username : "회원",
                     "채널주소": createMemberChannelInput.link,
                 }
                 // @ts-ignore

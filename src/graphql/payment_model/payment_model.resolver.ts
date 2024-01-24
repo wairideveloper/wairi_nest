@@ -92,7 +92,7 @@ export class PaymentModelResolver {
                     const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
                     //Todo apiplex 가상계좌
                     let param = {
-                        "이름": authUser.username,
+                        "이름": authUser.username ? authUser.username : "회원",
                         "가상계좌은행": response.vbank_data.bank_name,
                         "가상계좌번호": response.vbank_data.bank_account,
                         "캠페인이름": campaign.name,

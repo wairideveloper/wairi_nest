@@ -9,6 +9,8 @@ export class ApiplexResolver {
   @Query()
   async testapiplex() {
     try {
+     this.apiplexService.recommendCode();
+      return
       //   const result = await this.apiplexService.recommendCode();
       //   // const result = await this.apiplexService.dormancy();
       // return

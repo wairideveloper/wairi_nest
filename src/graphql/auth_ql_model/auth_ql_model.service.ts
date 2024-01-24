@@ -588,7 +588,7 @@ export class AuthQlModelService {
                 //Todo apiplex 회원정보 수정
                 if(member.phone){
                     let param = {
-                        "이름" : member.name,
+                        "이름" : member.name ? member.name : "회원",
                         "변경내용" : "닉네임 : " + data.nickname + ", 이메일 : " + data.email,
                     }
                     await this.apiPlexService.sendUserAlimtalk('kjR290Pm0Xac',member.phone, param);
