@@ -156,6 +156,7 @@ export class SubmitModelResolver {
                 payItem: pay,
                 payTotal: pay,
                 agreeContent: createCampaignSubmitInput.agreeContent,
+                use_app: 'Y',
             }
 
             console.log('==========> 🤩 : ' + inputData);

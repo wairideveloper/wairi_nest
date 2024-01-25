@@ -167,6 +167,9 @@ export class CampaignSubmit {
     @Column("longtext", {name: "options", nullable: true})
     options: string | null;
 
+    @Column("char", {name: "use_app"})
+    use_app: number;
+
     @ManyToOne(() => Campaign, (campaign) => campaign.idx)
     campaign: Campaign;
 

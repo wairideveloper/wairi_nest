@@ -2,6 +2,8 @@ import { Resolver, Query } from '@nestjs/graphql';
 import { ApiplexService } from './apiplex.service';
 import {getAfter3Days, randomString} from "../../util/common";
 import {HttpException} from "@nestjs/common";
+import axios, { AxiosResponse, AxiosError } from 'axios';
+
 @Resolver()
 export class ApiplexResolver {
   constructor(private readonly apiplexService: ApiplexService) {}
@@ -9,8 +11,30 @@ export class ApiplexResolver {
   @Query()
   async testapiplex() {
     try {
-     this.apiplexService.recommendCode();
-      return
+        const apiKey = 'AIzaSyAug04PXh8_zqzs3gTs8_5PTtQhjkFlCx4';
+        const apiEndpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${apiKey}`;
+        const postData = {
+            longDynamicLink: "https://wairiinc.page.link/?isi=6471933852&ibi=com.wairiCompany.wairi&efr=0&imv=0&link=https://wairiincpagelink.com/campaignView?sid%3D211110721209308&amv=0&apn=com.wairiInc.wairi"
+        };
+        axios.post(apiEndpoint, postData, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then((response: AxiosResponse) => {
+                // Handle the successful response
+                console.log('Shortened URL:', response.data.shortLink);
+            })
+            .catch((error: AxiosError) => {
+                // Handle errors
+                console.error('Error:', error.response ? error.response.data : error.message);
+            });
+
+return
+
+
+     // this.apiplexService.recommendCode();
+     //  return
       //   const result = await this.apiplexService.recommendCode();
       //   // const result = await this.apiplexService.dormancy();
       // return

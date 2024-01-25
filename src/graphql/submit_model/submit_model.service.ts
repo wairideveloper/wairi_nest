@@ -72,6 +72,7 @@ export class SubmitModelService {
                 'payItem',
                 'payTotal',
                 'agreeContent',
+                'use_app',
             ])
             .values(inputData)
             .execute();
