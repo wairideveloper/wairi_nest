@@ -40,7 +40,7 @@ export class AuthQlModelResolver {
 
     constructor(private readonly authQlModelService: AuthQlModelService) {
     }
-
+    //일반 로그인
     @Mutation(() => LoginResponse)
     async login(@Args('loginInput',) loginInput: LoginInput) {
         try {

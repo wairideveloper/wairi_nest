@@ -22,6 +22,7 @@ type Member {
     memberChannel: [MemberChannel]
     campaignReview: [CampaignReview]
     code: String
+    is_black: Int
 }
 
 type MemberChannel {

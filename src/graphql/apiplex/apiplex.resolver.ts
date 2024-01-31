@@ -13,10 +13,28 @@ export class ApiplexResolver {
     try {
         const apiKey = 'AIzaSyAug04PXh8_zqzs3gTs8_5PTtQhjkFlCx4';
         const apiEndpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${apiKey}`;
-        const postData = {
-            longDynamicLink: "https://wairiinc.page.link/?isi=6471933852&ibi=com.wairiCompany.wairi&efr=0&imv=0&link=https://wairiincpagelink.com/campaignView?sid%3D211110721209308&amv=0&apn=com.wairiInc.wairi"
+        // const postData = {
+        //     longDynamicLink: "https://wairiinc.page.link/?isi=6471933852&ibi=com.wairiCompany.wairi&efr=0&imv=0&link=https://wairiincpagelink.com/campaignView?sid%3D211110721209308&amv=0&apn=com.wairiInc.wairi"
+        // };
+
+        // 동적 링크 생성에 사용할 데이터
+        const dynamicLinkData = {
+            dynamicLinkInfo: {
+                domainUriPrefix: 'https://wairiinc.page.link',
+                link: 'https://wairiinc.page.link/campaignDetail?campaignIdx=771',
+                androidInfo: {
+                    androidPackageName: 'com.wairiInc.wairi',
+                    androidMinPackageVersionCode: '0',
+                    androidFallbackLink: 'https://play.google.com/store/apps/details?id=com.wairiInc.wairi',
+                },
+                iosInfo: {
+                    iosBundleId: 'com.wairiCompany.wairi',
+                    iosAppStoreId: '6471933852',
+                },
+            },
         };
-        axios.post(apiEndpoint, postData, {
+
+        axios.post(apiEndpoint, dynamicLinkData, {
             headers: {
                 'Content-Type': 'application/json',
             }

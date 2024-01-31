@@ -63,6 +63,7 @@ export class AuthQlModelService {
                     username: member.name,
                     memberType: member.type,
                     phone: member.phone,
+                    is_black: member.is_black,
                 };
                 const access_token = await this.jwtService.signAsync(payload, {
                     expiresIn: process.env.JWT_EXPIRATION_TIME,
@@ -645,7 +646,9 @@ export class AuthQlModelService {
                 const payload = {
                     idx: memberCheck.idx,
                     username: data.nickname,
-                    memberType: 1
+                    memberType: 1,
+                    phone: memberCheck.phone,
+                    is_black: memberCheck.is_black,
                 }
 
                 let memberChannel = await this.memberService.findChannel(memberCheck.idx);

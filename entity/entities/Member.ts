@@ -127,6 +127,9 @@ export class Member {
     @Column('varchar', {name: 'code'})
     code: string;
 
+    @Column('int', {name: 'is_black', default: 0})
+    is_black: number;
+
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
 

@@ -37,7 +37,8 @@ export class AuthService {
             idx: member.idx,
             username: member.name,
             memberType: member.type,
-            phone: member.phone
+            phone: member.phone,
+            is_black: member.is_black,
         };
         console.log("-> member.type", member.type);
         console.log(payload)

@@ -152,8 +152,9 @@ export class CampaignService {
                 'COUNT(*) AS submitCount'
             ])
             .from(CampaignSubmit, 'campaignSubmit')
-            .where('campaignSubmit.status > 0')
-            .andWhere('campaignSubmit.status < 900')
+            .where('campaignSubmit.status >= -1 ')
+            .andWhere('campaignSubmit.status <= 950')
+            .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
             .groupBy('campaignSubmit.campaignIdx')
             .getQuery();
 
@@ -166,8 +167,10 @@ export class CampaignService {
                 'COUNT(*) AS submitCount'
             ])
             .from(CampaignSubmit, 'campaignSubmit')
-            .where('campaignSubmit.status >= 400')
-            .andWhere('campaignSubmit.status <= 700')
+
+            //(200 <= status <= 700 and status paymentIdx > 0) and (statusDate900 = 0 or statusDate900 is null)
+            .where('campaignSubmit.status BETWEEN 200 AND 700')
+            .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
             .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
             .groupBy('campaignSubmit.campaignIdx')
             .getQuery();
@@ -207,7 +210,6 @@ export class CampaignService {
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
                 'cateArea.idx as cateAreaIdx',
-
             ])
             .where('campaign.remove = :remove', {remove: 0})
             .andWhere('campaign.status >= :t', {t: 200})
@@ -404,6 +406,7 @@ export class CampaignService {
                 [
                     'campaign.idx as idx',
                     'campaign.name as name',
+                    'campaign.cateIdx as cateIdx',
                     'CONVERT(campaign.name USING utf8) AS name',
                     'campaign.weight as weight',
                     'campaign.info as info',

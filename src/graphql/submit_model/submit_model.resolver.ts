@@ -69,7 +69,17 @@ export class SubmitModelResolver {
     ) {
         try {
             const campaign = await this.campaignsService.getCampaign(createCampaignSubmitInput.campaignIdx);
+            console.log("=>(submit_model.resolver.ts:72) campaign", campaign.cateIdx);
             const campaignItem = await this.campaignsService.getCampaignItemByIdx(createCampaignSubmitInput.itemIdx);
+
+            //블랙 인플루언서 체크
+            if(campaign.cateIdx == 24 && authUser.is_black == 0){
+                return {
+                    code: 400,
+                    message: 'BLACK INFLUENCER 회원만 신청이 가능합니다.',
+                    data: null
+                }
+            }
 
             //Todo 수익분배 월별 제한인원 신청하기 전에 체크
             if(campaignItem.sellType == 3){
