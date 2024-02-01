@@ -1,7 +1,7 @@
 import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
 import {CommonModelService} from './common_model.service';
-import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
-import * as Upload from "graphql-upload/Upload.js";
+// import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
+// import * as Upload from "graphql-upload/Upload.js";
 import {log} from "winston";
 import {MembersService} from "../member_model/member.service";
 import {UseGuards} from "@nestjs/common";
@@ -21,8 +21,8 @@ export class CommonModelResolver {
     @UseGuards(GqlAuthGuard)
     async signupUploadFile(
         @AuthUser() authUser: Member,
-        @Args({name: 'file', type: () => GraphQLUpload})
-            images: [Upload],
+        // @Args({name: 'file', type: () => GraphQLUpload})
+        //     images: [Upload],
         @Args('originalname') originalname: string,
         @Args('type') type: number,
         @Args('url') url: string,
@@ -34,8 +34,8 @@ export class CommonModelResolver {
     ) {
 
         try {
-            const file = images;
-            console.log("=>(common_model.resolver.ts:37) file", file);
+            // const file = images;
+            // console.log("=>(common_model.resolver.ts:37) file", file);
             return
             // let imgUrl = await this.commonModelService.uploadImage(file.file);
             // if (imgUrl) {

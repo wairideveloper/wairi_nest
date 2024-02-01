@@ -5,9 +5,9 @@ import {HttpException, UseGuards} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
-import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
-import * as Upload from "graphql-upload/Upload.js";
-import {FileUpload} from "graphql-upload/Upload";
+// import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
+// import * as Upload from "graphql-upload/Upload.js";
+// import {FileUpload} from "graphql-upload/Upload";
 
 
 class CreateReviewInput {

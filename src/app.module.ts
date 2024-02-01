@@ -69,6 +69,7 @@ import {ApolloServerErrorCode} from "@apollo/server/errors";
 import { ApiplexModule } from './graphql/apiplex/apiplex.module';
 import { ApiplexCallbackModule } from './apiplex_callback/apiplex_callback.module';
 import {NotificationTalk} from "../entity/entities/NotificationTalk";
+import { LogModelModule } from './graphql/log_model/log_model.module';
 
 @Module({
     imports: [
@@ -209,7 +210,8 @@ import {NotificationTalk} from "../entity/entities/NotificationTalk";
         ReviewModelModule,
         BootpayModule,
         ApiplexModule,
-        ApiplexCallbackModule
+        ApiplexCallbackModule,
+        LogModelModule
     ],
     controllers: [AppController],
     providers: [

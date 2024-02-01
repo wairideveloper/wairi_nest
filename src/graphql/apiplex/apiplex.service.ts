@@ -549,7 +549,7 @@ export class ApiplexService {
     }
 
     //캠페인 결제 리마인드 알림
-    private _6z33tsC3tk00(data) {
+    private _16z33tsC3tk00(data) {
         return `[캠페인 결제 요청 알림]
 
 안녕하세요, #{이름}님 ‘여행 인플루언서 플랫폼 와이리’입니다.

@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid";
 import * as process from 'process';
 import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
-import {FileUpload} from "graphql-upload/Upload";
+// import {FileUpload} from "graphql-upload/Upload";
 import * as AWS from "aws-sdk";
 import {Stream} from 'stream';
 import {Config} from "../../../entity/entities/Config";
@@ -46,40 +46,40 @@ export class CommonModelService {
         return channelData;
     }
 
-    async uploadImage(file: FileUpload) {
-        // console.log("=>(common_model.service.ts:50) file", file);
-        try {
-            if (!file || !file.createReadStream) {
-                throw new HttpException("Invalid file object", 500);
-            }
-            // const fileName = `${uuidv4()}-${file.filename}`;
-            const fileName = `${uuidv4()}}`;
-            const encodeFileName = encodeURIComponent(fileName);
-            const buffer = await this.streamToBuffer(file.createReadStream());
-            const uploadParams = {
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: String(encodeFileName),
-                Body: buffer,
-                ContentType: file.mimetype,
-                ACL: 'public-read',
-            };
-
-            const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
-
-            if (res.$metadata.httpStatusCode === 200) {
-                let url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
-                //aws s3에 저장된 파일의 url을 반환
-                url = url.split('?')[0];
-                return {
-                    key : encodeFileName,
-                    // url : `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}amazonaws.com/${encodeFileName}`
-                    url : url
-                };
-            }
-        } catch (error) {
-            throw new HttpException(error.message, 500)
-        }
-    }
+    // async uploadImage(file: FileUpload) {
+    //     // console.log("=>(common_model.service.ts:50) file", file);
+    //     try {
+    //         if (!file || !file.createReadStream) {
+    //             throw new HttpException("Invalid file object", 500);
+    //         }
+    //         // const fileName = `${uuidv4()}-${file.filename}`;
+    //         const fileName = `${uuidv4()}}`;
+    //         const encodeFileName = encodeURIComponent(fileName);
+    //         const buffer = await this.streamToBuffer(file.createReadStream());
+    //         const uploadParams = {
+    //             Bucket: process.env.AWS_BUCKET_NAME,
+    //             Key: String(encodeFileName),
+    //             Body: buffer,
+    //             ContentType: file.mimetype,
+    //             ACL: 'public-read',
+    //         };
+    //
+    //         const res = await this.s3_V2.send(new PutObjectCommand(uploadParams));
+    //
+    //         if (res.$metadata.httpStatusCode === 200) {
+    //             let url = await getSignedUrl(this.s3_V2, new GetObjectCommand(uploadParams));
+    //             //aws s3에 저장된 파일의 url을 반환
+    //             url = url.split('?')[0];
+    //             return {
+    //                 key : encodeFileName,
+    //                 // url : `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}amazonaws.com/${encodeFileName}`
+    //                 url : url
+    //             };
+    //         }
+    //     } catch (error) {
+    //         throw new HttpException(error.message, 500)
+    //     }
+    // }
 
     async deleteImage(key: string) {
         // const command = new GetObjectCommand({

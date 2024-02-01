@@ -24,6 +24,7 @@ import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {Config} from "../../../entity/entities/Config";
 import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
+import {LogModelService} from "../log_model/log_model.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
@@ -33,6 +34,6 @@ import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService,
-  ApiplexService]
+  ApiplexService, LogModelService]
 })
 export class SubmitModelModule {}
