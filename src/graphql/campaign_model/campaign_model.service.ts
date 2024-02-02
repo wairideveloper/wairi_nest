@@ -55,7 +55,9 @@ export class CampaignService {
                     ])
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
-                    .andWhere('campaign.status = 200')
+                    // .andWhere('campaign.status = 200')
+                    .andWhere('campaign.status >= :t', {t: 200})
+                    .andWhere('campaign.status <= :s', {s: 700})
                     .andWhere('partner.status = :status', {status: 1})
                     .orderBy('campaign.weight', 'DESC')
                     .addOrderBy('campaign.regdate', 'DESC')
@@ -127,7 +129,8 @@ export class CampaignService {
                         'COUNT(*) AS submitCount'
                     ])
                     .from(CampaignSubmit, 'campaignSubmit')
-                    .where('campaignSubmit.status >= 400')
+                    // .where('campaignSubmit.status >= 400')
+                    .where('campaignSubmit.status BETWEEN 200 AND 700')
                     .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
                     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
                     .groupBy('campaignSubmit.campaignIdx')
@@ -175,7 +178,7 @@ export class CampaignService {
                     .addOrderBy("weight", 'DESC')
                     .addOrderBy('regdate', 'DESC')
                     .groupBy('campaign.idx')
-                    .limit(8)
+                    .limit(1000)
                     .getRawMany()
             }
 

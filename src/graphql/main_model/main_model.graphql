@@ -22,6 +22,7 @@ type Category{
 
 type Product{
     approvalRate: Int
+    weight: Int
     idx: Int
     name: String
     status: Int
