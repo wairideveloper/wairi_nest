@@ -294,14 +294,14 @@ export class SubmitModelResolver {
                     channelUrl: submitChannel.link,
                     reason: reason
                 }
-                await this.madein20ModelService.sendPartnerAlimtalk(data, '72o88NAj9Gla9C1gIMLJ', campaign.idx);
+                // await this.madein20ModelService.sendPartnerAlimtalk(data, '72o88NAj9Gla9C1gIMLJ', campaign.idx);
 
                 let at_data = {
                     "이름": authUser.username ? authUser.username : '회원',
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
-                    // "이용일자": `${submit.startDate} ~ ${submit.endDate}`,
-                    "이용일자": FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),
+                    // "이용일자": unix time to date YYYY-MM-DD
+                    "이용일자": `${submit.startDate} ~ ${submit.endDate}`,
                     "인원": submit.nop,
                     "채널주소": submitChannel.link,
                     "취소사유": reason
