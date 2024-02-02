@@ -113,8 +113,9 @@ export class CampaignService {
                         'COUNT(*) AS submitCount'
                     ])
                     .from(CampaignSubmit, 'campaignSubmit')
-                    .where('campaignSubmit.status > 0')
-                    .andWhere('campaignSubmit.status < 900')
+                    .where('campaignSubmit.status >= -1 ')
+                    .andWhere('campaignSubmit.status <= 950')
+                    .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
                     .groupBy('campaignSubmit.campaignIdx')
                     .getQuery();
 
@@ -127,7 +128,7 @@ export class CampaignService {
                     ])
                     .from(CampaignSubmit, 'campaignSubmit')
                     .where('campaignSubmit.status >= 400')
-                    .andWhere('campaignSubmit.status <= 700')
+                    .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
                     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
                     .groupBy('campaignSubmit.campaignIdx')
                     .getQuery();
@@ -168,8 +169,11 @@ export class CampaignService {
                     .andWhere('campaign.status = 200')
                     .andWhere('partner.status = :status', {status: 1})
                     .andWhere('campaignItem.endDate > UNIX_TIMESTAMP(NOW())')
+                    // .orderBy("approvalRate", 'DESC')
+                    // .addOrderBy('weight', 'DESC')
                     .orderBy("approvalRate", 'DESC')
-                    .addOrderBy('weight', 'DESC')
+                    .addOrderBy("weight", 'DESC')
+                    .addOrderBy('regdate', 'DESC')
                     .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
