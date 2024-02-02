@@ -92,7 +92,7 @@ export class AuthQlModelResolver {
             throw error;
         }
     }
-
+    //일반 회원 가입
     @Mutation(() => SignupResponse)
     async signup(@Args('signupInput') signupInput: SignupInput) {
         try {

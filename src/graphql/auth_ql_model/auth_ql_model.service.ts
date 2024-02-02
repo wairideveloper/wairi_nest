@@ -8,6 +8,7 @@ import {compareSync} from "bcrypt";
 import * as process from 'process';
 import {JwtService} from "@nestjs/jwt";
 import {SignupInput} from "./dto/signupInput";
+import * as amplitude from '@amplitude/analytics-node';
 import {
     AES_DECRYPT,
     AES_ENCRYPT, bufferToString,
@@ -207,6 +208,14 @@ export class AuthQlModelService {
                 // await this.madein20ModelService.sendManagerAlimtalk(data, 'test','EHu0hjNSYvP3y0ZSxSd2');
 
                 //회원 알림톡 발송
+                //Todo amplitude
+                amplitude.init('a5731a043c47edc8f0cacd0f724385d9'); // dev
+                const eventProperties = {
+                    accout_type: 'email',
+                };
+                const test =  amplitude.track('account created', eventProperties, {
+                    device_id: 'wairi',
+                });
 
                 return {
                     message: '회원가입 성공',
@@ -666,6 +675,7 @@ export class AuthQlModelService {
 
                 const result = await this.jwtResponse(payload, memberCheck);
                 console.log("=>(auth_ql_model.service.ts:590) result", result);
+
                 return result;
             }else{
 
@@ -707,7 +717,32 @@ export class AuthQlModelService {
                         memberType: 1
                     }
                     const result = await this.jwtResponse(payload, member);
-                    console.log("=>(auth_ql_model.service.ts:609) result", result);
+
+                    //Todo amplitude
+                    let social_type = '';
+                    switch (data.social_type) {
+                        case '1':
+                            social_type = 'kakao'
+                            break;
+                        case '2':
+                            social_type = 'naver'
+                            break;
+                        case '3':
+                            social_type = 'google'
+                            break;
+                        case '4':
+                            social_type = 'apple'
+                            break;
+                    }
+                    console.log("=>(auth_ql_model.service.ts:688) social_type", social_type);
+                    amplitude.init('a5731a043c47edc8f0cacd0f724385d9'); // dev
+                    const eventProperties = {
+                        accout_type: social_type,
+                    };
+                    const test =  amplitude.track('account created', eventProperties, {
+                        device_id: 'wairi',
+                    });
+
                     return result;
                 }
             }
