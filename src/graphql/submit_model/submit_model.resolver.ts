@@ -213,8 +213,8 @@ export class SubmitModelResolver {
                 // await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
 
                 // @ts-ignore
-                await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI99',authUser.phone, param);
-                await this.apiPlexService.sendPartnerAlimtalk('2jSKar7G587Z', param, campaign.idx);
+                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',authUser.phone, param);
+                await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
 
                 return {
                     code: 200,

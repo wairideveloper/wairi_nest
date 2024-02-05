@@ -11,6 +11,18 @@ export class ApiplexResolver {
   @Query()
   async testapiplex() {
     try {
+        let at_data = {
+            "이름": 'authUser.username',
+            "업체이름": 'partner.corpName',
+            "캠페인이름": 'campaign.name',
+            "이용일자": '`${submit.startDate} ~ ${submit.endDate}`',
+            "인원": 'submit.nop',
+            "채널주소": 'submitChannel.link',
+            "취소사유": 'reason'
+        }
+        await this.apiplexService.sendUserAlimtalk('Q93pUvpoPjLq', '01082308203', at_data);
+        return
+
         const apiKey = 'AIzaSyAug04PXh8_zqzs3gTs8_5PTtQhjkFlCx4';
         const apiEndpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${apiKey}`;
         // const postData = {
@@ -63,15 +75,15 @@ return
       // await this.apiplexService.test2(phoneList,'Q93pUipflpNd', []);
       // return
 
-      let at_data = {
-        "이름": 'authUser.username',
-        "업체이름": 'partner.corpName',
-        "캠페인이름": 'campaign.name',
-        "이용일자": '`${submit.startDate} ~ ${submit.endDate}`',
-        "인원": 'submit.nop',
-        "채널주소": 'submitChannel.link',
-        "취소사유": 'reason'
-      }
+      // let at_data = {
+      //   "이름": 'authUser.username',
+      //   "업체이름": 'partner.corpName',
+      //   "캠페인이름": 'campaign.name',
+      //   "이용일자": '`${submit.startDate} ~ ${submit.endDate}`',
+      //   "인원": 'submit.nop',
+      //   "채널주소": 'submitChannel.link',
+      //   "취소사유": 'reason'
+      // }
 
       await this.apiplexService.sendUserAlimtalk('Q93pUvpaEFkd', '01082308203', at_data);
       return
