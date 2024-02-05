@@ -20,6 +20,9 @@ export class Popup {
   @Column("int", { name: "device_mobile" })
   deviceMobile: number;
 
+  @Column("int", { name: "device_app" })
+  device_app: number;
+
   @Column("longtext", { name: "content" })
   content: string;
 
