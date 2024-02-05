@@ -291,7 +291,7 @@ export class SubmitModelResolver {
                     name: authUser.username,
                     partnerName: partner.corpName,
                     campaignName: campaign.name,
-                    dayOfUse: `${submit.startDate} ~ ${submit.endDate}`,
+                    dayOfUse: `${submit.application_period}`,
                     nop: submit.nop,
                     channelUrl: submitChannel.link,
                     reason: reason
