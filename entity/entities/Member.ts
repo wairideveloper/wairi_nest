@@ -35,7 +35,7 @@ export class Member {
         name: 'phone',
         default: '',
     })
-    phone: String;
+    phone: any;
 
     @Column('blob', {
         name: 'name',
