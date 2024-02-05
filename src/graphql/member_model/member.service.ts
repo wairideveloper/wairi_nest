@@ -593,6 +593,7 @@ export class MembersService {
             .createQueryBuilder()
             //name
             .select(`(${AES_DECRYPT('name')})`, 'name')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
             .where('idx = :idx', {idx: idx})
             .getRawOne();
     }
