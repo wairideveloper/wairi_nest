@@ -369,6 +369,7 @@ export class ApiplexService {
                 phoneList.push(item.phone)
             }
         })
+        console.log("=>(apiplex.service.ts:373) 파트너 연락처", phoneList);
         return phoneList;
     }
 
