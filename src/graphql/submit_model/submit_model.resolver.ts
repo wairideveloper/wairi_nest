@@ -187,7 +187,7 @@ export class SubmitModelResolver {
                         data: null
                     }
                 }
-                console.log(submitChannel)
+                const member = await this.membersService.getMember(authUser.idx);
                 let param = {
                     // name: authUser.username,
                     // partnerName: partner.corpName,
@@ -197,7 +197,8 @@ export class SubmitModelResolver {
                     // channelUrl: submitChannel.link,
                     // approvalLink: `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
                     // deadline: getAfter3Days(),
-                    "이름": authUser.username ? authUser.username : "회원",
+                    // "이름": authUser.username ? authUser.username : "회원",
+                    "이름": member.name ? member.name : "회원",
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
                     // "이용일자": `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
@@ -297,8 +298,11 @@ export class SubmitModelResolver {
                 }
                 // await this.madein20ModelService.sendPartnerAlimtalk(data, '72o88NAj9Gla9C1gIMLJ', campaign.idx);
 
+                const member = await this.membersService.getMember(authUser.idx);
+
                 let at_data = {
-                    "이름": authUser.username ? authUser.username : '회원',
+                    // "이름": authUser.username ? authUser.username : '회원',
+                    "이름": member.name ? member.name : '회원',
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
                     // "이용일자": unix time to date YYYY-MM-DD
@@ -409,7 +413,7 @@ export class SubmitModelResolver {
             let data = await this.submitModelService.completeDraftRegistration(
                 draftCompleteInput.sid, draftCompleteInput.url, authUser.idx);
             if (data.affected === 1) {
-
+                const member = await this.membersService.getMember(authUser.idx);
                 //Todo apiplex 알림톡
                 let submit = await this.submitModelService.getSubmitDetail(draftCompleteInput.sid, authUser.idx);
                 const campaign = await this.submitModelService.getCampaignByCampaignIdx(submit.campaignIdx);
@@ -417,7 +421,8 @@ export class SubmitModelResolver {
                 // @ts-ignore
                 let param = {
                     "업체이름" : partner.corpName,
-                    "이름" : authUser.username ? authUser.username : "회원",
+                    // "이름" : authUser.username ? authUser.username : "회원",
+                    "이름" : member.name ? member.name : "회원",
                     "캠페인이름" : campaign.name,
                     // "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
                     "이용일자" : FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),

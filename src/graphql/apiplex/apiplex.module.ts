@@ -9,12 +9,15 @@ import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {Member} from "../../../entity/entities/Member";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
+import {MembersService} from "../member_model/member.service";
+import {CampaignReview} from "../../../entity/entities/CampaignReview";
+import {Config} from "../../../entity/entities/Config";
 
 @Module({
   imports: [TypeOrmModule.forFeature([
       NotificationTalk, Admin, Partner, Campaign, CampaignItem, Member,
-      MemberChannel
+      MemberChannel,CampaignReview,Config
   ])],
-  providers: [ApiplexResolver, ApiplexService]
+  providers: [ApiplexResolver, ApiplexService, MembersService]
 })
 export class ApiplexModule {}

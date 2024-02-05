@@ -15,6 +15,9 @@ import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 import {Admin} from "../../../entity/entities/Admin";
 import {Partner} from "../../../entity/entities/Partner";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
+import {MembersService} from "../member_model/member.service";
+import {CampaignReview} from "../../../entity/entities/CampaignReview";
+import {Config} from "../../../entity/entities/Config";
 
 @Module({
   imports: [
@@ -28,10 +31,12 @@ import {MemberChannel} from "../../../entity/entities/MemberChannel";
           MemberChannel,
           NotificationTalk,
           Admin,
-          Partner
+          Partner,
+          CampaignReview,
+          Config
       ]),
   ],
   providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService,
-  ApiplexService],
+  ApiplexService, MembersService],
 })
 export class PaymentModelModule {}

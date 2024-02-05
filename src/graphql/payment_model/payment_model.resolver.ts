@@ -1,6 +1,7 @@
 import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {PaymentModelService} from './payment_model.service';
 import {SubmitModelService} from "../submit_model/submit_model.service";
+import {MembersService} from "../member_model/member.service";
 import {
     FROM_UNIXTIME_JS_PLUS,
     FROM_UNIXTIME_JS_YY_MM_DD,
@@ -30,8 +31,8 @@ export class PaymentModelResolver {
     constructor(
         private readonly paymentModelService: PaymentModelService,
         private readonly submitModelService: SubmitModelService,
-        private readonly apiPlexService: ApiplexService
-
+        private readonly apiPlexService: ApiplexService,
+        private readonly membersService: MembersService
     ) {
     }
 
@@ -91,8 +92,10 @@ export class PaymentModelResolver {
                     const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
                     const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
                     //Todo apiplex 가상계좌
+                    const member = await this.membersService.getMember(authUser.idx);
                     let param = {
-                        "이름": authUser.username ? authUser.username : "회원",
+                        // "이름": authUser.username ? authUser.username : "회원",
+                        "이름": member.name ? member.name : "회원",
                         "가상계좌은행": response.vbank_data.bank_name,
                         "가상계좌번호": response.vbank_data.bank_account,
                         "캠페인이름": campaign.name,

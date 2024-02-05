@@ -137,11 +137,11 @@ export class MemberResolver {
             if (getChannel) {
                 getChannel = bufferToString(getChannel);
             }
-
+            const member = await this.membersService.getMember(authUser.idx);
             //Todo : 알림톡 발송
             if (authUser.phone) {
                 let param = {
-                    "이름": authUser.username ? authUser.username : "회원",
+                    "이름": member.name ? member.name : "회원",
                     "채널주소": createMemberChannelInput.link,
                 }
                 // @ts-ignore

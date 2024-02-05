@@ -587,4 +587,13 @@ export class MembersService {
             .where('idx = :idx', {idx: memberIdx})
             .execute();
     }
+
+    async getMember(idx: number) {
+        return await this.memberRepository
+            .createQueryBuilder()
+            //name
+            .select(`(${AES_DECRYPT('name')})`, 'name')
+            .where('idx = :idx', {idx: idx})
+            .getRawOne();
+    }
 }

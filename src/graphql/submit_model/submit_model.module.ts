@@ -34,6 +34,6 @@ import {LogModelService} from "../log_model/log_model.service";
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService,
-  ApiplexService, LogModelService]
+  ApiplexService, LogModelService, MembersService]
 })
 export class SubmitModelModule {}
