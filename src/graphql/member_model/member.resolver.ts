@@ -145,7 +145,7 @@ export class MemberResolver {
                     "채널주소": createMemberChannelInput.link,
                 }
                 // @ts-ignore
-                await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', authUser.phone, param)
+                await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', member.phone, param)
             }
 
             return {
