@@ -663,7 +663,7 @@ export class AuthQlModelService {
 
                 const payload = {
                     idx: memberCheck.idx,
-                    username: data.name,
+                    username: memberCheck.name,
                     memberType: 1,
                     phone: memberCheck.phone,
                     is_black: memberCheck.is_black,
