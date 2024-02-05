@@ -103,8 +103,8 @@ export class PaymentModelResolver {
                         "입금액": response.price,
                         "캠페인페이지승인링크": 'https://wairi.co.kr/extranet/campaign/submit#/' + submitItem.idx,
                     }
-                    // @ts-ignore
-                    await this.apiPlexService.sendUserAlimtalk('UOs0AyzcEtMt', authUser.phone, param);
+                    let phone = authUser.phone.toString();
+                    await this.apiPlexService.sendUserAlimtalk('UOs0AyzcEtMt', phone, param);
                 }
 
                 if (vbankDataTransaction) {

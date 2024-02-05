@@ -209,12 +209,10 @@ export class SubmitModelResolver {
                 }
                 console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
                 console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));
-                // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
-                // await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
 
                 //authUser.phone string 으로 변환
                 let phone = authUser.phone.toString();
-                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',phone, param);
+                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9', phone, param);
                 await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
 
                 return {
