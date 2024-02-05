@@ -394,6 +394,9 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
+            case "hop239tugoad": // 회원가입시 채널등록 알림
+                msg = this.hop239tugoad(data);
+                break;
             case "Q93pUipflpNd": // 미활동 인플루언서 상태값 변경
                 msg = this.Q93pUipflpNd(data);
                 break;
@@ -432,6 +435,10 @@ export class ApiplexService {
                 break;
             case "cOS69z2IOW5l": // completeDraftRegistration
                 msg = this.cOS69z2IOW5l(data);
+                break;
+
+            case "1cOS69z2IOW5": // completeDraftRegistration
+                msg = this._1cOS69z2IOW5(data);
                 break;
 
             case "1148DrKHkbs2": // completeDraftRegistration
@@ -1293,5 +1300,29 @@ export class ApiplexService {
             '- 채널주소: #{채널주소}\n' +
             '\n' +
             '※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.';
+    }
+
+    private hop239tugoad(data: any) { //회원가입시 채널등록 알림
+        return "안녕하세요 #{이름}님 여행 인플루언서 플랫폼 와이리입니다. \n" +
+            "회원가입을 감사드리며 와이리 서비스 원활한 이용을 위하여 [마이 와이리 - 나의 채널관리] 에서 본인의 채널을 등록해주세요.\n" +
+            "심사는 영업일 기준 2~3일 소요됩니다.\n" +
+            "\n" +
+            "감사합니다.";
+    }
+
+    private _1cOS69z2IOW5(data: any) {
+        return "[포스팅 완료 알림]\n" +
+            "\n" +
+            "안녕하세요 #{업체이름}님 여행 인플루언서 플랫폼 와이리입니다.\n" +
+            "아래 내용으로 진행된 캠페인 포스팅 업로드가 완료되었습니다 :)\n" +
+            "\n" +
+            "■ 신청 내용\n" +
+            "- 이름: #{이름}\n" +
+            "- 캠페인 신청내용: #{업체이름}, #{캠페인이름}\n" +
+            "- 이용일자: #{이용일자}\n" +
+            "- 투숙인원: #{인원}\n" +
+            "- 업로드 완료 콘텐츠: #{콘텐츠URL}\n" +
+            "\n" +
+            "※ 문의사항은 카카오톡 메시지 혹은 고객센터를 이용해주세요.";
     }
 }

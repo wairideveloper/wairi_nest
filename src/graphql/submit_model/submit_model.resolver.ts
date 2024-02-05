@@ -192,7 +192,7 @@ export class SubmitModelResolver {
                     // name: authUser.username,
                     // partnerName: partner.corpName,
                     // campaignName: campaign.name,
-                    // dayOfUse: `${createCampaignSubmitInput.startDate} ~ ${createCampaignSubmitInput.endDate}`,
+                    // dayOfUse: `${createCampaignSubmit1Input.startDate} ~ ${createCampaignSubmitInput.endDate}`,
                     // nop: createCampaignSubmitInput.nop,
                     // channelUrl: submitChannel.link,
                     // approvalLink: `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
@@ -423,7 +423,7 @@ export class SubmitModelResolver {
                     "인원" : submit.nop,
                     "콘텐츠URL" : draftCompleteInput.url,
                 }
-                await this.apiPlexService.sendPartnerAlimtalk('cOS69z2IOW5l', param, submit.campaignIdx);
+                await this.apiPlexService.sendPartnerAlimtalk('1cOS69z2IOW5', param, submit.campaignIdx);
                 return {
                     code: 200,
                     message: '초안 수정이 완료되었습니다.',

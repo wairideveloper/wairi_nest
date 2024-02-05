@@ -206,8 +206,15 @@ export class AuthQlModelService {
 
                 //관리자 알림톡 전송
                 // await this.madein20ModelService.sendManagerAlimtalk(data, 'test','EHu0hjNSYvP3y0ZSxSd2');
-
                 //회원 알림톡 발송
+                // if (result.phone) {
+                //     let param = {
+                //         "이름": result.name ? result.name : "회원",
+                //     }
+                //     // @ts-ignore
+                //     await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', authUser.phone, param)
+                // }
+
                 //Todo amplitude
                 amplitude.init('a5731a043c47edc8f0cacd0f724385d9'); // dev
                 const eventProperties = {
@@ -224,6 +231,8 @@ export class AuthQlModelService {
                     // identityVerification: identityVerification,
                     data: result,
                 };
+
+
             }else {
                 await queryRunner.rollbackTransaction();
                 throw new HttpException('회원가입에 실패하였습니다.', HttpStatus.CONFLICT);
@@ -654,12 +663,12 @@ export class AuthQlModelService {
 
                 const payload = {
                     idx: memberCheck.idx,
-                    username: data.nickname,
+                    username: data.name,
                     memberType: 1,
                     phone: memberCheck.phone,
                     is_black: memberCheck.is_black,
                 }
-
+console.log("=>(auth_ql_model.service.ts:672) 소셜 로그인 payload: ", payload);
                 let memberChannel = await this.memberService.findChannel(memberCheck.idx);
                 memberChannel = bufferToString(memberChannel);
                 //array memberChannel.regdate 변환
