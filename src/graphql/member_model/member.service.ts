@@ -589,12 +589,13 @@ export class MembersService {
     }
 
     async getMember(idx: number) {
-        return await this.memberRepository
+        let data = await this.memberRepository
             .createQueryBuilder()
             //name
             .select(`(${AES_DECRYPT('name')})`, 'name')
             .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
             .where('idx = :idx', {idx: idx})
             .getRawOne();
+        return bufferToString(data);
     }
 }
