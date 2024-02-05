@@ -424,8 +424,8 @@ export class SubmitModelResolver {
                     // "이름" : authUser.username ? authUser.username : "회원",
                     "이름" : member.name ? member.name : "회원",
                     "캠페인이름" : campaign.name,
-                    // "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
-                    "이용일자" : FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),
+                    "이용일자" : `${submit.startDate} ~ ${submit.endDate}`,
+                    // "이용일자" : FROM_UNIXTIME_JS_PLUS(submit.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submit.endDate),
                     "인원" : submit.nop,
                     "콘텐츠URL" : draftCompleteInput.url,
                 }
