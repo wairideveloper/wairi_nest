@@ -212,8 +212,9 @@ export class SubmitModelResolver {
                 // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
                 // await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
 
-                // @ts-ignore
-                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',authUser.phone, param);
+                //authUser.phone string 으로 변환
+                let phone = authUser.phone.toString();
+                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',phone, param);
                 await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
 
                 return {
