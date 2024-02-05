@@ -345,17 +345,28 @@ export class ApiplexService {
         partner = bufferToString(partner)
 
         let receivers = []
-        let receiverData = await this.partnerRepository.createQueryBuilder('partner')
+        let receiverDataPartner = await this.partnerRepository.createQueryBuilder('partner')
             .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
             .where('campaign.idx = :idx', {idx: campaignIdx})
             .select('partner.noteReceivers')
             .getRawOne();
-        receiverData = bufferToString(receiverData)
+        receiverDataPartner = bufferToString(receiverDataPartner)
+        let receiverDataCampaign = await this.campaignRepository.createQueryBuilder('campaign')
+            .select('campaign.noteReceivers', 'noteReceivers')
+            .where('campaign.idx = :idx', {idx: campaignIdx})
+            .getRawOne();
+        receiverDataCampaign = bufferToString(receiverDataCampaign)
         //JSON 으로 변환
-        if (!receiverData.noteReceivers) {
-            console.log("=>(madein20_model.service.ts:74) receivers.noteReceivers: ", '추가연락처 없음');
+        if (!receiverDataPartner.noteReceivers) {
+            console.log("=>(madein20_model.service.ts:74) receivers.receiverDataPartner: ", '추가연락처 없음');
         } else {
-            receivers = JSON.parse(receiverData.noteReceivers)
+            receivers = JSON.parse(receiverDataPartner.noteReceivers)
+        }
+
+        if (!receiverDataCampaign.noteReceivers) {
+            console.log("=>(madein20_model.service.ts:74) receivers.receiverDataCampaign: ", '추가연락처 없음');
+        } else {
+            receivers = receivers.concat(JSON.parse(receiverDataCampaign.noteReceivers))
         }
 
         //수신동의 여부 확인
