@@ -59,7 +59,7 @@ export class CampaignService {
                     // .andWhere('campaign.status >= :t', {t: 200})
                     // .andWhere('campaign.status <= :s', {s: 700})
                     .andWhere('partner.status = :status', {status: 1})
-                    .orderBy('campaign.weight', 'DESC')
+                    // .orderBy('campaign.weight', 'DESC')
                     .addOrderBy('campaign.regdate', 'DESC')
                     .groupBy('campaign.idx')
                     .limit(8)
