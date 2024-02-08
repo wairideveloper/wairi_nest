@@ -55,9 +55,9 @@ export class CampaignService {
                     ])
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
-                    // .andWhere('campaign.status = 200')
-                    .andWhere('campaign.status >= :t', {t: 200})
-                    .andWhere('campaign.status <= :s', {s: 700})
+                    .andWhere('campaign.status = 200')
+                    // .andWhere('campaign.status >= :t', {t: 200})
+                    // .andWhere('campaign.status <= :s', {s: 700})
                     .andWhere('partner.status = :status', {status: 1})
                     .orderBy('campaign.weight', 'DESC')
                     .addOrderBy('campaign.regdate', 'DESC')
@@ -214,9 +214,9 @@ export class CampaignService {
                             .limit(1),
                     'dc11'
                 )
-                // .where('c.status = 200')
-                .where('c.status >= :t', {t: 200})
-                .andWhere('c.status <= :s', {s: 700})
+                .where('c.status = 200')
+                // .where('c.status >= :t', {t: 200})
+                // .andWhere('c.status <= :s', {s: 700})
                 .andWhere('c.remove = 0')
                 .orderBy('c.weight', 'DESC')
                 .addOrderBy('c.regdate', 'DESC')
@@ -246,6 +246,7 @@ export class CampaignService {
                 cateArea = bufferToString(cateArea)
                 campaignItemLowestPrice = bufferToString(campaignItemLowestPrice)
             }
+
 
             let result = [];
             campaign.forEach((item, index) => {
