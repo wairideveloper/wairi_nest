@@ -214,7 +214,9 @@ export class CampaignService {
                             .limit(1),
                     'dc11'
                 )
-                .where('c.status = 200')
+                // .where('c.status = 200')
+                .where('c.status >= :t', {t: 200})
+                .andWhere('c.status <= :s', {s: 700})
                 .andWhere('c.remove = 0')
                 .orderBy('c.weight', 'DESC')
                 .addOrderBy('c.regdate', 'DESC')
