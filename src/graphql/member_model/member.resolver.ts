@@ -202,7 +202,7 @@ export class MemberResolver {
                     changes: html
                 }
 
-                await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'kjR290Pm0Xac0NzLZNU2');
+                // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'kjR290Pm0Xac0NzLZNU2');
 
                 return {
                     code: 200,

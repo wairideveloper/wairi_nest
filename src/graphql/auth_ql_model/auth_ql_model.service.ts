@@ -46,6 +46,7 @@ export class AuthQlModelService {
         ) {
     }
 
+    //일반 로그인
     async login(id: string, password: string) {
         try {
             let member = await this.memberService.findByIdSecession(id);
