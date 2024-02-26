@@ -598,4 +598,13 @@ export class MembersService {
             .getRawOne();
         return bufferToString(data);
     }
+
+    async getCannelLinkByUserIdx(submitChannel, memberIdx: number) {
+        let data = await this.memberChannelRepository.createQueryBuilder()
+            .select('*')
+            .where('type = :submitChannel', {submitChannel: submitChannel})
+            .andWhere('memberIdx = :memberIdx', {memberIdx: memberIdx})
+            .getRawOne();
+        return bufferToString(data);
+    }
 }

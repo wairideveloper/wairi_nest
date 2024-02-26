@@ -509,4 +509,8 @@ export class SubmitModelService {
         data = bufferToString(data);
         return data;
     }
+
+    async getCannelLinkByUserIdx(submitChannel,memberIdx: number) {
+
+    }
 }

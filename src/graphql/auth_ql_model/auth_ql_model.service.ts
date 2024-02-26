@@ -67,10 +67,20 @@ export class AuthQlModelService {
                     phone: member.phone,
                     is_black: member.is_black,
                 };
-                const access_token = await this.jwtService.signAsync(payload, {
-                    expiresIn: process.env.JWT_EXPIRATION_TIME,
-                    secret: process.env.JWT_SECRET
-                });
+
+                let access_token: string;
+                if(id == 'zizi'){
+                     access_token = await this.jwtService.signAsync(payload, {
+                        //만료시간 1분
+                        expiresIn: '1m',
+                        secret: process.env.JWT_SECRET
+                    });
+                }else {
+                     access_token = await this.jwtService.signAsync(payload, {
+                        expiresIn: process.env.JWT_EXPIRATION_TIME,
+                        secret: process.env.JWT_SECRET
+                    });
+                }
                 const refresh_token = await this.jwtService.signAsync({id: payload.idx}, {
                     expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
                     secret: process.env.JWT_SECRET

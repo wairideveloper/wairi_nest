@@ -305,6 +305,7 @@ export class SubmitModelResolver {
                     "이름": member.name ? member.name : '회원',
                     "업체이름": partner.corpName,
                     "캠페인이름": campaign.name,
+                    "인원": submit.nop+'명',
                     // "이용일자": unix time to date YYYY-MM-DD
                     "이용일자": `${submit.application_period}`,
                     "채널주소": submitChannel.link,

@@ -327,7 +327,7 @@ export class ApiplexService {
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
             // 01082308203 추가
-            phoneList.push('01082308203');
+            // phoneList.push('01082308203');
             const response = await this.sendAlimtalk(phoneList, templateCode, data)
             console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
         } catch (e) {
@@ -406,6 +406,12 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
+            case "10jios36HB30": // 인플루언서 결제 전 예약 대기 알림
+                msg = this._10jios36HB30(data);
+                break;
+            case "Gdghda431fag": // 인플루언서 결제 전 예약 대기 알림
+                msg = this.Gdghda431fag(data);
+                break;
             case "hop239tugoad": // 회원가입시 채널등록 알림
                 msg = this.hop239tugoad(data);
                 break;
@@ -1336,5 +1342,37 @@ export class ApiplexService {
             "- 업로드 완료 콘텐츠: #{콘텐츠URL}\n" +
             "\n" +
             "※ 문의사항은 카카오톡 메시지 혹은 고객센터를 이용해주세요.";
+    }
+
+    private Gdghda431fag(data: any) {
+        return "[인플루언서 결제 전 예약 대기 알림]\n" +
+            "\n" +
+            "안녕하세요 #{업체이름}님 여행 인플루언서 플랫폼 와이리입니다.\n" +
+            "아래 캠페인 승인 감사드리며 해당 인플루언서가 결제할때까지 예약 대기 부탁드립니다.\n" +
+            "\n" +
+            "■신청 내용\n" +
+            "- 이름 : #{이름}\n" +
+            "- 캠페인 신청내용 : #{업체이름}, #{캠페인이름}\n" +
+            "- 이용일자 : #{이용일자}\n" +
+            "\n" +
+            "인플루언서가 결제 완료되면 예약 확정 요청 알림을 전달드리겠습니다.\n" +
+            "\n" +
+            " ※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
+    }
+
+    private _10jios36HB30(data: any) {
+        return "[예약 요청 알림] \n" +
+            "\n" +
+            "안녕하세요 #{업체이름}님 여행 인플루언서 플랫폼 와이리입니다. \n" +
+            "아래 내용으로 예약확정부탁드립니다 :) \n" +
+            "\n" +
+            "■ 신청 내용 \n" +
+            "- 이름: #{이름} \n" +
+            "- 캠페인 신청내용: #{업체이름}, #{캠페인이름} \n" +
+            "- 이용일자: #{이용일자} \n" +
+            "- 이용인원: #{인원} \n" +
+            "- #{이름}님의 업로드 채널: #{채널주소} \n" +
+            "\n" +
+            "※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
     }
 }

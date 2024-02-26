@@ -147,6 +147,20 @@ export class PaymentModelResolver {
                     )
 
                 }
+
+                //Todo 파트너 알림톡
+                    const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
+                    const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
+                    const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel,memberIdx);
+                    let param = {
+                        "이름": partner.corpCeo,
+                        "캠페인이름": campaign.name,
+                        "업체이름": partner.corpName,
+                        "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
+                        "인원": submitItem.nop,
+                        "채널주소": cannelData['cannelLink'],
+                    }
+                    await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
             }
 
             return {
