@@ -226,6 +226,28 @@ export class MembersService {
         return result;
     }
 
+    async findByIdx(idx: number) {
+        const result = await this.memberRepository
+            .createQueryBuilder()
+            .select('*')
+            .addSelect(`(${AES_DECRYPT('name')})`, 'name')
+            .addSelect(`(${AES_DECRYPT('email')})`, 'email')
+            .addSelect(`(${AES_DECRYPT('phone')})`, 'phone')
+            .addSelect(`(${FROM_UNIXTIME('birth')})`, 'birth')
+            .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+            .addSelect(`(${FROM_UNIXTIME('lastUpdate')})`, 'lastUpdate')
+            .addSelect(`(${FROM_UNIXTIME('lastSignin')})`, 'lastSignin')
+            .addSelect('passwd')
+            .addSelect('code')
+            .where('idx = :idx', {idx: idx})
+            // .andWhere('status != -9')
+            // status -9 는 탈퇴회원
+            // .andWhere('status != -9')
+            .getRawOne();
+
+        return result;
+    }
+
     async findByIdSecession(id) {
         const result = await this.memberRepository
             .createQueryBuilder()

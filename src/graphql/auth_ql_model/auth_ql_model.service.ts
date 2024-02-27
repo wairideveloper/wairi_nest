@@ -81,7 +81,7 @@ export class AuthQlModelService {
                         secret: process.env.JWT_SECRET
                     });
                 }
-                const refresh_token = await this.jwtService.signAsync({id: payload.idx}, {
+                const refresh_token = await this.jwtService.signAsync({idx: payload.idx,username: member.name}, {
                     expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
                     secret: process.env.JWT_SECRET
                 });
@@ -356,10 +356,20 @@ export class AuthQlModelService {
             const decodedToken = await this.jwtService.verifyAsync(refresh_token, {
                 secret: process.env.JWT_SECRET,
             });
+
+            //    idx: member.idx,
+            //                     username: member.name,
+            //                     memberType: member.type,
+            //                     phone: member.phone,
+            //                     is_black: member.is_black,
+            let member = await this.memberService.findByIdx(decodedToken.idx);
+            member = bufferToString(member);
             const payload = {
                 idx: decodedToken.idx,
-                username: decodedToken.username,
-                memberType: decodedToken.memberType,
+                username: member.name,
+                memberType: member.type,
+                phone: member.phone,
+                is_black: member.is_black,
             };
             const access_token = await this.jwtService.signAsync(payload, {
                 expiresIn: process.env.JWT_EXPIRATION_TIME,
