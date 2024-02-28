@@ -20,7 +20,8 @@ export class ApiplexResolver {
             "채널주소": 'submitChannel.link',
             "취소사유": 'reason'
         }
-        await this.apiplexService.sendUserAlimtalk('Q93pUvpoPjLq', '01082308203', at_data);
+        await this.apiplexService.sendPartnerAlimtalk('Q93pUvpoPjLq', at_data, 795);
+        // await this.apiplexService.sendUserAlimtalk('Q93pUvpoPjLq', '01082308203', at_data);
         return
 
         const apiKey = 'AIzaSyAug04PXh8_zqzs3gTs8_5PTtQhjkFlCx4';

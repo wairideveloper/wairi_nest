@@ -315,7 +315,8 @@ export class ApiplexService {
     async sendPartnerAlimtalk(templateCode: string, data: any, campaignIdx: number, division: string = '') {
         try {
             let phoneList = await this.partnerConfig(campaignIdx);
-            console.log("=>(apiplex.service.ts:98) phoneList", phoneList);
+            //phoneList 중복제거
+            phoneList = Array.from(new Set(phoneList));
 
             let partner = await this.partnerRepository.createQueryBuilder('partner')
                 .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')

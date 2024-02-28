@@ -149,16 +149,17 @@ export class PaymentModelResolver {
                 }
 
                 //Todo 파트너 알림톡
+                    const member = await this.membersService.getMember(authUser.idx);
                     const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
                     const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
                     const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel,memberIdx);
                     let param = {
-                        "이름": partner.corpCeo,
+                        "이름": member.name ? member.name : "회원",
                         "캠페인이름": campaign.name,
                         "업체이름": partner.corpName,
                         "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
                         "인원": submitItem.nop,
-                        "채널주소": cannelData['cannelLink'],
+                        "채널주소": cannelData['link'],
                     }
                     await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
             }
