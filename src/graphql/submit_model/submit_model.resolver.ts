@@ -421,6 +421,7 @@ export class SubmitModelResolver {
                 // @ts-ignore
                 let param = {
                     "업체이름" : partner.corpName,
+                    "업체명" : partner.corpName,
                     // "이름" : authUser.username ? authUser.username : "회원",
                     "이름" : member.name ? member.name : "회원",
                     "캠페인이름" : campaign.name,
