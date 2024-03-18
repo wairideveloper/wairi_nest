@@ -20,6 +20,9 @@ export class ApiplexResolver {
             "채널주소": 'submitChannel.link',
             "취소사유": 'reason'
         }
+
+        await this.apiplexService.sendPartnerAlimtalk('1cOS69z2IOW5',null,144);
+        return
         await this.apiplexService.sendPartnerAlimtalk('Q93pUvpoPjLq', at_data, 795);
         // await this.apiplexService.sendUserAlimtalk('Q93pUvpoPjLq', '01082308203', at_data);
         return

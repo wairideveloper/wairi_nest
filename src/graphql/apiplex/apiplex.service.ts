@@ -317,6 +317,7 @@ export class ApiplexService {
             let phoneList = await this.partnerConfig(campaignIdx);
             //phoneList 중복제거
             phoneList = Array.from(new Set(phoneList));
+            console.log("=>(apiplex.service.ts:320) phoneList", phoneList);
 
             let partner = await this.partnerRepository.createQueryBuilder('partner')
                 .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
@@ -329,6 +330,8 @@ export class ApiplexService {
             data.campaignName = partner.campaignName;
             // 01082308203 추가
             // phoneList.push('01082308203');
+            // console.log("=>(apiplex.service.ts:333) phoneList", phoneList);
+            // return
             const response = await this.sendAlimtalk(phoneList, templateCode, data)
             console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
         } catch (e) {
