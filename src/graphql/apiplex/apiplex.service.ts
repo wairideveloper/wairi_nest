@@ -410,6 +410,9 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
+            case "7q0IN9T48W62": // 2캠페인 등록 신청 완료 알림
+                msg = this._7q0IN9T48W62(data);
+                break;
             case "10jios36HB30": // 인플루언서 결제 전 예약 대기 알림
                 msg = this._10jios36HB30(data);
                 break;
@@ -1378,5 +1381,17 @@ export class ApiplexService {
             "- #{이름}님의 업로드 채널: #{채널주소} \n" +
             "\n" +
             "※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
+    }
+
+    private _7q0IN9T48W62(data: any) {
+        return "[캠페인 신청 알림] \n" +
+            " \n" +
+            " 안녕하세요, #{업체이름}님 여행 인플루언서 플랫폼 와이리입니다. \n" +
+            " 아래 내용으로 인플루언서 캠페인 신청 요청이 왔습니다. \n" +
+            " 인플루언서 신청의 경우#{업체이름}께서 직접 승인을 해주셔야지 예약이 확정됩니다. 검토 후 캠페인 승인 여부 결정 부탁드립니다:)\n" +
+            " ※#{자동신청마감시간}이내 미 응답 시 자동 취소되오니 주의하시길 바랍니다. \n" +
+            " ※#{캠페인페이지승인링크} 해당 링크를 클릭하여 캠페인 승인 여부 결정 및 예약 확정 부탁드립니다. \n" +
+            " \n" +
+            " ※ 본 메시지는 알림톡을 수신 동의한 고객님께만 발송됩니다.";
     }
 }

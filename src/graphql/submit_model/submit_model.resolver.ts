@@ -216,7 +216,7 @@ export class SubmitModelResolver {
                 //authUser.phone string 으로 변환
 
                 await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
-                await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
+                await this.apiPlexService.sendPartnerAlimtalk('7q0IN9T48W62', param, campaign.idx);
 
                 return {
                     code: 200,
