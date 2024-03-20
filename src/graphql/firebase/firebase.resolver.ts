@@ -10,6 +10,6 @@ export class FirebaseResolver {
         @Args('firebaseInput') firebaseInput: FirebaseInput,
   ) {
     console.log("=>(firebase.resolver.ts:13) FirebaseInput", FirebaseInput);
-        return await this.firebaseService.firebaseTest();
+        return await this.firebaseService.firebaseTest(FirebaseInput);
   }
 }

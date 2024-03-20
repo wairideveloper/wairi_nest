@@ -3,16 +3,17 @@ import * as admin from 'firebase-admin';
 @Injectable()
 export class FirebaseService {
     constructor(@Inject('FIREBASE_APP') private readonly app: admin.app.App) {}
-    async firebaseTest() {
+    async firebaseTest(data) {
+        console.log("=>(firebase.service.ts:7) data", data);
 
         const message = {
             notification: {
                 title: 'Hello',
                 body: 'World',
             },
-            token: 'eWGyWqUr71IQ0fVJ-PRtzg:APA91bHsKZ9AUksB-zZuDH6wpRyiTXeCXlb9lPSXpGLpelvegf30pn0-cPYU5Y9rCGhdAVOuKDblcmOB-WnStPZgz5Bq0CdCuRDKDW36TFv2m6XSMLLRxinWAs7eezbzTjjWS-rGvOVW',
+            token: data.token,
         };
-
+console.log("=>(firebase.service.ts:16) message", message);
         try {
             // Send a message
             const response = await this.app.messaging().send(message);
