@@ -13,7 +13,6 @@ export class FirebaseService {
             },
             token: data.token,
         };
-console.log("=>(firebase.service.ts:16) message", message);
         try {
             // Send a message
             const response = await this.app.messaging().send(message);
@@ -23,6 +22,7 @@ console.log("=>(firebase.service.ts:16) message", message);
             console.log('Successfully sent message:', response);
         } catch (error) {
             console.error('Error sending message:', error);
+            throw new Error(error);
         }
     }
 }
