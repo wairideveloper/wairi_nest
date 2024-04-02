@@ -24,7 +24,6 @@ export class CampaignService {
         private cateAreaRepository: Repository<CateArea>,
         @InjectRepository(Cate)
         private cateRepository: Repository<Cate>,
-
     ) {
     }
 
@@ -32,11 +31,11 @@ export class CampaignService {
         최신순: regdate
         인기순: submitCount
      */
-    async getProducts(sort:string) {
+    async getProducts(sort: string) {
         let campaign: any[];
         try {
 
-            if(sort == 'recent'){
+            if (sort == 'recent') {
                 campaign = await this.campaignRepository
                     .createQueryBuilder('campaign')
                     .leftJoin('campaign.campaignItem', 'campaignItem')
@@ -53,6 +52,28 @@ export class CampaignService {
                         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                         '(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1) as image2',
                     ])
+                    .addSelect(
+                        (subQuery) =>
+                            subQuery
+                                .select('priceOrig')
+                                .from('campaignItem', 'ci')
+                                .where('ci.campaignIdx = campaign.idx')
+                                .andWhere('ci.remove = 0')
+                                .orderBy('priceOrig', 'ASC')
+                                .limit(1),
+                        'lowestPriceOrig'
+                    )
+                    .addSelect(
+                        (subQuery) =>
+                            subQuery
+                                .select('dc11')
+                                .from('campaignItem', 'ci')
+                                .where('ci.campaignIdx = campaign.idx')
+                                .andWhere('ci.remove = 0')
+                                .orderBy('dc11', 'ASC')
+                                .limit(1),
+                        'discountPercentage'
+                    )
                     .where('campaign.remove = :remove', {remove: 0})
                     .andWhere('campaignItem.remove = :cr', {cr: 0})
                     .andWhere('campaign.status = 200')
@@ -64,7 +85,7 @@ export class CampaignService {
                     .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
-            }else if(sort == 'popular'){
+            } else if (sort == 'popular') {
                 let submitCount = this.campaignSubmitRepository
                     .createQueryBuilder()
                     .subQuery()
@@ -90,6 +111,28 @@ export class CampaignService {
                         'campaign.cateAreaIdx as cateAreaIdx',
                         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                     ])
+                    .addSelect(
+                        (subQuery) =>
+                            subQuery
+                                .select('priceOrig')
+                                .from('campaignItem', 'ci')
+                                .where('ci.campaignIdx = campaign.idx')
+                                .andWhere('ci.remove = 0')
+                                .orderBy('priceOrig', 'ASC')
+                                .limit(1),
+                        'lowestPriceOrig'
+                    )
+                    .addSelect(
+                        (subQuery) =>
+                            subQuery
+                                .select('dc11')
+                                .from('campaignItem', 'ci')
+                                .where('ci.campaignIdx = campaign.idx')
+                                .andWhere('ci.remove = 0')
+                                .orderBy('dc11', 'ASC')
+                                .limit(1),
+                        'discountPercentage'
+                    )
                     .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
                     .leftJoin('campaign.campaignItem', 'campaignItem')
                     .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
@@ -106,7 +149,7 @@ export class CampaignService {
                     .groupBy('campaign.idx')
                     .limit(8)
                     .getRawMany()
-            }else{
+            } else {
                 // let submitCount = this.campaignSubmitRepository
                 //     .createQueryBuilder()
                 //     .subQuery()
@@ -162,6 +205,28 @@ export class CampaignService {
                         // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
                         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                     ])
+                    .addSelect(
+                        (subQuery) =>
+                            subQuery
+                                .select('priceOrig')
+                                .from('campaignItem', 'ci')
+                                .where('ci.campaignIdx = campaign.idx')
+                                .andWhere('ci.remove = 0')
+                                .orderBy('priceOrig', 'ASC')
+                                .limit(1),
+                        'lowestPriceOrig'
+                    )
+                    .addSelect(
+                        (subQuery) =>
+                            subQuery
+                                .select('dc11')
+                                .from('campaignItem', 'ci')
+                                .where('ci.campaignIdx = campaign.idx')
+                                .andWhere('ci.remove = 0')
+                                .orderBy('dc11', 'ASC')
+                                .limit(1),
+                        'discountPercentage'
+                    )
                     // .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
                     // .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
                     // .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
@@ -181,53 +246,8 @@ export class CampaignService {
                     .groupBy('campaign.idx')
                     .limit(1000)
                     .getRawMany()
+
             }
-
-            let campaignItem = await this.campaignItemRepository
-                .createQueryBuilder('campaignItem')
-                .select('*')
-                .where("campaignItem.remove != 1")
-                .getRawMany()
-
-            let campaignItemLowestPrice = await this.campaignRepository
-                .createQueryBuilder('c')
-                .select('c.idx', 'campaignIdx')
-                .addSelect('c.name', 'campaignName')
-                .addSelect(
-                    (subQuery) =>
-                        subQuery
-                            .select('priceOrig')
-                            .from('campaignItem', 'ci')
-                            .where('ci.campaignIdx = c.idx')
-                            .andWhere('ci.remove = 0')
-                            .orderBy('priceOrig', 'ASC')
-                            .limit(1),
-                    'lowestPrice'
-                )
-                .addSelect(
-                    (subQuery) =>
-                        subQuery
-                            .select('dc11')
-                            .from('campaignItem', 'ci')
-                            .where('ci.campaignIdx = c.idx')
-                            .andWhere('ci.remove = 0')
-                            .orderBy('dc11', 'ASC')
-                            .limit(1),
-                    'dc11'
-                )
-                .where('c.status = 200')
-                // .where('c.status >= :t', {t: 200})
-                // .andWhere('c.status <= :s', {s: 700})
-                .andWhere('c.remove = 0')
-                .orderBy('c.weight', 'DESC')
-                .addOrderBy('c.regdate', 'DESC')
-                .getRawMany();
-
-            let campaignItemSchedule = await this.campaignItemScheduleRepository
-                .createQueryBuilder('campaignItemSchedule')
-                .select('*')
-                .getRawMany()
-
 
             let cate = await this.cateRepository
                 .createQueryBuilder('cate')
@@ -239,51 +259,129 @@ export class CampaignService {
                 .select('*')
                 .getRawMany()
 
-            if(campaign){
-                campaign = bufferToString(campaign)
-                campaignItem = bufferToString(campaignItem)
-                campaignItemSchedule = bufferToString(campaignItemSchedule)
-                cate = bufferToString(cate)
-                cateArea = bufferToString(cateArea)
-                campaignItemLowestPrice = bufferToString(campaignItemLowestPrice)
-            }
+            campaign = bufferToString(campaign)
+            cate = bufferToString(cate)
+            cateArea = bufferToString(cateArea)
 
-
-            let result = [];
             campaign.forEach((item, index) => {
-                campaignItemLowestPrice.forEach((campaignItemLowestPriceItem, campaignItemLowestPriceIndex) => {
-                    if(item.idx == campaignItemLowestPriceItem.campaignIdx){
-                        item.lowestPriceOrig = campaignItemLowestPriceItem.lowestPrice;
-                        item.discountPercentage = campaignItemLowestPriceItem.dc11;
-                        item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+                item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+                item.category = cate.filter((cateItem, cateIndex) => {
+                    return cateItem.idx == item.cateIdx
+                }).map((cateItem, cateIndex) => {
+                    return {
+                        ...cateItem,
+                        cateArea: cateArea.filter((cateAreaItem, cateAreaIndex) => {
+                            return cateAreaItem.idx == item.cateAreaIdx
+                        })
                     }
                 })
-                result.push({
-                    ...item,
-                    campaignItem: campaignItem.filter((campaignItemItem, campaignItemIndex) => {
-                        return campaignItemItem.campaignIdx == item.idx
-                    }).map((campaignItemItem, campaignItemIndex) => {
-                        return {
-                            ...campaignItemItem,
-                            campaignItemSchedule: campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
-
-                                return campaignItemScheduleItem.itemIdx == campaignItemItem.idx
-                            })
-                        }
-                    }),
-                    category: cate.filter((cateItem, cateIndex) => {
-                        return cateItem.idx == item.cateIdx
-                    }).map((cateItem, cateIndex) => {
-                      return {
-                            ...cateItem,
-                            cateArea: cateArea.filter((cateAreaItem, cateAreaIndex) => {
-                                   return cateAreaItem.idx == item.cateAreaIdx
-                            })
-                      }
-                    })
-                })
             })
-            return result;
+
+
+
+            return campaign
+
+            // let campaignItem = await this.campaignItemRepository
+            //     .createQueryBuilder('campaignItem')
+            //     .select('*')
+            //     .where("campaignItem.remove != 1")
+            //     .getRawMany()
+            //
+            // let campaignItemLowestPrice = await this.campaignRepository
+            //     .createQueryBuilder('c')
+            //     .select('c.idx', 'campaignIdx')
+            //     .addSelect('c.name', 'campaignName')
+            //     .addSelect(
+            //         (subQuery) =>
+            //             subQuery
+            //                 .select('priceOrig')
+            //                 .from('campaignItem', 'ci')
+            //                 .where('ci.campaignIdx = c.idx')
+            //                 .andWhere('ci.remove = 0')
+            //                 .orderBy('priceOrig', 'ASC')
+            //                 .limit(1),
+            //         'lowestPrice'
+            //     )
+            //     .addSelect(
+            //         (subQuery) =>
+            //             subQuery
+            //                 .select('dc11')
+            //                 .from('campaignItem', 'ci')
+            //                 .where('ci.campaignIdx = c.idx')
+            //                 .andWhere('ci.remove = 0')
+            //                 .orderBy('dc11', 'ASC')
+            //                 .limit(1),
+            //         'dc11'
+            //     )
+            //     .where('c.status = 200')
+            //     // .where('c.status >= :t', {t: 200})
+            //     // .andWhere('c.status <= :s', {s: 700})
+            //     .andWhere('c.remove = 0')
+            //     .orderBy('c.weight', 'DESC')
+            //     .addOrderBy('c.regdate', 'DESC')
+            //     .getRawMany();
+            //
+            // let campaignItemSchedule = await this.campaignItemScheduleRepository
+            //     .createQueryBuilder('campaignItemSchedule')
+            //     .select('*')
+            //     .getRawMany()
+            //
+            //
+            // let cate = await this.cateRepository
+            //     .createQueryBuilder('cate')
+            //     .select('*')
+            //     .getRawMany()
+            //
+            // let cateArea = await this.cateAreaRepository
+            //     .createQueryBuilder('cateArea')
+            //     .select('*')
+            //     .getRawMany()
+            //
+            // if(campaign){
+            //     campaign = bufferToString(campaign)
+            //     campaignItem = bufferToString(campaignItem)
+            //     campaignItemSchedule = bufferToString(campaignItemSchedule)
+            //     cate = bufferToString(cate)
+            //     cateArea = bufferToString(cateArea)
+            //     campaignItemLowestPrice = bufferToString(campaignItemLowestPrice)
+            // }
+            //
+            // let result = [];
+            // campaign.forEach((item, index) => {
+            //     campaignItemLowestPrice.forEach((campaignItemLowestPriceItem, campaignItemLowestPriceIndex) => {
+            //         if(item.idx == campaignItemLowestPriceItem.campaignIdx){
+            //             item.lowestPriceOrig = campaignItemLowestPriceItem.lowestPrice;
+            //             item.discountPercentage = campaignItemLowestPriceItem.dc11;
+            //             item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+            //         }
+            //     })
+            //     result.push({
+            //         ...item,
+            //         campaignItem: campaignItem.filter((campaignItemItem, campaignItemIndex) => {
+            //             return campaignItemItem.campaignIdx == item.idx
+            //         }).map((campaignItemItem, campaignItemIndex) => {
+            //             return {
+            //                 ...campaignItemItem,
+            //                 campaignItemSchedule: campaignItemSchedule.filter((campaignItemScheduleItem, campaignItemScheduleIndex) => {
+            //
+            //                     return campaignItemScheduleItem.itemIdx == campaignItemItem.idx
+            //                 })
+            //             }
+            //         }),
+            //         category: cate.filter((cateItem, cateIndex) => {
+            //             return cateItem.idx == item.cateIdx
+            //         }).map((cateItem, cateIndex) => {
+            //           return {
+            //                 ...cateItem,
+            //                 cateArea: cateArea.filter((cateAreaItem, cateAreaIndex) => {
+            //                        return cateAreaItem.idx == item.cateAreaIdx
+            //                 })
+            //           }
+            //         })
+            //     })
+            // })
+            // return result;
+
         } catch (error) {
             console.log("=>(campaign_model.service.ts:196) error", error);
             throw new HttpException(error.message, error.status);
