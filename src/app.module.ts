@@ -70,9 +70,11 @@ import { ApiplexModule } from './graphql/apiplex/apiplex.module';
 import { ApiplexCallbackModule } from './apiplex_callback/apiplex_callback.module';
 import {NotificationTalk} from "../entity/entities/NotificationTalk";
 import { LogModelModule } from './graphql/log_model/log_model.module';
-
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { CacheModule } from '@nestjs/cache-manager';
 @Module({
     imports: [
+        CacheModule.register(),
         ConfigModule.forRoot({
             cache: true,
             isGlobal: true,
@@ -211,7 +213,8 @@ import { LogModelModule } from './graphql/log_model/log_model.module';
         BootpayModule,
         ApiplexModule,
         ApiplexCallbackModule,
-        LogModelModule
+        LogModelModule,
+        SchedulerModule
     ],
     controllers: [AppController],
     providers: [

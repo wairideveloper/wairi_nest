@@ -13,6 +13,7 @@ import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 import {Popup} from "../../../entity/entities/Popup";
+import {CacheModule} from "@nestjs/cache-manager";
 
 
 @Module({
@@ -20,6 +21,7 @@ import {Popup} from "../../../entity/entities/Popup";
         TypeOrmModule.forFeature([Banner, Cate, CateArea, Campaign,
             CampaignItem,CampaignItemSchedule,CampaignSubmit, Popup
         ]),
+        CacheModule.register()
     ],
     providers: [MainModelResolver, MainModelService, BannerModelService, CateModelService,
         CampaignService]

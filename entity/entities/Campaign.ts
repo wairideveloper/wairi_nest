@@ -160,6 +160,8 @@ export class Campaign {
     })
     growthDiscountUse: string | null;
 
+    @Column("int", {name: "approvalRate"})
+    approvalRate: number;
     //relation
     @OneToMany((type) => CampaignItem, (CampaignItem) => CampaignItem.campaign)
     campaignItem: CampaignItem[]

@@ -107,46 +107,46 @@ export class CampaignService {
                     .limit(8)
                     .getRawMany()
             }else{
-                let submitCount = this.campaignSubmitRepository
-                    .createQueryBuilder()
-                    .subQuery()
-                    .select([
-                        'campaignSubmit.campaignIdx as campaignIdx',
-                        'COUNT(*) AS submitCount'
-                    ])
-                    .from(CampaignSubmit, 'campaignSubmit')
-                    .where('campaignSubmit.status >= -1 ')
-                    .andWhere('campaignSubmit.status <= 950')
-                    .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
-                    .groupBy('campaignSubmit.campaignIdx')
-                    .getQuery();
+                // let submitCount = this.campaignSubmitRepository
+                //     .createQueryBuilder()
+                //     .subQuery()
+                //     .select([
+                //         'campaignSubmit.campaignIdx as campaignIdx',
+                //         'COUNT(*) AS submitCount'
+                //     ])
+                //     .from(CampaignSubmit, 'campaignSubmit')
+                //     .where('campaignSubmit.status >= -1 ')
+                //     .andWhere('campaignSubmit.status <= 950')
+                //     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+                //     .groupBy('campaignSubmit.campaignIdx')
+                //     .getQuery();
 
-                let recentSubmitCount = this.campaignSubmitRepository
-                    .createQueryBuilder()
-                    .subQuery()
-                    .select([
-                        'campaignSubmit.campaignIdx as campaignIdx',
-                        'COUNT(*) AS submitCount'
-                    ])
-                    .from(CampaignSubmit, 'campaignSubmit')
-                    // .where('campaignSubmit.status >= 400')
-                    .where('campaignSubmit.status BETWEEN 200 AND 700')
-                    .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
-                    .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
-                    .groupBy('campaignSubmit.campaignIdx')
-                    .getQuery();
+                // let recentSubmitCount = this.campaignSubmitRepository
+                //     .createQueryBuilder()
+                //     .subQuery()
+                //     .select([
+                //         'campaignSubmit.campaignIdx as campaignIdx',
+                //         'COUNT(*) AS submitCount'
+                //     ])
+                //     .from(CampaignSubmit, 'campaignSubmit')
+                //     // .where('campaignSubmit.status >= 400')
+                //     .where('campaignSubmit.status BETWEEN 200 AND 700')
+                //     .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
+                //     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+                //     .groupBy('campaignSubmit.campaignIdx')
+                //     .getQuery();
 
-                let recentSubmitCountTotal = this.campaignSubmitRepository
-                    .createQueryBuilder()
-                    .subQuery()
-                    .select([
-                        'campaignSubmit.campaignIdx as campaignIdx',
-                        'COUNT(*) AS submitCount'
-                    ])
-                    .from(CampaignSubmit, 'campaignSubmit')
-                    .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
-                    .groupBy('campaignSubmit.campaignIdx')
-                    .getQuery();
+                // let recentSubmitCountTotal = this.campaignSubmitRepository
+                //     .createQueryBuilder()
+                //     .subQuery()
+                //     .select([
+                //         'campaignSubmit.campaignIdx as campaignIdx',
+                //         'COUNT(*) AS submitCount'
+                //     ])
+                //     .from(CampaignSubmit, 'campaignSubmit')
+                //     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+                //     .groupBy('campaignSubmit.campaignIdx')
+                //     .getQuery();
 
                 campaign = await this.campaignRepository
                     .createQueryBuilder('campaign')
@@ -158,12 +158,13 @@ export class CampaignService {
                         'campaign.weight as weight',
                         'campaign.cateIdx as cateIdx',
                         'campaign.cateAreaIdx as cateAreaIdx',
-                        'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
+                        'campaign.approvalRate as approvalRate',
+                        // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
                         'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                     ])
-                    .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
-                    .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
-                    .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
+                    // .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
+                    // .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
+                    // .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
                     .leftJoin('campaign.campaignItem', 'campaignItem')
                     .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
                     .leftJoin('campaign.partner', 'partner')
@@ -174,7 +175,7 @@ export class CampaignService {
                     .andWhere('campaignItem.endDate > UNIX_TIMESTAMP(NOW())')
                     // .orderBy("approvalRate", 'DESC')
                     // .addOrderBy('weight', 'DESC')
-                    .orderBy("approvalRate", 'DESC')
+                    .orderBy("campaign.approvalRate", 'DESC')
                     .addOrderBy("weight", 'DESC')
                     .addOrderBy('regdate', 'DESC')
                     .groupBy('campaign.idx')
