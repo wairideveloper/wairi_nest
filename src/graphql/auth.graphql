@@ -206,6 +206,7 @@ input SocialSignInput {
     refererRoot: Int
     refererRootInput: String
     agreeMsg: Int
+    device: Int
 }
 
 extend type Query {

@@ -32,6 +32,7 @@ class SocialSignInput {
     refererRoot: number;
     refererRootInput: string;
     agreeMsg: number;
+    device: number;
 }
 
 @Resolver('AuthQlModel')
@@ -342,6 +343,7 @@ export class AuthQlModelResolver {
                 refererRoot: socialSignInput.refererRoot,
                 refererRootInput: socialSignInput.refererRootInput,
                 agreeMsg: socialSignInput.agreeMsg,
+                device: 2,
             }
             return await this.authQlModelService.socialSignup(data);
         } catch (error) {

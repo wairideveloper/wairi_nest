@@ -75,7 +75,8 @@ export class MembersService {
                     'level',
                     'regdate',
                     'lastSignin',
-                    'code'
+                    'code',
+                    'device'
                 ])
                 .values({
                     type: () => data.type,
@@ -96,7 +97,8 @@ export class MembersService {
                     level: () => data.level,
                     regdate: () => data.regdate,
                     lastSignin: () => data.lastSignin,
-                    code: () => `"${data.code}"`
+                    code: () => `"${data.code}"`,
+                    device: () => data.device
                 })
                 // .getSql();
                 // console.log("-> user", user);
@@ -116,7 +118,8 @@ export class MembersService {
         refererRoot: number,
         refererRootInput: string,
         agreeMsg: number,
-        code: string
+        code: string,
+        device: number
     ) {
         try {
             const now = getNowUnix();
@@ -127,7 +130,7 @@ export class MembersService {
                 .createQueryBuilder()
                 .insert()
                 .into(Member, ['id', 'social_kakao', 'social_naver', 'social_google', 'social_apple', 'type', 'level', 'status', 'social_type', 'nickname', 'email',
-                    'name', 'passwd', 'regdate', 'agreeMsg', 'refererRoot', 'refererRootInput', 'code'
+                    'name', 'passwd', 'regdate', 'agreeMsg', 'refererRoot', 'refererRootInput', 'code','device'
                 ])
                 .values({
                     id: () => `"${id}"`,
@@ -148,7 +151,8 @@ export class MembersService {
                     agreeMsg: agreeMsg,
                     refererRoot: refererRoot,
                     refererRootInput: refererRootInput,
-                    code: `${code}` // 개인 추천코드 생성
+                    code: `${code}`,// 개인 추천코드 생성
+                    device: device
                 })
                 .execute();
 

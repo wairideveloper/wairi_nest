@@ -130,6 +130,9 @@ export class Member {
     @Column('int', {name: 'is_black', default: 0})
     is_black: number;
 
+    @Column('int', {name: 'device', default: '1'})
+    device: number;
+
     @OneToMany(() => CampaignReview, (campaignReview) => campaignReview.memberIdx)
     review: CampaignReview[];
 

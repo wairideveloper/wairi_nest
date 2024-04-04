@@ -165,7 +165,8 @@ export class AuthQlModelService {
                 status: 1,
                 regdate: getNowUnix(),
                 lastSignin: getNowUnix(),
-                code: `${code}` // 개인 추천코드 생성
+                code: `${code}` , // 개인 추천코드 생성
+                device: 2
             }
 
             const newMember = await this.memberService.create(data);
@@ -660,6 +661,7 @@ export class AuthQlModelService {
         refererRoot: number;
         refererRootInput: string;
         agreeMsg: number;
+        device: number;
     }) {
         try{
             /*
@@ -736,7 +738,8 @@ console.log("=>(auth_ql_model.service.ts:672) 소셜 로그인 payload: ", paylo
                     data.refererRoot,
                     data.refererRootInput,
                     data.agreeMsg,
-                    code // 개인 추천코드 생성
+                    code, // 개인 추천코드 생성
+                    data.device
                     );
                 if(newMember){
                     let member = await this.memberService.findSocialId(data.email, data.id, data.social_type);
