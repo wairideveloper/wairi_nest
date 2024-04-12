@@ -74,6 +74,7 @@ export class CampaignService {
                 'campaign.idx as idx',
                 'campaign.name as name',
                 'campaign.weight as weight',
+                'campaign.status as status',
                 // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
                 // 'min(campaignItem.priceOrig) as lowestPriceOrig',
                 // 'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
@@ -86,7 +87,30 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('priceOrig')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('priceOrig', 'ASC')
+                        .limit(1),
+                'lowestPriceOrig'
+            )
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('dc11')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('dc11', 'ASC')
+                        .limit(1),
+                'discountPercentage'
+            )
+            // .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+            .where('(campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
                 // status: 200,
                 // remove: 0,
                 campaignKeyword: '%' + keyword + '%',
@@ -102,16 +126,22 @@ export class CampaignService {
 
         data = bufferToString(data);
         let result = [];
-        data.forEach((item) => {
-            campaignItemLowestPrice.forEach((item2) => {
-                if (item.idx == item2.campaignIdx) {
-                    item.lowestPriceOrig = item2.lowestPrice;
-                    item.discountPercentage = item2.dc11;
-                    item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
-                    result.push(item);
-                }
-            })
-        });
+        data.forEach((item, index) => {
+            item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+            result.push(item);
+        })
+        // let result = [];
+
+        // data.forEach((item) => {
+        //     campaignItemLowestPrice.forEach((item2) => {
+        //         if (item.idx == item2.campaignIdx) {
+        //             item.lowestPriceOrig = item2.lowestPrice;
+        //             item.discountPercentage = item2.dc11;
+        //             item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+        //             result.push(item);
+        //         }
+        //     })
+        // });
 
         const total = await this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
