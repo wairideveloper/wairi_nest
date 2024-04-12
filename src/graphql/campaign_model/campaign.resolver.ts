@@ -112,6 +112,7 @@ export class CampaignResolver {
 
     @Query()
     async getDetailCampaign(@Args('idx', {type: () => Int}) idx: number) {
+        console.log("=>(campaign.resolver.ts:115) idx", idx);
         try {
             let data = await this.campaignsService.detailCampaign(idx);
             return data

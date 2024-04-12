@@ -144,53 +144,53 @@ export class CampaignService {
 
     async mainList(take, page, cate, cateArea, sort) {
         let query: SelectQueryBuilder<Campaign>
-        let submitCount = this.campaignSubmit
-            .createQueryBuilder()
-            .subQuery()
-            .select([
-                'campaignSubmit.campaignIdx as campaignIdx',
-                'COUNT(*) AS submitCount'
-            ])
-            .from(CampaignSubmit, 'campaignSubmit')
-            .where('campaignSubmit.status >= -1 ')
-            .andWhere('campaignSubmit.status <= 950')
-            .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
-            .groupBy('campaignSubmit.campaignIdx')
-            .getQuery();
+        // let submitCount = this.campaignSubmit
+        //     .createQueryBuilder()
+        //     .subQuery()
+        //     .select([
+        //         'campaignSubmit.campaignIdx as campaignIdx',
+        //         'COUNT(*) AS submitCount'
+        //     ])
+        //     .from(CampaignSubmit, 'campaignSubmit')
+        //     .where('campaignSubmit.status >= -1 ')
+        //     .andWhere('campaignSubmit.status <= 950')
+        //     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+        //     .groupBy('campaignSubmit.campaignIdx')
+        //     .getQuery();
 
         //최근 3개월 승인률 % 계산
-        let recentSubmitCount = this.campaignSubmit
-            .createQueryBuilder()
-            .subQuery()
-            .select([
-                'campaignSubmit.campaignIdx as campaignIdx',
-                'COUNT(*) AS submitCount'
-            ])
-            .from(CampaignSubmit, 'campaignSubmit')
+        // let recentSubmitCount = this.campaignSubmit
+        //     .createQueryBuilder()
+        //     .subQuery()
+        //     .select([
+        //         'campaignSubmit.campaignIdx as campaignIdx',
+        //         'COUNT(*) AS submitCount'
+        //     ])
+        //     .from(CampaignSubmit, 'campaignSubmit')
+        //
+        //     //(200 <= status <= 700 and status paymentIdx > 0) and (statusDate900 = 0 or statusDate900 is null)
+        //     .where('campaignSubmit.status BETWEEN 200 AND 700')
+        //     .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
+        //     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+        //     .groupBy('campaignSubmit.campaignIdx')
+        //     .getQuery();
 
-            //(200 <= status <= 700 and status paymentIdx > 0) and (statusDate900 = 0 or statusDate900 is null)
-            .where('campaignSubmit.status BETWEEN 200 AND 700')
-            .andWhere('(campaignSubmit.statusDate900 = 0 OR campaignSubmit.statusDate900 IS NULL)')
-            .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
-            .groupBy('campaignSubmit.campaignIdx')
-            .getQuery();
-
-        let recentSubmitCountTotal = this.campaignSubmit
-            .createQueryBuilder()
-            .subQuery()
-            .select([
-                'campaignSubmit.campaignIdx as campaignIdx',
-                'COUNT(*) AS submitCount'
-            ])
-            .from(CampaignSubmit, 'campaignSubmit')
-            .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
-            .groupBy('campaignSubmit.campaignIdx')
-            .getQuery();
+        // let recentSubmitCountTotal = this.campaignSubmit
+        //     .createQueryBuilder()
+        //     .subQuery()
+        //     .select([
+        //         'campaignSubmit.campaignIdx as campaignIdx',
+        //         'COUNT(*) AS submitCount'
+        //     ])
+        //     .from(CampaignSubmit, 'campaignSubmit')
+        //     .andWhere('campaignSubmit.regdate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH))')
+        //     .groupBy('campaignSubmit.campaignIdx')
+        //     .getQuery();
 
         query = this.campaignRepository.createQueryBuilder('campaign')
-            .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
-            .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
-            .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
+            // .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
+            // .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
+            // .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
             .leftJoin('campaign.campaignItem', 'campaignItem')
             .leftJoin('campaign.campaignImage', 'campaignImage')
             .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
@@ -198,9 +198,9 @@ export class CampaignService {
             .leftJoin('campaign.cateArea', 'cateArea')
             .leftJoin('campaign.partner', 'partner')
             .select([
-                'campaignSubmit.submitCount',
+                // 'campaignSubmit.submitCount',
                 // % 계산
-                'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
+                // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
                 'campaign.idx as idx',
                 'campaign.name as name',
                 'campaign.weight as weight',
@@ -210,7 +210,31 @@ export class CampaignService {
                 'cate.idx as cateIdx',
                 'cateArea.name as cateAreaName',
                 'cateArea.idx as cateAreaIdx',
+                'campaign.status as status',
+                'campaign.approvalRate as approvalRate',
             ])
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('priceOrig')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('priceOrig', 'ASC')
+                        .limit(1),
+                'lowestPriceOrig'
+            )
+            .addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('dc11')
+                        .from('campaignItem', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .andWhere('ci.remove = 0')
+                        .orderBy('dc11', 'ASC')
+                        .limit(1),
+                'discountPercentage'
+            )
             .where('campaign.remove = :remove', {remove: 0})
             .andWhere('campaign.status >= :t', {t: 200})
             .andWhere('campaign.status <= :s', {s: 700})
@@ -237,17 +261,22 @@ export class CampaignService {
         const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 
         let result = [];
-        data.forEach((item) => {
-            item.regdate = moment.unix(item.regdate).format('YYYY-MM-DD HH:mm:ss');
-            campaignItemLowestPrice.forEach((item2) => {
-                if (item.idx == item2.campaignIdx) {
-                    item.lowestPriceOrig = item2.lowestPrice;
-                    item.discountPercentage = item2.dc11;
-                    item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
-                    result.push(item);
-                }
-            })
-        });
+        data.forEach((item, index) => {
+            item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+            result.push(item);
+        })
+        console.log("=>(campaign.service.ts:264) result", result);
+        // data.forEach((item) => {
+        //     item.regdate = moment.unix(item.regdate).format('YYYY-MM-DD HH:mm:ss');
+        //     campaignItemLowestPrice.forEach((item2) => {
+        //         if (item.idx == item2.campaignIdx) {
+        //             item.lowestPriceOrig = item2.lowestPrice;
+        //             item.discountPercentage = item2.dc11;
+        //             item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+        //             result.push(item);
+        //         }
+        //     })
+        // });
 
         const totalQuery = this.campaignRepository.createQueryBuilder('campaign')
             .leftJoin('campaign.campaignItem', 'campaignItem')
