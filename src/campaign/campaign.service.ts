@@ -148,8 +148,9 @@ export class CampaignService {
             // .where('campaign.remove = :remove', {remove: 0})
             // .andWhere('campaign.name like :keyword', {keyword: '%' + keyword + '%'})
             // .orWhere('campaignItem.name like :keyword', {keyword: '%' + keyword + '%'})
-            .where('(campaign.status = :status AND campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaign.status = :status AND campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaignItem.name like :itemKeyword)', {
-                status: 200,
+            // .where('(campaign.status = :status AND campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaign.status = :status AND campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaignItem.name like :itemKeyword)', {
+            .where('(campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaign.name like :campaignKeyword) OR (campaignItem.memberTarget = :memberTarget AND campaign.remove = :remove AND campaignItem.name like :itemKeyword)', {
+                // status: 200,
                 memberTarget: 1,
                 remove: 0,
                 campaignKeyword: '%' + keyword + '%',
