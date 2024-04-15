@@ -661,13 +661,14 @@ export class CampaignService {
             ]);
 
             query.where('campaign.idx = :idx', {idx: idx})
-                .andWhere('campaign.remove = :remove', {remove: 0})
-                .andWhere('campaignItem.remove = :cr', {cr: 0})
-                .andWhere('campaign.status = 200')
+                // .andWhere('campaign.remove = :remove', {remove: 0})
+                // .andWhere('campaignItem.remove = :cr', {cr: 0})
+                // .andWhere('campaign.status = 200')
                 .andWhere('partner.status = :status', {status: 1});
 
             let result = await query.getRawOne();
             result = bufferToString(result);
+            console.log("=>(campaign.service.ts:671) result", result);
             return result;
             //info , production_guide, caution = "" -> null
             if (result.info == "") {
