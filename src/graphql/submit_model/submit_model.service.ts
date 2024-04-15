@@ -323,11 +323,12 @@ export class SubmitModelService {
         }
     }
 
-    async draftRegistration(sid: string, postRemarks: string, memberIdx: number) {
+    async draftRegistration(sid: string, postTitle:string, postRemarks: string, memberIdx: number) {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .update(CampaignSubmit)
             .set({
                 status: 500,
+                postTitle: postTitle,
                 postRemarks: postRemarks,
                 statusDate500: getUnixTimeStamp()
             })
@@ -403,7 +404,7 @@ export class SubmitModelService {
             .set({
                 postUrl: url,
                 status : 700,
-                // statusDate700: getUnixTimeStamp()
+                statusDate550: getUnixTimeStamp()
             })
             .where("campaignSubmit.sid = :sid", {sid: sid})
             //status 500 or 700 일때

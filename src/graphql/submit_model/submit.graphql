@@ -59,6 +59,7 @@ type Submits implements Pagination {
 
 input DraftRegistrationInput{
     sid: String!
+    postTitle: String
     postRemarks: String
     url: String
 }

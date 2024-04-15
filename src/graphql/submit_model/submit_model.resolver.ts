@@ -31,6 +31,7 @@ class CreateCampaignSubmitInput {
 
 class DraftRegistrationInput {
     sid: string;
+    postTitle: string;
     postRemarks: string;
 }
 
@@ -343,7 +344,7 @@ export class SubmitModelResolver {
     ) {
         try {
             let data = await this.submitModelService.draftRegistration(
-                draftRegistrationInput.sid, draftRegistrationInput.postRemarks, authUser.idx);
+                draftRegistrationInput.sid,draftRegistrationInput.postTitle, draftRegistrationInput.postRemarks, authUser.idx);
             console.log("=>(submit_model.resolver.ts:194) data", data);
             if (data.affected === 1) {
                 return {

@@ -70,6 +70,9 @@ export class CampaignSubmit {
     @Column("text", {name: "postUrl"})
     postUrl: string;
 
+    @Column("text", {name: "postTitle"})
+    postTitle: string;
+
     @Column("text", {name: "postRemarks"})
     postRemarks: string;
 
