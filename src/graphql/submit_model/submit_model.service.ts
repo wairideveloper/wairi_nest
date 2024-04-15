@@ -355,7 +355,6 @@ export class SubmitModelService {
                 "campaignSubmit.postUrl as postUrl",
                 "campaignSubmit.nop as nop",
                 "campaignSubmit.payTotal as payTotal",
-                "campaignSubmit.postRemarks as postRemarks",
                 "campaignSubmit.startDate as startDate",
                 "campaignSubmit.endDate as endDate",
                 "campaignSubmit.submitChannel as submitChannel",
@@ -367,6 +366,7 @@ export class SubmitModelService {
                 "campaignSubmit.payItem as payItem",
                 "campaignSubmit.payTotal as payTotal",
                 "campaignSubmit.agreeContent as agreeContent",
+                "campaignSubmit.postTitle as postTitle",
                 "campaignSubmit.postRemarks as postRemarks",
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
             ])
@@ -383,10 +383,11 @@ export class SubmitModelService {
         return data;
     }
 
-    async updateDraftRegistration(sid: string, postRemarks: string, memberIdx: number) {
+    async updateDraftRegistration(sid: string, postTitle:string, postRemarks: string, memberIdx: number) {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .update(CampaignSubmit)
             .set({
+                postTitle: postTitle,
                 postRemarks: postRemarks,
             })
             .where("campaignSubmit.sid = :sid", {sid: sid})

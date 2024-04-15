@@ -42,6 +42,7 @@ type CampaignSubmit{
     cancelReason: String
     denyReason: String
     autoCancelDate: String
+    postTitle: String
     postRemarks: String
     postUrl: String
     isPostSummary: Int

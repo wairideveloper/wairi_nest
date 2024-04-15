@@ -387,7 +387,7 @@ export class SubmitModelResolver {
     ) {
         try {
             let data = await this.submitModelService.updateDraftRegistration(
-                draftRegistrationInput.sid, draftRegistrationInput.postRemarks, authUser.idx);
+                draftRegistrationInput.sid, draftRegistrationInput.postTitle, draftRegistrationInput.postRemarks, authUser.idx);
             console.log("=>(submit_model.resolver.ts:220) data", data);
             if (data.affected === 1) {
                 return {

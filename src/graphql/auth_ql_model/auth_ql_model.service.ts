@@ -69,18 +69,18 @@ export class AuthQlModelService {
                 };
 
                 let access_token: string;
-                if(id == 'zizi'){
-                     access_token = await this.jwtService.signAsync(payload, {
-                        //만료시간 1분
-                        expiresIn: '1m',
-                        secret: process.env.JWT_SECRET
-                    });
-                }else {
+                // if(id == 'zizi'){
+                //      access_token = await this.jwtService.signAsync(payload, {
+                //         //만료시간 1분
+                //         expiresIn: '1m',
+                //         secret: process.env.JWT_SECRET
+                //     });
+                // }else {
                      access_token = await this.jwtService.signAsync(payload, {
                         expiresIn: process.env.JWT_EXPIRATION_TIME,
                         secret: process.env.JWT_SECRET
                     });
-                }
+                // }
                 const refresh_token = await this.jwtService.signAsync({idx: payload.idx,username: member.name}, {
                     expiresIn: process.env.JWT_EXPIRATION_REFRESH_TIME,
                     secret: process.env.JWT_SECRET
