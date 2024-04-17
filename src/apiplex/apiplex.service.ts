@@ -1,6 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
-import { CreateApiplexDto } from './dto/create-apiplex.dto';
-import { UpdateApiplexDto } from './dto/update-apiplex.dto';
+import {CreateApiplexDto} from './dto/create-apiplex.dto';
+import {UpdateApiplexDto} from './dto/update-apiplex.dto';
 import {Admin} from "../../entity/entities/Admin";
 import {Partner} from "../../entity/entities/Partner";
 import {Campaign} from "../../entity/entities/Campaign";
@@ -13,6 +13,7 @@ import {Repository} from "typeorm";
 import axios from "axios";
 import {AES_DECRYPT, bufferToString} from "../util/common";
 import {NotificationTalk} from "../../entity/entities/NotificationTalk";
+
 @Injectable()
 export class ApiplexService {
   private readonly logger = new Logger(ApiplexService.name);
@@ -81,7 +82,7 @@ export class ApiplexService {
   }
 
   private setConfig(template_code: string, at_template: string, receiver_number: string, data: any) {
-    const resultArray = {
+    return {
       msg_type: "AT",
       msg_data: [
         {
@@ -95,8 +96,6 @@ export class ApiplexService {
         }
       ]
     };
-
-    return resultArray;
   }
 
   async partnerConfig(campaignIdx: number) {
@@ -183,11 +182,11 @@ export class ApiplexService {
       try {
         let headers = this.headers;
         let setConfigTemplate = this.setConfigTemplate(template_code, params);
-        console.log("=>(apiplex.service.ts:84) setConfigTemplate", setConfigTemplate);
         let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
         console.log("=>(apiplex.service.ts:86) axioData", axioData);
         let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
         console.log("=>(apiplex.service.ts:87) result", result.data.results);
+        return
         if (result.data.results[0].code == 'C100') {
           let data = {
             status: this.code[result.data.results.code],
@@ -200,7 +199,7 @@ export class ApiplexService {
           }
           console.log("=>(apiplex.service.ts:144) data", data);
 
-          await this.notificationTalkSave(data)
+          // await this.notificationTalkSave(data)
         }
       } catch (error) {
         this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));
