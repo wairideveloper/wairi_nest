@@ -173,6 +173,9 @@ export class CampaignSubmit {
     @Column("char", {name: "use_app"})
     use_app: number;
 
+    @Column('text', { name: 'editPostDraft' })
+    editPostDraft: string | null;
+
     @ManyToOne(() => Campaign, (campaign) => campaign.idx)
     campaign: Campaign;
 
