@@ -68,6 +68,9 @@ type CampaignItem{
     minDays: Int
     maxDays: Int
     minSubmit: Int
+    sellType: Int
+    calcType1: Int
+    calcType2: Int
     infoRefund: String
     infoRefund1: String
     infoRefund2: String

@@ -316,8 +316,8 @@ export class ApiplexService {
         try {
             let phoneList = await this.partnerConfig(campaignIdx);
             //phoneList 중복제거
+            phoneList = ['01082308203']; // Todo : 테스트
             phoneList = Array.from(new Set(phoneList));
-            console.log("=>(apiplex.service.ts:320) phoneList", phoneList);
 
             let partner = await this.partnerRepository.createQueryBuilder('partner')
                 .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
@@ -328,6 +328,7 @@ export class ApiplexService {
             partner = bufferToString(partner)
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
+            console.log("=>(apiplex.service.ts:332) data", data);
             // 01082308203 추가
             // phoneList.push('01082308203');
             // console.log("=>(apiplex.service.ts:333) phoneList", phoneList);
@@ -335,6 +336,7 @@ export class ApiplexService {
             const response = await this.sendAlimtalk(phoneList, templateCode, data)
             console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
         } catch (e) {
+            console.log("=>(apiplex.service.ts:340) e", e);
             throw new Error('Failed to send sendPartnerAlimtalk: ' + e.message);
         }
     }

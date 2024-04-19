@@ -14,7 +14,18 @@ export class ApiplexController {
 
   @Get()
   findAll() {
-    return this.apiplexService.sendPartnerAlimtalk('djgoak25gpd0' , {} , 144);
+    const data = {
+      '업체이름' : '테스트업체',
+      '이름' : '테스트이름',
+      '캠페인이름': '테스트캠페인',
+      '이용일자': '2021-10-10',
+      '인원': '10',
+      '채널주소': 'https://www.naver.com',
+
+      '자동신청마감시간' : '2021-10-10 10:10:10',
+      '캠페인페이지승인링크' : 'https://www.naver.com',
+    }
+    return this.apiplexService.sendPartnerAlimtalk('djgoak25gpd0' , data , 144);
   }
 
   @Get(':id')

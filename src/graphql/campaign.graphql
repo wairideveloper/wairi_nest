@@ -157,6 +157,7 @@ type CampaignSchedule{
 }
 
 type ItemScedule{
+#    unixdate: Int
     date: String
     itemSchedule: [CampaignItemSchedule]!
 }

@@ -1,12 +1,9 @@
 import {HttpException, Injectable, NotFoundException} from '@nestjs/common';
-import {CreateCampaignDto} from './dto/create-campaign.dto';
-import {UpdateCampaignDto} from './dto/update-campaign.dto';
 import {Campaign} from "../../entity/entities/Campaign";
 import {CampaignItem} from "../../entity/entities/CampaignItem";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository, SelectQueryBuilder} from "typeorm";
 import {Pagination} from '../paginate'
-import {PaginationOptions} from '../paginate/pagination.option'
 import {Cate} from "../../entity/entities/Cate";
 import {CateArea} from "../../entity/entities/CateArea";
 import {Partner} from "../../entity/entities/Partner";
@@ -430,10 +427,9 @@ export class CampaignService {
                 })
 
             })
-            console.log (id)
+
             let campaignImages = await this.getCampaignImages(id);
             campaignImages = bufferToString(campaignImages);
-            console.log("=>(campaign.service.ts:331) campaignImages", campaignImages);
             let campaignCate = await this.getCampaignCate(id);
             campaignCate = bufferToString(campaignCate);
             let campaignCateArea = await this.getCampaignCateArea(id);
@@ -442,8 +438,8 @@ export class CampaignService {
             campaignPartner = bufferToString(campaignPartner);
             let campaignReview = await this.getCampaignReview(id);
             campaignReview = bufferToString(campaignReview);
-
-            const result = {
+            console.log("=>(campaign.service.ts:360) campaignItem", campaignItem);
+            return {
                 campaign,
                 campaignItem,
                 campaignImages,
@@ -451,8 +447,7 @@ export class CampaignService {
                 campaignCateArea,
                 campaignPartner,
                 campaignReview,
-            }
-            return result;
+            };
         } catch (error) {
             console.log("=>(campaign.service.ts:315) error", error);
             throw new HttpException(error, 500);
@@ -951,9 +946,12 @@ export class CampaignService {
             .addSelect(`(${FROM_UNIXTIME('campaignItem.startDate')})`, 'startDate')
             .addSelect(`(${FROM_UNIXTIME('campaignItem.endDate')})`, 'endDate')
             .addSelect(`(${FROM_UNIXDATE('campaignItemSchedule.date')})`, 'date')
+            .addSelect('date as unixdate')
+
             .where('campaignItem.remove = :remove', {remove: 0})
             .andWhere('campaignItemSchedule.date >= UNIX_TIMESTAMP(CURDATE())')
             .andWhere('campaign.idx = :idx', {idx: idx})
+            .andWhere('campaignItemSchedule.stock > 0')
             .orderBy('campaignItem.ordering', 'ASC')
             .getRawMany();
         data = bufferToString(data);

@@ -170,7 +170,8 @@ export class ApiplexService {
       // console.log("=>(apiplex.service.ts:333) phoneList", phoneList);
       // return
       const response = await this.sendAlimtalk(phoneList, templateCode, data)
-      console.log("=>(madein20_model.service.ts:123) sendPartnerAlimtalk response", response);
+      console.log("=>(apiplex.service.ts:173) response", response);
+
     } catch (e) {
       throw new Error('Failed to send sendPartnerAlimtalk: ' + e.message);
     }
@@ -186,7 +187,7 @@ export class ApiplexService {
         console.log("=>(apiplex.service.ts:86) axioData", axioData);
         let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
         console.log("=>(apiplex.service.ts:87) result", result.data.results);
-        return
+        return result;
         if (result.data.results[0].code == 'C100') {
           let data = {
             status: this.code[result.data.results.code],

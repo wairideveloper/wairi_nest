@@ -18,10 +18,11 @@ export class ApiplexResolver {
             "이용일자": '`${submit.startDate} ~ ${submit.endDate}`',
             "인원": 'submit.nop',
             "채널주소": 'submitChannel.link',
-            "취소사유": 'reason'
+            "취소사유": 'reason',
+            "콘텐츠URL": 'reason'
         }
-
-        await this.apiplexService.sendPartnerAlimtalk('1cOS69z2IOW5',null,144);
+console.log("=>(apiplex.resolver.ts:24) test", 'test');
+        await this.apiplexService.sendPartnerAlimtalk('1cOS69z2IOW5',at_data,144);
         return
         await this.apiplexService.sendPartnerAlimtalk('Q93pUvpoPjLq', at_data, 795);
         // await this.apiplexService.sendUserAlimtalk('Q93pUvpoPjLq', '01082308203', at_data);

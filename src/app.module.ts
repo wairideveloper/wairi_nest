@@ -136,7 +136,8 @@ import { ApiplexModule } from './apiplex/apiplex.module';
                 // FirebaseModule,
                 SubmitModelModule,
                 ReviewModelModule,
-                ApiplexModule
+                ApiplexModule,
+                // ApiplexModule2
             ],
             typePaths: ['./**/*.graphql'],
             definitions: {
