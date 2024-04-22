@@ -329,8 +329,7 @@ export class ApiplexService {
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
             console.log("=>(apiplex.service.ts:332) data", data);
-            // 01082308203 추가
-            // phoneList.push('01082308203');
+
             // console.log("=>(apiplex.service.ts:333) phoneList", phoneList);
             // return
             const response = await this.sendAlimtalk(phoneList, templateCode, data)

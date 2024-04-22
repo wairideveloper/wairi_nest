@@ -76,7 +76,6 @@ return
       //
       //
       // console.log("=>(apiplex.resolver.ts:11) testapiplex", 'testapiplex');
-      // let phoneList = ['01082308203'];
       // await this.apiplexService.test2(phoneList,'Q93pUipflpNd', []);
       // return
 

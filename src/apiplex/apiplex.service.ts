@@ -152,7 +152,7 @@ export class ApiplexService {
     try {
       let phoneList = await this.partnerConfig(campaignIdx);
       //phoneList 중복제거
-      phoneList = ['01082308203']; // Todo : 테스트
+      // phoneList = ['01082308203']; // Todo : 테스트
       phoneList = Array.from(new Set(phoneList));
       console.log("=>(apiplex.service.ts:320) phoneList", phoneList);
 
