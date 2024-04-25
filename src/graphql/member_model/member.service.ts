@@ -574,6 +574,7 @@ export class MembersService {
             .addSelect('code')
             .where(`${AES_DECRYPT('email')} = :email`, {email: email})
             .andWhere('social_type = :socialType', {socialType: socialType})
+            .andWhere('id = :id', {id: id})
             .getRawOne();
     }
 
