@@ -3,16 +3,9 @@ import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Brackets, Repository} from "typeorm";
+import {Brackets, Connection, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
-import {
-    bufferToString, dataDateTimeTransform,
-    FROM_UNIXTIME,
-    FROM_UNIXTIME_JS,
-    getUnixTimeStamp,
-    switchSubmitStatusText
-} from "../../util/common";
-import {Connection} from "typeorm";
+import {bufferToString, dataDateTimeTransform, FROM_UNIXTIME, getUnixTimeStamp} from "../../util/common";
 import {ReceiptResponseParameters} from '@bootpay/backend-js/lib/response';
 import {Campaign} from "../../../entity/entities/Campaign";
 import {Partner} from "../../../entity/entities/Partner";
@@ -248,17 +241,25 @@ export class SubmitModelService {
     }
 
     async getCampaignItemSchduleByItemIdxAndRangeDate(itemIdx, startDate, endDate) {
-        let data = await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
-            .select('*')
-            .where("campaignItemSchedule.itemIdx = :itemIdx", {itemIdx: itemIdx})
-            .andWhere(new Brackets(qb => {
-                qb.where("campaignItemSchedule.date >= :startDate", {startDate: startDate})
-                    .andWhere("campaignItemSchedule.date < :endDate", {endDate: endDate});
-            }))
-            .getRawMany();
-
-        return data;
-
+        if(startDate == endDate){
+            return await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
+                .select('*')
+                .where("campaignItemSchedule.itemIdx = :itemIdx", {itemIdx: itemIdx})
+                .andWhere(new Brackets(qb => {
+                    qb.where("campaignItemSchedule.date >= :startDate", {startDate: startDate})
+                        .andWhere("campaignItemSchedule.date <= :endDate", {endDate: endDate});
+                }))
+                .getRawMany();
+        }else {
+            return await this.campaignItemScheduleRepository.createQueryBuilder("campaignItemSchedule")
+                .select('*')
+                .where("campaignItemSchedule.itemIdx = :itemIdx", {itemIdx: itemIdx})
+                .andWhere(new Brackets(qb => {
+                    qb.where("campaignItemSchedule.date >= :startDate", {startDate: startDate})
+                        .andWhere("campaignItemSchedule.date < :endDate", {endDate: endDate});
+                }))
+                .getRawMany();
+        }
     }
 
     async updateCampaignItemSchduleStock(itemSchduleIdx: any[], nop: string,
