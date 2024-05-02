@@ -50,7 +50,6 @@ export class PaymentModelResolver {
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
-            //
 
             const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
                 submitItem.itemIdx, submitItem.startDate, submitItem.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
@@ -135,10 +134,16 @@ export class PaymentModelResolver {
 
                 //재고 차감
                 if (itemSchduleIdx.length > 0) {
+                    let count: any;
+                    if(submitItem.calcType1 == 1){
+                        count = submitItem.limits;
+                    }else{
+                        count = submitItem.nop;
+                    }
                     console.log("=>(payment_model.resolver.ts:101) updateCampaignItemSchduleStock", '카드사용 재고차감 시작');
                     const result = await this.submitModelService.updateCampaignItemSchduleStock(
                         itemSchduleIdx,
-                        submitItem.nop,
+                        count,
                         confirmPaymentInput.sid,
                         response,
                         // 12328, // memberIdx0114

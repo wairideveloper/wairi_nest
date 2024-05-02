@@ -8,6 +8,7 @@ import {Pagination} from "../../paginate";
 import {bufferToString, dataDateTimeTransform, FROM_UNIXTIME, getUnixTimeStamp} from "../../util/common";
 import {ReceiptResponseParameters} from '@bootpay/backend-js/lib/response';
 import {Campaign} from "../../../entity/entities/Campaign";
+import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {Partner} from "../../../entity/entities/Partner";
 
 @Injectable()
@@ -36,6 +37,8 @@ export class SubmitModelService {
         private campaignRepository: Repository<Campaign>,
         @InjectRepository(Partner)
         private partnerRepository: Repository<Partner>,
+        @InjectRepository(CampaignItem)
+        private campaignItemRepository: Repository<CampaignItem>,
         private connection: Connection
     ) {
     }
@@ -262,7 +265,7 @@ export class SubmitModelService {
         }
     }
 
-    async updateCampaignItemSchduleStock(itemSchduleIdx: any[], nop: string,
+    async updateCampaignItemSchduleStock(itemSchduleIdx: any[], count: any,
                                          sid: string, response: ReceiptResponseParameters,
                                          memberIdx: number, submitIdx: number
     ) {
@@ -298,7 +301,7 @@ export class SubmitModelService {
             let campaignItemSchduleUpdate = await queryRunner.manager.createQueryBuilder()
                 .update(CampaignItemSchedule)
                 .set({
-                    stock: () => "stock - " + nop
+                    stock: () => "stock - " + count
                 })
                 .where("idx IN (:...idx)", {idx: itemSchduleIdx})
                 .execute();

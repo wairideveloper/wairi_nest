@@ -8,12 +8,13 @@ import {SubmitModelService} from "../graphql/submit_model/submit_model.service";
 import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
 import {Campaign} from "../../entity/entities/Campaign";
 import {Partner} from "../../entity/entities/Partner";
+import {CampaignItem} from "../../entity/entities/CampaignItem";
 
 @Module({
   imports: [
       TypeOrmModule.forFeature([
           Payment, CampaignSubmit, CampaignSubmit, CampaignItemSchedule, Campaign,
-          Partner
+          Partner, CampaignItem
         ]),
   ],
   controllers: [BootpayController],
