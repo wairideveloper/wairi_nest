@@ -100,9 +100,6 @@ export class CampaignResolver {
     ) {
         try {
             const list = await this.campaignsService.favList(take, page, authUser.idx);
-            console.log("=>(campaign.resolver.ts:99) list", list);
-            //json 형식으로 변환
-            console.log(list)
             return list
         } catch (error) {
             console.log(error)
