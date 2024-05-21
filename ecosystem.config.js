@@ -7,11 +7,11 @@ module.exports = {
             env: {
                 NODE_ENV: "development",
                 PORT:3000,
-                DB_HOST: 'wairi.cd3o2k56nbte.ap-northeast-2.rds.amazonaws.com',
+                DB_HOST: '210.114.6.219',
                 DB_PORT: '3306',
-                DB_USER: 'admin',
-                DB_PASSWORD: 'wairisuccess^^77',
-                DB_SCHEMA: 'wairi',
+                DB_USER: 'wairidevelop',
+                DB_PASSWORD: 'wairi23@*!',
+                DB_SCHEMA: 'wairidevelop',
                 NODE_ENV: "development",
 
                 ENTITY_PATH:'dist/**/*.entity{.js}',
@@ -48,7 +48,7 @@ module.exports = {
                 DB_HOST: '203.245.24.10',
                 DB_PORT: '3306',
                 DB_USER: 'wairi',
-                DB_PASSWORD: 'wairi72@',
+                DB_PASSWORD: 'Wa2024!@!@',
                 DB_SCHEMA: 'wairi',
                 NODE_ENV: "production",
 
