@@ -105,9 +105,9 @@ export class CommonModelService {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: awsObjectKey,
         });
-        const url = await getSignedUrl(this.s3_V2, command, { expiresIn: 15 * 60 }); // expires in seconds
-        console.log('Presigned URL: ', url);
-        return url;
+        // const url = await getSignedUrl(this.s3_V2, command, { expiresIn: 15 * 60 }); // expires in seconds
+        // console.log('Presigned URL: ', url);
+        // return url;
     }
 
     async streamToBuffer(stream: Stream): Promise<Buffer> {

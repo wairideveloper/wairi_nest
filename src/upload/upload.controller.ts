@@ -32,7 +32,7 @@ export class UploadController {
         console.log("=>(upload.controller.ts:24) files", files);
         const imgurl: string[] = [];
         // return this.uploadService.uploadImage(files);
-        return this.uploadService.uploadImageV2(files);
+        // return this.uploadService.uploadImageV2(files);
     }
 
     @Post('uploadFileV2')
@@ -40,6 +40,6 @@ export class UploadController {
     async uploadFileV2(@UploadedFiles() files) {
         const imgurl: string[] = [];
         // return this.uploadService.uploadImage(files);
-        return this.uploadService.uploadImageV2(files);
+        // return this.uploadService.uploadImageV2(files);
     }
 }
