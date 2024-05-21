@@ -17,6 +17,12 @@ export class Campaign {
     @Column("int", {name: "status"})
     status: number;
 
+    @Column("int", {name: "approvalMethod"})
+    approvalMethod: number;
+
+    @Column("int", {name: "grade"})
+    grade: number;
+
     @Column("int", {name: "partnerIdx"})
     partnerIdx: number;
 

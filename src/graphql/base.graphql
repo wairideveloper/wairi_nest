@@ -40,6 +40,8 @@ type GrowthType{
 type SearchWord {
     idx: Int!
     name: String
+    approvalMethod: Int
+    grade: Int
     count: Int
     cateName: String
     cateAreaName: String

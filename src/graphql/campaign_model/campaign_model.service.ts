@@ -34,57 +34,72 @@ export class CampaignService {
     async getProducts(sort: string) {
         let campaign: any[];
         try {
-
+            //접근 port 확인
+            console.log("=>(campaign.resolver.ts:41) process.env.PORT", process.env.PORT);
             if (sort == 'recent') {
-                campaign = await this.campaignRepository
-                    .createQueryBuilder('campaign')
-                    .leftJoin('campaign.campaignItem', 'campaignItem')
-                    .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
-                    .leftJoin('campaign.partner', 'partner')
-                    .select([
-                        'campaign.idx as idx',
-                        'campaign.name as name',
-                        'campaign.status as status',
-                        'campaign.regdate as regdate',
-                        'campaign.weight as weight',
-                        'campaign.cateIdx as cateIdx',
-                        'campaign.cateAreaIdx as cateAreaIdx',
-                        'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                        '(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1) as image2',
-                    ])
-                    .addSelect(
+                const query = this.campaignRepository.createQueryBuilder('campaign');
+                query.leftJoin('campaign.campaignItem', 'campaignItem')
+                query.leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+                query.leftJoin('campaign.partner', 'partner')
+                query.select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.approvalMethod as approvalMethod',
+                    'campaign.grade as grade',
+                    'campaign.status as status',
+                    'campaign.regdate as regdate',
+                    'campaign.weight as weight',
+                    'campaign.cateIdx as cateIdx',
+                    'campaign.cateAreaIdx as cateAreaIdx',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                    '(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1) as image2',
+                ])
+                if (process.env.PORT == '3000') {
+                    console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                    query.addSelect(
                         (subQuery) =>
                             subQuery
-                                .select('priceOrig')
-                                .from('campaignItem', 'ci')
+                                .select('aws_url')
+                                .from('campaignImage', 'ci')
                                 .where('ci.campaignIdx = campaign.idx')
-                                .andWhere('ci.remove = 0')
-                                .orderBy('priceOrig', 'ASC')
+                                .orderBy('ordering', 'ASC')
                                 .limit(1),
-                        'lowestPriceOrig'
+                        'image'
                     )
-                    .addSelect(
-                        (subQuery) =>
-                            subQuery
-                                .select('dc11')
-                                .from('campaignItem', 'ci')
-                                .where('ci.campaignIdx = campaign.idx')
-                                .andWhere('ci.remove = 0')
-                                .orderBy('dc11', 'ASC')
-                                .limit(1),
-                        'discountPercentage'
-                    )
-                    .where('campaign.remove = :remove', {remove: 0})
-                    .andWhere('campaignItem.remove = :cr', {cr: 0})
-                    .andWhere('campaign.status = 200')
-                    // .andWhere('campaign.status >= :t', {t: 200})
-                    // .andWhere('campaign.status <= :s', {s: 700})
-                    .andWhere('partner.status = :status', {status: 1})
-                    // .orderBy('campaign.weight', 'DESC')
-                    .addOrderBy('campaign.regdate', 'DESC')
-                    .groupBy('campaign.idx')
-                    .limit(8)
-                    .getRawMany()
+                }
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('priceOrig')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('priceOrig', 'ASC')
+                            .limit(1),
+                    'lowestPriceOrig'
+                )
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('dc11')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('dc11', 'ASC')
+                            .limit(1),
+                    'discountPercentage'
+                )
+                query.where('campaign.remove = :remove', {remove: 0})
+                query.andWhere('campaignItem.remove = :cr', {cr: 0})
+                query.andWhere('campaign.status = 200')
+                // .andWhere('campaign.status >= :t', {t: 200})
+                // .andWhere('campaign.status <= :s', {s: 700})
+                query.andWhere('partner.status = :status', {status: 1})
+                // .orderBy('campaign.weight', 'DESC')
+                query.addOrderBy('campaign.regdate', 'DESC')
+                query.groupBy('campaign.idx')
+                query.limit(8)
+                campaign = await query.getRawMany()
             } else if (sort == 'popular') {
                 let submitCount = this.campaignSubmitRepository
                     .createQueryBuilder()
@@ -99,40 +114,54 @@ export class CampaignService {
                     .groupBy('campaignSubmit.campaignIdx')
                     .getQuery();
 
-                campaign = await this.campaignRepository
-                    .createQueryBuilder('campaign')
-                    .select([
-                        'campaign.idx as idx',
-                        'campaign.name as name',
-                        'campaign.status as status',
-                        'campaign.regdate as regdate',
-                        'campaign.weight as weight',
-                        'campaign.cateIdx as cateIdx',
-                        'campaign.cateAreaIdx as cateAreaIdx',
-                        'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                    ])
-                    .addSelect(
+                const query = await this.campaignRepository.createQueryBuilder('campaign');
+                query.select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.status as status',
+                    'campaign.approvalMethod as approvalMethod',
+                    'campaign.grade as grade',
+                    'campaign.regdate as regdate',
+                    'campaign.weight as weight',
+                    'campaign.cateIdx as cateIdx',
+                    'campaign.cateAreaIdx as cateAreaIdx',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                ])
+                if (process.env.PORT == '3000') {
+                    console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                    query.addSelect(
                         (subQuery) =>
                             subQuery
-                                .select('priceOrig')
-                                .from('campaignItem', 'ci')
+                                .select('aws_url')
+                                .from('campaignImage', 'ci')
                                 .where('ci.campaignIdx = campaign.idx')
-                                .andWhere('ci.remove = 0')
-                                .orderBy('priceOrig', 'ASC')
+                                .orderBy('ordering', 'ASC')
                                 .limit(1),
-                        'lowestPriceOrig'
+                        'image'
                     )
-                    .addSelect(
-                        (subQuery) =>
-                            subQuery
-                                .select('dc11')
-                                .from('campaignItem', 'ci')
-                                .where('ci.campaignIdx = campaign.idx')
-                                .andWhere('ci.remove = 0')
-                                .orderBy('dc11', 'ASC')
-                                .limit(1),
-                        'discountPercentage'
-                    )
+                }
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('priceOrig')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('priceOrig', 'ASC')
+                            .limit(1),
+                    'lowestPriceOrig'
+                )
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('dc11')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('dc11', 'ASC')
+                            .limit(1),
+                    'discountPercentage'
+                )
                     .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
                     .leftJoin('campaign.campaignItem', 'campaignItem')
                     .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
@@ -148,7 +177,7 @@ export class CampaignService {
                     .addOrderBy('regdate', 'DESC')
                     .groupBy('campaign.idx')
                     .limit(8)
-                    .getRawMany()
+                campaign = await query.getRawMany()
             } else {
                 // let submitCount = this.campaignSubmitRepository
                 //     .createQueryBuilder()
@@ -191,42 +220,56 @@ export class CampaignService {
                 //     .groupBy('campaignSubmit.campaignIdx')
                 //     .getQuery();
 
-                campaign = await this.campaignRepository
-                    .createQueryBuilder('campaign')
-                    .select([
-                        'campaign.idx as idx',
-                        'campaign.name as name',
-                        'campaign.status as status',
-                        'campaign.regdate as regdate',
-                        'campaign.weight as weight',
-                        'campaign.cateIdx as cateIdx',
-                        'campaign.cateAreaIdx as cateAreaIdx',
-                        'campaign.approvalRate as approvalRate',
-                        // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
-                        'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                    ])
-                    .addSelect(
+                const query = await this.campaignRepository.createQueryBuilder('campaign')
+                query.select([
+                    'campaign.idx as idx',
+                    'campaign.name as name',
+                    'campaign.status as status',
+                    'campaign.approvalMethod as approvalMethod',
+                    'campaign.grade as grade',
+                    'campaign.regdate as regdate',
+                    'campaign.weight as weight',
+                    'campaign.cateIdx as cateIdx',
+                    'campaign.cateAreaIdx as cateAreaIdx',
+                    'campaign.approvalRate as approvalRate',
+                    // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
+                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                ])
+                if (process.env.PORT == '3000') {
+                    console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                    query.addSelect(
                         (subQuery) =>
                             subQuery
-                                .select('priceOrig')
-                                .from('campaignItem', 'ci')
+                                .select('aws_url')
+                                .from('campaignImage', 'ci')
                                 .where('ci.campaignIdx = campaign.idx')
-                                .andWhere('ci.remove = 0')
-                                .orderBy('priceOrig', 'ASC')
+                                .orderBy('ordering', 'ASC')
                                 .limit(1),
-                        'lowestPriceOrig'
+                        'image'
                     )
-                    .addSelect(
-                        (subQuery) =>
-                            subQuery
-                                .select('dc11')
-                                .from('campaignItem', 'ci')
-                                .where('ci.campaignIdx = campaign.idx')
-                                .andWhere('ci.remove = 0')
-                                .orderBy('dc11', 'ASC')
-                                .limit(1),
-                        'discountPercentage'
-                    )
+                }
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('priceOrig')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('priceOrig', 'ASC')
+                            .limit(1),
+                    'lowestPriceOrig'
+                )
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('dc11')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('dc11', 'ASC')
+                            .limit(1),
+                    'discountPercentage'
+                )
                     // .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
                     // .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
                     // .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
@@ -245,7 +288,7 @@ export class CampaignService {
                     .addOrderBy('regdate', 'DESC')
                     .groupBy('campaign.idx')
                     .limit(1000)
-                    .getRawMany()
+                campaign = await query.getRawMany()
 
             }
 
@@ -276,7 +319,6 @@ export class CampaignService {
                     }
                 })
             })
-
 
 
             return campaign

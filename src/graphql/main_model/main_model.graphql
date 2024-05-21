@@ -26,6 +26,8 @@ type Product{
     idx: Int
     name: String
     status: Int
+    approvalMethod: Int
+    grade: Int
     price: Int
     discount: Int
     image: String

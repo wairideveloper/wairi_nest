@@ -12,6 +12,8 @@ type Campaign {
     addr2: String
     level: Int
     status: Int
+    approvalMethod: Int
+    grade: Int
     regdate: String
     info: String
     lastUpdate: String

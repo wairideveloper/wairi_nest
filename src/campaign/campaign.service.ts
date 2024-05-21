@@ -61,64 +61,79 @@ export class CampaignService {
 
     async search(keyword: string, take: number = 10, page: number = 1) {
         // const {take, page} = {take: 10, page: 1};
-        let data = await this.campaignRepository.createQueryBuilder('campaign')
-            .leftJoin('campaign.campaignItem', 'campaignItem')
-            .leftJoin('campaign.campaignImage', 'campaignImage')
-            .leftJoin('campaign.cate', 'cate')
-            .leftJoin('campaign.cateArea', 'cateArea')
-            .leftJoin('campaign.partner', 'partner')
-            .select([
-                'campaign.idx as idx',
-                'campaign.name as name',
-                'campaign.weight as weight',
-                'campaign.status as status',
-                // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
-                // 'min(campaignItem.priceOrig) as lowestPriceOrig',
-                // 'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
-                'min(campaignItem.calcType1) as lowestPriceCalcType1',
-                'min(campaignItem.calcType2) as lowestPriceCalcType2',
-                'min(campaignItem.sellType) as lowestPriceSellType',
-                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                'cate.name as cateName',
-                'cate.idx as cateIdx',
-                'cateArea.name as cateAreaName',
-                'partner.corpName as partnerName',
-            ])
-            .addSelect(
+        let query = this.campaignRepository.createQueryBuilder('campaign');
+        query.leftJoin('campaign.campaignItem', 'campaignItem')
+        query.leftJoin('campaign.campaignImage', 'campaignImage')
+        query.leftJoin('campaign.cate', 'cate')
+        query.leftJoin('campaign.cateArea', 'cateArea')
+        query.leftJoin('campaign.partner', 'partner')
+        query.select([
+            'campaign.idx as idx',
+            'campaign.name as name',
+            'campaign.weight as weight',
+            'campaign.status as status',
+            'campaign.approvalMethod as approvalMethod',
+            'campaign.grade as grade',
+            // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
+            // 'min(campaignItem.priceOrig) as lowestPriceOrig',
+            // 'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
+            'min(campaignItem.calcType1) as lowestPriceCalcType1',
+            'min(campaignItem.calcType2) as lowestPriceCalcType2',
+            'min(campaignItem.sellType) as lowestPriceSellType',
+            'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            'cate.name as cateName',
+            'cate.idx as cateIdx',
+            'cateArea.name as cateAreaName',
+            'partner.corpName as partnerName',
+        ])
+        if (process.env.PORT == '3000') {
+            console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+            query.addSelect(
                 (subQuery) =>
                     subQuery
-                        .select('priceOrig')
-                        .from('campaignItem', 'ci')
+                        .select('aws_url')
+                        .from('campaignImage', 'ci')
                         .where('ci.campaignIdx = campaign.idx')
-                        .andWhere('ci.remove = 0')
-                        .orderBy('priceOrig', 'ASC')
+                        .orderBy('ordering', 'ASC')
                         .limit(1),
-                'lowestPriceOrig'
+                'image'
             )
-            .addSelect(
-                (subQuery) =>
-                    subQuery
-                        .select('dc11')
-                        .from('campaignItem', 'ci')
-                        .where('ci.campaignIdx = campaign.idx')
-                        .andWhere('ci.remove = 0')
-                        .orderBy('dc11', 'ASC')
-                        .limit(1),
-                'discountPercentage'
-            )
-            // .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
-            .where('(campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR ( campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
-                // status: 200,
-                // remove: 0,
-                campaignKeyword: '%' + keyword + '%',
-                itemKeyword: '%' + keyword + '%',
-            })
-            .orderBy('campaign.idx', 'DESC')
-            .addOrderBy('campaign.weight', 'DESC')
-            .groupBy('campaign.idx')
-            .offset(take * (page - 1))
-            .limit(take)
-            .getRawMany();
+        }
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('priceOrig')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('priceOrig', 'ASC')
+                    .limit(1),
+            'lowestPriceOrig'
+        )
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('dc11')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('dc11', 'ASC')
+                    .limit(1),
+            'discountPercentage'
+        )
+        // .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+        query.where('(campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR ( campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+            // status: 200,
+            // remove: 0,
+            campaignKeyword: '%' + keyword + '%',
+            itemKeyword: '%' + keyword + '%',
+        })
+        query.orderBy('campaign.idx', 'DESC')
+        query.addOrderBy('campaign.weight', 'DESC')
+        query.groupBy('campaign.idx')
+        query.offset(take * (page - 1))
+        query.limit(take)
+        let data = await query.getRawMany();
         const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 
         data = bufferToString(data);
@@ -215,66 +230,81 @@ export class CampaignService {
         //     .groupBy('campaignSubmit.campaignIdx')
         //     .getQuery();
 
-        query = this.campaignRepository.createQueryBuilder('campaign')
-            // .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
-            // .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
-            // .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
-            .leftJoin('campaign.campaignItem', 'campaignItem')
-            .leftJoin('campaign.campaignImage', 'campaignImage')
-            .leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
-            .leftJoin('campaign.cate', 'cate')
-            .leftJoin('campaign.cateArea', 'cateArea')
-            .leftJoin('campaign.partner', 'partner')
-            .select([
-                // 'campaignSubmit.submitCount',
-                // % 계산
-                // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
-                'campaign.idx as idx',
-                'campaign.name as name',
-                'campaign.weight as weight',
-                'campaign.regdate as regdate',
-                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                'cate.name as cateName',
-                'cate.idx as cateIdx',
-                'cateArea.name as cateAreaName',
-                'cateArea.idx as cateAreaIdx',
-                'campaign.status as status',
-                'campaign.approvalRate as approvalRate',
-            ])
-            .addSelect(
+        query = this.campaignRepository.createQueryBuilder('campaign');
+        // .leftJoin(submitCount, 'campaignSubmit', 'campaignSubmit.campaignIdx = campaign.idx')
+        // .leftJoin(recentSubmitCount, 'recentSubmitCount', 'recentSubmitCount.campaignIdx = campaign.idx')
+        // .leftJoin(recentSubmitCountTotal, 'recentSubmitCountTotal', 'recentSubmitCountTotal.campaignIdx = campaign.idx')
+        query.leftJoin('campaign.campaignItem', 'campaignItem')
+        query.leftJoin('campaign.campaignImage', 'campaignImage')
+        query.leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+        query.leftJoin('campaign.cate', 'cate')
+        query.leftJoin('campaign.cateArea', 'cateArea')
+        query.leftJoin('campaign.partner', 'partner')
+        query.select([
+            // 'campaignSubmit.submitCount',
+            // % 계산
+            // 'ROUND((recentSubmitCount.submitCount / recentSubmitCountTotal.submitCount) * 100) AS approvalRate',
+            'campaign.idx as idx',
+            'campaign.name as name',
+            'campaign.weight as weight',
+            'campaign.regdate as regdate',
+            'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            'cate.name as cateName',
+            'cate.idx as cateIdx',
+            'cateArea.name as cateAreaName',
+            'cateArea.idx as cateAreaIdx',
+            'campaign.status as status',
+            'campaign.approvalMethod as approvalMethod',
+            'campaign.grade as grade',
+            'campaign.approvalRate as approvalRate',
+        ])
+        if (process.env.PORT == '3000') {
+            console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+            query.addSelect(
                 (subQuery) =>
                     subQuery
-                        .select('priceOrig')
-                        .from('campaignItem', 'ci')
+                        .select('aws_url')
+                        .from('campaignImage', 'ci')
                         .where('ci.campaignIdx = campaign.idx')
-                        .andWhere('ci.remove = 0')
-                        .orderBy('priceOrig', 'ASC')
+                        .orderBy('ordering', 'ASC')
                         .limit(1),
-                'lowestPriceOrig'
+                'image'
             )
-            .addSelect(
-                (subQuery) =>
-                    subQuery
-                        .select('dc11')
-                        .from('campaignItem', 'ci')
-                        .where('ci.campaignIdx = campaign.idx')
-                        .andWhere('ci.remove = 0')
-                        .orderBy('dc11', 'ASC')
-                        .limit(1),
-                'discountPercentage'
-            )
-            .where('campaign.remove = :remove', {remove: 0})
-            .andWhere('campaign.status >= :t', {t: 200})
-            .andWhere('campaign.status <= :s', {s: 700})
-            .andWhere('campaignItem.memberTarget = :mt', {mt: 1})
-            .andWhere('partner.status = :status', {status: 1})
-            // .orderBy('submitCount', 'DESC')
-            // .addOrderBy('campaign.weight', 'DESC')
-            .orderBy("weight", 'DESC')
-            .addOrderBy('regdate', 'DESC')
-            .groupBy('campaign.idx')
-            .offset(take * (page - 1))
-            .limit(take)
+        }
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('priceOrig')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('priceOrig', 'ASC')
+                    .limit(1),
+            'lowestPriceOrig'
+        )
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('dc11')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('dc11', 'ASC')
+                    .limit(1),
+            'discountPercentage'
+        )
+        query.where('campaign.remove = :remove', {remove: 0})
+        query.andWhere('campaign.status >= :t', {t: 200})
+        query.andWhere('campaign.status <= :s', {s: 700})
+        query.andWhere('campaignItem.memberTarget = :mt', {mt: 1})
+        query.andWhere('partner.status = :status', {status: 1})
+        // .orderBy('submitCount', 'DESC')
+        // .addOrderBy('campaign.weight', 'DESC')
+        query.orderBy("weight", 'DESC')
+        query.addOrderBy('regdate', 'DESC')
+        query.groupBy('campaign.idx')
+        query.offset(take * (page - 1))
+        query.limit(take)
 
         if (cate) {
             query.andWhere('campaign.cateIdx = :cate', {cate: cate})
@@ -475,8 +505,8 @@ export class CampaignService {
     }
 
     async getCampaignItem(id: number) {
-        let result = await this.campaignItemRepository.createQueryBuilder('campaignItem')
-            .select([
+        let query = this.campaignItemRepository.createQueryBuilder('campaignItem');
+        query.select([
                     'campaignItem.*',
                     //  `(SELECT
                     //  IF(
@@ -498,18 +528,30 @@ export class CampaignService {
                     'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
                 ]
             )
-            .addSelect('CONCAT(DATE(FROM_UNIXTIME(startDate)), " ~ ", DATE(FROM_UNIXTIME(endDate))) AS application_period')
-            .where('campaignItem.campaignIdx = :idx', {idx: id})
-            .andWhere('campaignItem.remove = :remove', {remove: 0})
-            .orderBy('campaignItem.ordering', 'ASC')
-            .getRawMany()
-
+        if (process.env.PORT == '3000') {
+            console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+            query.addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('aws_url')
+                        .from('campaignItemImage', 'ci')
+                        .where('ci.itemIdx = campaignItem.idx')
+                        .orderBy('ordering', 'ASC')
+                        .limit(1),
+                'image'
+            )
+        }
+        query.addSelect('CONCAT(DATE(FROM_UNIXTIME(startDate)), " ~ ", DATE(FROM_UNIXTIME(endDate))) AS application_period')
+        query.where('campaignItem.campaignIdx = :idx', {idx: id})
+        query.andWhere('campaignItem.remove = :remove', {remove: 0})
+        query.orderBy('campaignItem.ordering', 'ASC')
+        const result = await query.getRawMany()
         return bufferToString(result);
     }
 
     async getCampaignImages(id: number) {
-        return await this.campaignImageRepository.createQueryBuilder('campaignImage')
-            .select(
+        let query = this.campaignImageRepository.createQueryBuilder('campaignImage');
+        query.select(
                 [
                     'idx',
                     'campaignIdx',
@@ -517,9 +559,12 @@ export class CampaignService {
                     'ordering',
                 ]
             )
-            .where('campaignIdx = :idx', {idx: id})
-            .orderBy('ordering', 'ASC')
-            .getRawMany()
+        if (process.env.PORT == '3000') {
+            query.addSelect( 'aws_url as fileName')
+        }
+        query.where('campaignIdx = :idx', {idx: id})
+        query.orderBy('ordering', 'ASC')
+        return await query.getRawMany();
     }
 
     async getCampaignCate(id: number) {
@@ -654,6 +699,19 @@ export class CampaignService {
                 'cateArea.idx as cateAreaIdx',
                 'partner.corpName as partnerName',
             ]);
+            if (process.env.PORT == '3000') {
+                console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('aws_url')
+                            .from('campaignImage', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .orderBy('ordering', 'ASC')
+                            .limit(1),
+                    'image'
+                )
+            }
 
             query.where('campaign.idx = :idx', {idx: idx})
                 // .andWhere('campaign.remove = :remove', {remove: 0})
@@ -753,14 +811,14 @@ export class CampaignService {
 
     async recentList(take: number, page: number, memberIdx: number) {
         try {
-            let data = await this.campaignRecentRepository.createQueryBuilder('campaignRecent')
-                .leftJoin('campaignRecent.campaign', 'campaign')
-                .leftJoin('campaign.campaignItem', 'campaignItem')
-                .leftJoin('campaign.campaignImage', 'campaignImage')
-                .leftJoin('campaign.cate', 'cate')
-                .leftJoin('campaign.cateArea', 'cateArea')
-                .leftJoin('campaign.partner', 'partner')
-                .select([
+            let query = this.campaignRecentRepository.createQueryBuilder('campaignRecent');
+            query.leftJoin('campaignRecent.campaign', 'campaign')
+            query.leftJoin('campaign.campaignItem', 'campaignItem')
+            query.leftJoin('campaign.campaignImage', 'campaignImage')
+            query.leftJoin('campaign.cate', 'cate')
+            query.leftJoin('campaign.cateArea', 'cateArea')
+            query.leftJoin('campaign.partner', 'partner')
+            query.select([
                     'campaign.idx as idx',
                     'campaign.name as name',
                     'campaign.weight as weight',
@@ -774,14 +832,27 @@ export class CampaignService {
                     'cateArea.name as cateAreaName',
                     'partner.corpName as partnerName',
                 ])
-                .where('campaignRecent.memberIdx = :memberIdx', {memberIdx: memberIdx})
-                .andWhere('campaign.remove = :remove', {remove: 0})
-                .orderBy('campaignRecent.regdate', 'DESC')
-                .groupBy('campaign.idx')
-                .offset(take * (page - 1))
-                .limit(take)
-                .getRawMany();
-            data = bufferToString(data);
+            if (process.env.PORT == '3000') {
+                console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('aws_url')
+                            .from('campaignImage', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .orderBy('ordering', 'ASC')
+                            .limit(1),
+                    'image'
+                )
+            }
+            query.where('campaignRecent.memberIdx = :memberIdx', {memberIdx: memberIdx})
+            query.andWhere('campaign.remove = :remove', {remove: 0})
+            query.orderBy('campaignRecent.regdate', 'DESC')
+            query.groupBy('campaign.idx')
+            query.offset(take * (page - 1))
+            query.limit(take)
+            const data = await query.getRawMany();
+            bufferToString(data);
             const total = await this.campaignRecentRepository.createQueryBuilder('campaignRecent')
                 .leftJoin('campaignRecent.campaign', 'campaign')
                 .where('campaignRecent.memberIdx = :memberIdx', {memberIdx: memberIdx})
@@ -826,44 +897,74 @@ export class CampaignService {
 
     async getRecommendedSearchWords(type: string, limit: number = 5) {
         try {
-            const weight = await this.campaignRepository.createQueryBuilder('campaign')
-                .leftJoin('campaign.cate', 'cate')
-                .leftJoin('campaign.cateArea', 'cateArea')
-                .select([
-                    'campaign.idx as idx',
-                    'campaign.name as name',
-                    'campaign.weight as count',
-                    'cate.name as cateName',
-                    'cateArea.name as cateAreaName',
-                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                ])
-                .where('campaign.remove = :remove', {remove: 0})
-                .andWhere('campaign.status = 200')
-                .orderBy('campaign.weight', 'DESC')
-                .limit(limit)
-                .getRawMany();
+            const weight_query = this.campaignRepository.createQueryBuilder('campaign');
+            weight_query.leftJoin('campaign.cate', 'cate')
+            weight_query.leftJoin('campaign.cateArea', 'cateArea')
+            weight_query.select([
+                'campaign.idx as idx',
+                'campaign.name as name',
+                'campaign.weight as count',
+                'campaign.approvalMethod as approvalMethod',
+                'campaign.grade as grade',
+                'cate.name as cateName',
+                'cateArea.name as cateAreaName',
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            ])
+            if (process.env.PORT == '3000') {
+                console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                weight_query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('aws_url')
+                            .from('campaignImage', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .orderBy('ordering', 'ASC')
+                            .limit(1),
+                    'image'
+                )
+            }
+            weight_query.where('campaign.remove = :remove', {remove: 0})
+            weight_query.andWhere('campaign.status = 200')
+            weight_query.orderBy('campaign.weight', 'DESC')
+            weight_query.limit(limit)
+            const weight = await weight_query.getRawMany();
 
-            const submit = await this.campaignSubmit.createQueryBuilder('campaignSubmit')
-                .select([
-                    'campaignSubmit.campaignIdx as idx',
-                    'count(*) as count',
-                    'campaign.name as name',
-                    'campaign.weight as weight',
-                    'cate.name as cateName',
-                    'cateArea.name as cateAreaName',
-                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                ])
-                .leftJoin('campaignSubmit.campaign', 'campaign')
-                .leftJoin('campaign.cate', 'cate')
-                .leftJoin('campaign.cateArea', 'cateArea')
-                .where('campaign.remove = :remove', {remove: 0})
-                .andWhere('campaign.status = 200')
-                //wherein campaignSubmit.status = 400, 500, 700
-                .andWhere('campaignSubmit.status IN (:...status)', {status: [400, 500, 700]})
-                .groupBy('campaignSubmit.campaignIdx')
-                .orderBy('count', 'DESC')
-                .limit(limit)
-                .getRawMany();
+            const submit_query = this.campaignSubmit.createQueryBuilder('campaignSubmit');
+            submit_query.select([
+                'campaignSubmit.campaignIdx as idx',
+                'count(*) as count',
+                'campaign.name as name',
+                'campaign.weight as weight',
+                'campaign.approvalMethod as approvalMethod',
+                'campaign.grade as grade',
+                'cate.name as cateName',
+                'cateArea.name as cateAreaName',
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            ])
+            if (process.env.PORT == '3000') {
+                console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                submit_query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('aws_url')
+                            .from('campaignImage', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .orderBy('ordering', 'ASC')
+                            .limit(1),
+                    'image'
+                )
+            }
+            submit_query.leftJoin('campaignSubmit.campaign', 'campaign')
+            submit_query.leftJoin('campaign.cate', 'cate')
+            submit_query.leftJoin('campaign.cateArea', 'cateArea')
+            submit_query.where('campaign.remove = :remove', {remove: 0})
+            submit_query.andWhere('campaign.status = 200')
+            //wherein campaignSubmit.status = 400, 500, 700
+            submit_query.andWhere('campaignSubmit.status IN (:...status)', {status: [400, 500, 700]})
+            submit_query.groupBy('campaignSubmit.campaignIdx')
+            submit_query.orderBy('count', 'DESC')
+            submit_query.limit(limit)
+            const submit = await submit_query.getRawMany();
 
             if (type == 'weight') {
                 return bufferToString(weight);
@@ -1053,35 +1154,50 @@ export class CampaignService {
 
     async favList(take: number, page: number, idx: number) {
         try {
-            let data = await this.campaignFavRepository.createQueryBuilder('campaignFav')
-                .leftJoin('campaignFav.campaign', 'campaign')
-                .leftJoin('campaign.campaignItem', 'campaignItem')
-                .leftJoin('campaign.campaignImage', 'campaignImage')
-                .leftJoin('campaign.cate', 'cate')
-                .leftJoin('campaign.cateArea', 'cateArea')
-                .leftJoin('campaign.partner', 'partner')
-                .select([
-                    'campaign.idx as idx',
-                    'campaign.name as name',
-                    'campaign.weight as weight',
-                    'campaign.status as status',
-                    'min(campaignItem.priceOrig) as lowestPriceOrig',
-                    'min(campaignItem.calcType1) as lowestPriceCalcType1',
-                    'min(campaignItem.calcType2) as lowestPriceCalcType2',
-                    'min(campaignItem.sellType) as lowestPriceSellType',
-                    'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
-                    'cate.name as cateName',
-                    'cate.idx as cateIdx',
-                    'cateArea.name as cateAreaName',
-                    'partner.corpName as partnerName',
-                ])
-                .where('campaignFav.memberIdx = :idx', {idx: idx})
-                .andWhere('campaign.remove = :remove', {remove: 0})
-                .orderBy('campaignFav.regdate', 'DESC')
-                .groupBy('campaign.idx')
-                .offset(take * (page - 1))
-                .limit(take)
-                .getRawMany();
+            let query = this.campaignFavRepository.createQueryBuilder('campaignFav');
+            query.leftJoin('campaignFav.campaign', 'campaign')
+            query.leftJoin('campaign.campaignItem', 'campaignItem')
+            query.leftJoin('campaign.campaignImage', 'campaignImage')
+            query.leftJoin('campaign.cate', 'cate')
+            query.leftJoin('campaign.cateArea', 'cateArea')
+            query.leftJoin('campaign.partner', 'partner')
+            query.select([
+                'campaign.idx as idx',
+                'campaign.name as name',
+                'campaign.weight as weight',
+                'campaign.status as status',
+                'campaign.approvalMethod as approvalMethod',
+                'campaign.grade as grade',
+                'min(campaignItem.priceOrig) as lowestPriceOrig',
+                'min(campaignItem.calcType1) as lowestPriceCalcType1',
+                'min(campaignItem.calcType2) as lowestPriceCalcType2',
+                'min(campaignItem.sellType) as lowestPriceSellType',
+                'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+                'cate.name as cateName',
+                'cate.idx as cateIdx',
+                'cateArea.name as cateAreaName',
+                'partner.corpName as partnerName',
+            ])
+            if (process.env.PORT == '3000') {
+                console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('aws_url')
+                            .from('campaignImage', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .orderBy('ordering', 'ASC')
+                            .limit(1),
+                    'image'
+                )
+            }
+            query.where('campaignFav.memberIdx = :idx', {idx: idx})
+            query.andWhere('campaign.remove = :remove', {remove: 0})
+            query.orderBy('campaignFav.regdate', 'DESC')
+            query.groupBy('campaign.idx')
+            query.offset(take * (page - 1))
+            query.limit(take)
+            let data = await query.getRawMany();
 
             const campaignItemLowestPrice = await this.getCampaignLowestPrice();
 

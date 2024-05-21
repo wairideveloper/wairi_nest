@@ -21,11 +21,12 @@ export class MainModelResolver {
             }
             let key = sort;
             console.log("=>(main_model.resolver.ts:23) key", key);
-            let data = await this.cacheManager.get(key);
-            if (!data) {
-                data = await this.mainModelService.getMainPage(sort);
-                await this.cacheManager.set(key, data, 20000);
-            }
+            // let data = await this.cacheManager.get(key);
+            // if (!data) {
+            //     data = await this.mainModelService.getMainPage(sort);
+            //     await this.cacheManager.set(key, data, 20000);
+            // }
+            let data = await this.mainModelService.getMainPage(sort);
             return data;
             // return await this.mainModelService.getMainPage(sort);
         } catch (error) {

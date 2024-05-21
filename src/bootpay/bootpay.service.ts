@@ -174,4 +174,45 @@ export class BootpayService {
             await queryRunner.release();
         }
     }
+
+    async updateKakaoPayment(body) {
+        if(body.status != 1){
+            throw new HttpException("status is not 1", 404);
+        }
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try{
+            const payment = await queryRunner.manager.findOne(Payment, {
+                where: {
+                    oid: body.order_id
+                }
+            })
+            if(!payment) {
+                throw new Error("결제 정보가 존재하지 않습니다.")
+            }
+            const submit = await queryRunner.manager.findOne(CampaignSubmit, {
+                where: {
+                    idx: payment.submitIdx
+                }
+            })
+            if(!submit) {
+                throw new Error("신청 정보가 존재하지 않습니다.")
+            }
+
+            if(submit.status == 200){
+                //update status = 300
+                await queryRunner.manager.createQueryBuilder()
+                    .update(CampaignSubmit)
+                    .set({
+                        status: 300,
+                        paymentIdx: payment.idx,
+                    })
+                    .where("idx = :idx", { idx: submit.idx })
+                    .execute();
+            }
+        }catch (e) {
+            console.log("=>(bootpay.service.ts:updateKakaoPayment) e", e);
+        }
+    }
 }

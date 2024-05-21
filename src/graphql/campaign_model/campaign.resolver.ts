@@ -60,8 +60,6 @@ export class CampaignResolver {
         try {
             let data = await this.campaignsService.detailCampaign(id);
             //json 형식으로 변환
-
-            console.log(data)
             // console.log(bufferToString(data))
             // data.forEach((element) => {
             //     bufferToString(element);
@@ -83,6 +81,7 @@ export class CampaignResolver {
         @Args('sort', {type: () => Int}) sort?: string,
     ) {
         try {
+
             const list = await this.campaignsService.mainList(take, page, cate, cateArea, sort);
             return list
         } catch (error) {
@@ -125,7 +124,6 @@ export class CampaignResolver {
             console.log(idx)
             let data = await this.campaignsService.detailCampaign(idx);
             //json 형식으로 변환
-            console.log(data.campaignItem)
             return data.campaignItem
         } catch (error) {
             console.log(error)
@@ -161,8 +159,6 @@ export class CampaignResolver {
             let nowUnix = Math.floor(new Date().getTime() / 1000);
             let startUnix = Math.floor(new Date(start_day).getTime() / 1000);
             let endUnix = Math.floor(new Date(end_day).getTime() / 1000);
-
-            console.log(now, nowUnix, startUnix, endUnix)
 
             let data = await this.campaignsService.getActiveItemSchedule(idx, startUnix, endUnix, nowUnix);
             data = bufferToString(data);
@@ -206,7 +202,6 @@ export class CampaignResolver {
         try {
             const list = await this.campaignsService.recentList(take, page, memberIdx);
             //json 형식으로 변환
-            console.log(list)
             return list
         } catch (error) {
             console.log(error)
@@ -234,7 +229,6 @@ export class CampaignResolver {
             result.campaignIdx = response.campaignIdx;
             result.regdate = FROM_UNIXTIME_JS(response.regdate);
 
-            console.log("-> result", result);
             return result;
         } catch (error) {
             console.log(error)
@@ -292,7 +286,7 @@ export class CampaignResolver {
     ){
         try{
             let data = await this.campaignsService.getCampaignItemSchedule(idx);
-            console.log("=>(campaign.resolver.ts:240) data", data);
+
             return data;
         }catch (error) {
             console.log(error)
