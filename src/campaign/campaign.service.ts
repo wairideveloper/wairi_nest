@@ -468,7 +468,7 @@ export class CampaignService {
             campaignPartner = bufferToString(campaignPartner);
             let campaignReview = await this.getCampaignReview(id);
             campaignReview = bufferToString(campaignReview);
-            console.log("=>(campaign.service.ts:360) campaignItem", campaignItem);
+            // console.log("=>(campaign.service.ts:360) campaignItem", campaignItem);
             return {
                 campaign,
                 campaignItem,
@@ -668,6 +668,8 @@ export class CampaignService {
                 'campaign.idx as idx',
                 'campaign.name as name',
                 'campaign.weight as weight',
+                'campaign.approvalMethod as approvalMethod',
+                'campaign.grade as grade',
                 'campaign.info as info',
                 'campaign.production_guide as production_guide',
                 'campaign.caution as caution',
@@ -677,6 +679,21 @@ export class CampaignService {
                 'campaign.addr2 as addr2',
                 'campaign.addrLat as addrLat',
                 'campaign.addrLng as addrLng',
+                'campaign.checkIn as checkIn',
+                'campaign.checkOut as checkOut',
+                'campaign.roomType as roomType',
+                'campaign.information as information',
+                'campaign.otherInformation as otherInformation',
+                'campaign.mainKeyword as mainKeyword',
+                'campaign.mission as mission',
+                'campaign.channels as channels',
+                'campaign.blogCount as blogCount',
+                'campaign.youtubeCount as youtubeCount',
+                'campaign.instaCount as instaCount',
+                'campaign.tiktokCount as tiktokCount',
+                'campaign.tstoryCount as tstoryCount',
+                'campaign.etcCount as etcCount',
+
                 `(SELECT 
                     IF(
                         schedule.priceDeposit > 0, 
@@ -721,7 +738,15 @@ export class CampaignService {
 
             let result = await query.getRawOne();
             result = bufferToString(result);
-            console.log("=>(campaign.service.ts:671) result", result);
+            if (result.mainKeyword) {
+                result.mainKeyword = result.mainKeyword
+                    .replace('[', '')
+                    .replace(']', '')
+                    .split(',')
+                    .map((keyword: string) => keyword.trim());
+            }
+
+            // console.log("=>(campaign.service.ts:671) result", result);
             return result;
             //info , production_guide, caution = "" -> null
             if (result.info == "") {

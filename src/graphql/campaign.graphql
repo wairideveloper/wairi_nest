@@ -28,6 +28,20 @@ type Campaign {
     discountPrice: Int
     addrLat: Float
     addrLng: Float
+    checkIn: String
+    checkOut: String
+    roomType: String
+    information: String
+    otherInformation: String
+    mainKeyword: [String]
+    mission: String
+    channels: String
+    blogCount: Int
+    youtubeCount: Int
+    instaCount: Int
+    tiktokCount: Int
+    tstoryCount: Int
+    etcCount: Int
     production_guide: String
     caution: String
     submitCount:String

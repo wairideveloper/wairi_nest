@@ -166,6 +166,48 @@ export class Campaign {
     })
     growthDiscountUse: string | null;
 
+    @Column('text', { name: 'production_guide', nullable: true })
+    productionGuide: string | null;
+
+    @Column('time', { name: 'checkIn' })
+    checkIn: string | null;
+
+    @Column('time', { name: 'checkOut' })
+    checkOut: string | null;
+
+    @Column('text', { name: 'roomType' })
+    roomType: string | null;
+
+    @Column('text', { name: 'information' })
+    information: string | null;
+
+    @Column('text', { name: 'otherInformation' })
+    otherInformation: string | null;
+
+    @Column('text', { name: 'mainKeyword' })
+    mainKeyword: string | null;
+
+    @Column('text', { name: 'mission' })
+    mission: string | null;
+
+    @Column('int', { name: 'blogCount', nullable: true })
+    blogCount: number;
+
+    @Column('int', { name: 'youtubeCount', nullable: true })
+    youtubeCount: number;
+
+    @Column('int', { name: 'instaCount', nullable: true })
+    instaCount: number;
+
+    @Column('int', { name: 'tiktokCount', nullable: true })
+    tiktokCount: number;
+
+    @Column('int', { name: 'tstoryCount', nullable: true })
+    tstoryCount: number;
+
+    @Column('int', { name: 'etcCount', nullable: true })
+    etcCount: number;
+
     @Column("int", {name: "approvalRate"})
     approvalRate: number;
     //relation
