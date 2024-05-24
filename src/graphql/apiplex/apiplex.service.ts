@@ -318,6 +318,7 @@ export class ApiplexService {
             //phoneList 중복제거
             // phoneList = ['01082308203']; // Todo : 테스트
             phoneList = Array.from(new Set(phoneList));
+            console.log("=>(apiplex.service.ts:321) phoneList", phoneList);
 
             let partner = await this.partnerRepository.createQueryBuilder('partner')
                 .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')

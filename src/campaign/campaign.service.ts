@@ -728,6 +728,8 @@ export class CampaignService {
                             .limit(1),
                     'image'
                 )
+
+
             }
 
             query.where('campaign.idx = :idx', {idx: idx})
