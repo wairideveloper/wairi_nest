@@ -354,7 +354,7 @@ export class ApiplexService {
         let receiverDataPartner = await this.partnerRepository.createQueryBuilder('partner')
             .leftJoin('campaign', 'campaign', 'campaign.partnerIdx = partner.idx')
             .where('campaign.idx = :idx', {idx: campaignIdx})
-            .select('partner.noteReceivers')
+            .select('partner.noteReceivers','noteReceivers')
             .getRawOne();
         receiverDataPartner = bufferToString(receiverDataPartner)
         let receiverDataCampaign = await this.campaignRepository.createQueryBuilder('campaign')
