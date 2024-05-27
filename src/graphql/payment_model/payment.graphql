@@ -85,6 +85,7 @@ input PaymentItemInput {
     startDate: String
     endDate: String
     submitChannel: Int
+    agreeContent: Int
 }
 
 type PaymentItemResponse{

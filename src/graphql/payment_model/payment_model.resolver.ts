@@ -45,6 +45,7 @@ class PaymentItemInput {
     endDate: string
     price: number
     submitChannel: number
+    agreeContent: number
 }
 
 @Resolver('PaymentModel')
@@ -131,6 +132,7 @@ export class PaymentModelResolver {
                 payItem: pay,
                 payTotal: pay,
                 use_app: 'Y',
+                agreeContent: paymentItemInput.agreeContent,
             }
             //createCampaignSubmit
             const insertSubmit = await queryRunner.manager.createQueryBuilder()
