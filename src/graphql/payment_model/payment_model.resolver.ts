@@ -169,12 +169,15 @@ export class PaymentModelResolver {
                     })
                     .execute();
 
-                //campaignSubmit paymentIdx update
-                const updateSubmit = await queryRunner.manager.createQueryBuilder()
-                    .update(CampaignSubmit)
-                    .set({paymentIdx: payment.identifiers[0].idx})
-                    .where("idx = :idx", {idx: submitIdx})
-                    .execute();
+                //campaignSubmit paymentIdx status = 300 update
+                  const updateSubmit = await queryRunner.manager.createQueryBuilder()
+                        .update(CampaignSubmit)
+                        .set({
+                            status: 300,
+                            paymentIdx: payment.identifiers[0].idx
+                        })
+                        .where("idx = :idx", {idx: submitIdx})
+                        .execute();
 
                 //재고 차감
                 campaignItemSchdule.forEach((item) => {
