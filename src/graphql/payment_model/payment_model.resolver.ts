@@ -81,7 +81,7 @@ export class PaymentModelResolver {
                 }
             }
             console.log("=>(payment_model.resolver.ts:74) sid", sid);
-            let pay = campaignItem.priceOrig
+            let pay = campaignItem.priceDeposit
             const startDate = getUnixTimeStampByDate9Sub(paymentItemInput.startDate);
             const endDate = getUnixTimeStampByDate9Sub(paymentItemInput.endDate);
             const nights = (endDate - startDate) / 86400;
@@ -91,6 +91,20 @@ export class PaymentModelResolver {
                 let count = Math.floor(nights / minDays);
                 pay = pay * count;
             }
+
+            //재고 체크
+            const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
+                paymentItemInput.itemIdx, paymentItemInput.startDate, paymentItemInput.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
+
+            let itemSchduleIdx = [];
+
+            campaignItemSchdule.forEach((item) => {
+                itemSchduleIdx.push(item.idx);
+                if (item.stock == 0) {
+                    throw new HttpException("재고가 부족합니다.", 404);
+                }
+            });
+
             let inputData = {
                 sid: String(sid),
                 status: 100,
@@ -130,18 +144,39 @@ export class PaymentModelResolver {
             console.log("=>(payment_model.service.ts:19) confirmPayment", response);
 
             if (response.status === 1) {
-                console.log("-> response", response.status);
+                console.log("-> response", response);
+
                 if ((campaignItem.priceDeposit) != response.price) {
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
+                //payment insert
+                const payment = await queryRunner.manager.createQueryBuilder()
+                    .insert()
+                    .into(Payment)
+                    .values({
+                        status: response.status == 1 ? 200 : 100,
+                        oid: response.order_id,
+                        memberIdx: memberIdx,
+                        submitIdx: submitIdx,
+                        payTotal: response.price,
+                        receiptId: response.receipt_id,
+                        payMethod: response.method_origin_symbol,
+                        regdate: getUnixTimeStamp(),
+                        cardName: response.card_data ? response.card_data.card_company : '',
+                        cardNum: response.card_data ? response.card_data.card_no : '',
+                    })
+                    .execute();
+
+                //campaignSubmit paymentIdx update
+                const updateSubmit = await queryRunner.manager.createQueryBuilder()
+                    .update(CampaignSubmit)
+                    .set({paymentIdx: payment.identifiers[0].idx})
+                    .where("idx = :idx", {idx: submitIdx})
+                    .execute();
+
                 //재고 차감
-                const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
-                    paymentItemInput.itemIdx, paymentItemInput.startDate, paymentItemInput.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
-
-                let itemSchduleIdx = [];
-
                 campaignItemSchdule.forEach((item) => {
                     itemSchduleIdx.push(item.idx);
                     if (item.stock == 0) {
