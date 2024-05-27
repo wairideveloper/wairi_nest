@@ -4,9 +4,14 @@ import {SubmitModelService} from "../submit_model/submit_model.service";
 import {MembersService} from "../member_model/member.service";
 import {
     FROM_UNIXTIME_JS_PLUS,
-    FROM_UNIXTIME_JS_YY_MM_DD, genSid,
+    FROM_UNIXTIME_JS_YY_MM_DD,
+    genSid,
     getAfter3Days,
-    getBootpayStatusText, getUnixTimeStamp, getUnixTimeStampAfter3Days, getUnixTimeStampByDate9Sub,
+    getBootpayStatusText,
+    getUnixTimeStamp,
+    getUnixTimeStampAfter3Days,
+    getUnixTimeStampByDate,
+    getUnixTimeStampByDate9Sub,
     getUnixTimeStampByYmdPlus
 } from "../../util/common";
 import common_1, {HttpException, UseGuards} from "@nestjs/common";
@@ -164,6 +169,7 @@ export class PaymentModelResolver {
                         receiptId: response.receipt_id,
                         payMethod: response.method_origin_symbol,
                         regdate: getUnixTimeStamp(),
+                        paydate: getUnixTimeStampByDate(response.purchased_at.toString()),
                         cardName: response.card_data ? response.card_data.card_company : '',
                         cardNum: response.card_data ? response.card_data.card_no : '',
                     })
