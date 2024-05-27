@@ -39,6 +39,7 @@ class PaymentItemInput {
     startDate: string
     endDate: string
     price: number
+    submitChannel: number
 }
 
 @Resolver('PaymentModel')
@@ -107,6 +108,7 @@ export class PaymentModelResolver {
                     status: 100,
                     memberType: 1,
                     memberType2: 1,
+                    submitChannel: paymentItemInput.submitChannel,
                     nights: nights,
                     campaignIdx: paymentItemInput.campaignIdx,
                     itemIdx: paymentItemInput.itemIdx,

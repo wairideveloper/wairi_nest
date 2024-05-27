@@ -84,6 +84,7 @@ input PaymentItemInput {
     nop: Int
     startDate: String
     endDate: String
+    submitChannel: Int
 }
 
 type PaymentItemResponse{
