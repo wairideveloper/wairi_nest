@@ -8,7 +8,7 @@ import {
     _getChannelName, bufferToString, FROM_UNIXTIME_JS_PLUS,
     genSid, getAfter3Days, getChannelName,
     getUnixTimeStamp,
-    getUnixTimeStampAfter3Days,
+    getUnixTimeStampAfter3Days, getUnixTimeStampAfter42Hours,
     getUnixTimeStampByDate, getUnixTimeStampByDate9Sub
 } from "../../util/common";
 import {CampaignService} from "../../campaign/campaign.service";
@@ -162,6 +162,7 @@ export class SubmitModelResolver {
                 memberIdx: authUser.idx,
                 regdate: getUnixTimeStamp(),
                 autoCancelDate: getUnixTimeStampAfter3Days(), // 3일 후 자동 취소
+                payExpire: getUnixTimeStampAfter42Hours(), // 42시간 후
                 campaignName: campaign.name,
                 itemName: campaignItem.name,
                 payItem: pay,

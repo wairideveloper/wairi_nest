@@ -123,6 +123,10 @@ export const getUnixTimeStampAfter3Days = () => {
     return moment().add(3, 'days').unix();
 }
 
+//현재시간 유닉스 타임스템프 42시간  후
+export const getUnixTimeStampAfter42Hours = () => {
+    return moment().add(42, 'hours').unix();
+}
 //현재시간 3일후 날짜
 export const getAfter3Days = () => {
     return moment().add(3, 'days').format('YYYY-MM-DD');
