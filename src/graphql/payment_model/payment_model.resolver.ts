@@ -71,108 +71,107 @@ export class PaymentModelResolver {
             const campaignItem = await this.campaignsService.getCampaignItemByIdx(paymentItemInput.itemIdx);
             console.log("=>(payment_model.resolver.ts:62) campaignItem", campaignItem);
 
+            let checked = true;
+            let sid = "";
+            while (checked) {
+                sid = genSid(paymentItemInput.itemIdx)
+                const checkSid = await this.submitModelService.checkSid(sid)
+                if (checkSid === 0) {
+                    checked = false;
+                }
+            }
+            console.log("=>(payment_model.resolver.ts:74) sid", sid);
+            let pay = campaignItem.priceOrig
+            const startDate = getUnixTimeStampByDate9Sub(paymentItemInput.startDate);
+            const endDate = getUnixTimeStampByDate9Sub(paymentItemInput.endDate);
+            const nights = (endDate - startDate) / 86400;
+            if (campaignItem.minDays > 1) {
+                let minDays = campaignItem.minDays - 1;
+                //nights 를 minDays 로 나눠 개수
+                let count = Math.floor(nights / minDays);
+                pay = pay * count;
+            }
+            let inputData = {
+                sid: String(sid),
+                status: 100,
+                memberType: 1,
+                memberType2: 1,
+                submitChannel: paymentItemInput.submitChannel,
+                nights: nights,
+                campaignIdx: paymentItemInput.campaignIdx,
+                itemIdx: paymentItemInput.itemIdx,
+                nop: paymentItemInput.nop,
+                startDate: startDate,
+                endDate: endDate,
+                price: paymentItemInput.price,
+                // type: createCampaignSubmitInput.type,
+                memberIdx: authUser.idx,
+                regdate: getUnixTimeStamp(),
+                campaignName: campaign.name,
+                itemName: campaignItem.name,
+                payItem: pay,
+                payTotal: pay,
+                use_app: 'Y',
+            }
+            //createCampaignSubmit
+            const insertSubmit = await queryRunner.manager.createQueryBuilder()
+                .insert()
+                .into(CampaignSubmit)
+                .values(inputData)
+                .execute();
+
+            const submitIdx = insertSubmit.identifiers[0].idx
+            console.log("=>(payment_model.resolver.ts:109) submitIdx", submitIdx);
+
+            const submitItem = await this.submitModelService.getSubmitBySid(sid) //sid로 신청 정보 가져오기
+
             await Bootpay.getAccessToken()
             const response = await Bootpay.confirmPayment(paymentItemInput.receipt_id)
             console.log("=>(payment_model.service.ts:19) confirmPayment", response);
 
-            if(response.status === 1) {
+            if (response.status === 1) {
                 console.log("-> response", response.status);
                 if ((campaignItem.priceDeposit) != response.price) {
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
+                //재고 차감
+                const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
+                    paymentItemInput.itemIdx, paymentItemInput.startDate, paymentItemInput.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
 
-                let checked = true;
-                let sid = "";
-                while (checked) {
-                    sid = genSid(paymentItemInput.itemIdx)
-                    const checkSid = await this.submitModelService.checkSid(sid)
-                    if (checkSid === 0) {
-                        checked = false;
+                let itemSchduleIdx = [];
+
+                campaignItemSchdule.forEach((item) => {
+                    itemSchduleIdx.push(item.idx);
+                    if (item.stock == 0) {
+                        throw new HttpException("재고가 부족합니다.", 404);
                     }
-                }
-                console.log("=>(payment_model.resolver.ts:74) sid", sid);
-                let pay = campaignItem.priceOrig
-                const startDate = getUnixTimeStampByDate9Sub(paymentItemInput.startDate);
-                const endDate = getUnixTimeStampByDate9Sub(paymentItemInput.endDate);
-                const nights = (endDate - startDate) / 86400;
-                if (campaignItem.minDays > 1) {
-                    let minDays = campaignItem.minDays - 1;
-                    //nights 를 minDays 로 나눠 개수
-                    let count = Math.floor(nights / minDays);
-                    pay = pay * count;
-                }
-                let inputData = {
-                    sid: String(sid),
-                    status: 100,
-                    memberType: 1,
-                    memberType2: 1,
-                    submitChannel: paymentItemInput.submitChannel,
-                    nights: nights,
-                    campaignIdx: paymentItemInput.campaignIdx,
-                    itemIdx: paymentItemInput.itemIdx,
-                    nop: paymentItemInput.nop,
-                    startDate: startDate,
-                    endDate: endDate,
-                    price: paymentItemInput.price,
-                    // type: createCampaignSubmitInput.type,
-                    memberIdx: authUser.idx,
-                    regdate: getUnixTimeStamp(),
-                    campaignName: campaign.name,
-                    itemName: campaignItem.name,
-                    payItem: pay,
-                    payTotal: pay,
-                    use_app: 'Y',
-                }
-                //createCampaignSubmit
-                const insertSubmit = await queryRunner.manager.createQueryBuilder()
-                    .insert()
-                    .into(CampaignSubmit)
-                    .values(inputData)
-                    .execute();
-
-                const submitIdx = insertSubmit.identifiers[0].idx
-                console.log("=>(payment_model.resolver.ts:109) submitIdx", submitIdx);
-
-                const submitItem = await this.submitModelService.getSubmitBySid(sid) //sid로 신청 정보 가져오기
-
-                    //재고 차감
-                    const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
-                        paymentItemInput.itemIdx, paymentItemInput.startDate, paymentItemInput.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
-
-                    let itemSchduleIdx = [];
-
-                    campaignItemSchdule.forEach((item) => {
-                        itemSchduleIdx.push(item.idx);
-                        if (item.stock == 0) {
-                            throw new HttpException("재고가 부족합니다.", 404);
-                        }
-                    });
-                    if (itemSchduleIdx.length > 0) {
-                        let count: any;
-                        if (campaignItem.calcType1 == 1) {
-                            count = campaignItem.limits;
-                        } else {
-                            count = campaignItem.nop;
-                        }
-                        const result = await this.submitModelService.updateCampaignItemSchduleStock(
-                            itemSchduleIdx,
-                            count,
-                            sid,
-                            response,
-                            // 12328, // memberIdx0114
-                            authUser.idx, // memberIdx
-                            campaignItem.idx
-                        )
+                });
+                if (itemSchduleIdx.length > 0) {
+                    let count: any;
+                    if (campaignItem.calcType1 == 1) {
+                        count = campaignItem.limits;
+                    } else {
+                        count = campaignItem.nop;
                     }
-                    await queryRunner.commitTransaction();
-                    return {
-                        status: response.status,
-                        code: 200,
-                        message: getBootpayStatusText(response.status),
-                        data: response
-                    }
+                    const result = await this.submitModelService.updateCampaignItemSchduleStock(
+                        itemSchduleIdx,
+                        count,
+                        sid,
+                        response,
+                        // 12328, // memberIdx0114
+                        authUser.idx, // memberIdx
+                        campaignItem.idx
+                    )
+                }
+                await queryRunner.commitTransaction();
+                return {
+                    status: response.status,
+                    code: 200,
+                    message: getBootpayStatusText(response.status),
+                    data: response
+                }
             }
 
         } catch (error) {
