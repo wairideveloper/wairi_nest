@@ -76,7 +76,22 @@ type ConfirmStockData {
     vbank_data: Vbank_data
 }
 
+input PaymentItemInput {
+    receipt_id: String!
+    price: Int
+    campaignIdx: Int
+    itemIdx: Int
+    nop: Int
+    startDate: String
+    endDate: String
+}
 
+type PaymentItemResponse{
+    status: Int
+    code: Int
+    message: String
+#    data: ConfirmStockData
+}
 
 extend type Query {
 #    부트페이 토큰 발급
@@ -87,4 +102,5 @@ extend type Query {
 
 extend type Mutation {
     confirmStock(confirmPaymentInput:ConfirmPaymentInput): ConfirmStock
+    paymentItem(paymentItemInput:PaymentItemInput): PaymentItemResponse
 }

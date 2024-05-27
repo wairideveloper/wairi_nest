@@ -18,11 +18,18 @@ import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {MembersService} from "../member_model/member.service";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
+import {CampaignService} from "../../campaign/campaign.service";
+import {CampaignImage} from "../../../entity/entities/CampaignImage";
+import {Cate} from "../../../entity/entities/Cate";
+import {CateArea} from "../../../entity/entities/CateArea";
+import {CampaignRecent} from "../../../entity/entities/CampaignRecent";
+import {CampaignFav} from "../../../entity/entities/CampaignFav";
 
 @Module({
   imports: [
       TypeOrmModule.forFeature([
           Campaign,
+          CampaignImage,
           CampaignItem,
           CampaignItemSchedule,
           CampaignSubmit,
@@ -33,10 +40,15 @@ import {Config} from "../../../entity/entities/Config";
           Admin,
           Partner,
           CampaignReview,
-          Config
+          Config,
+          CampaignSubmit,
+          Cate,
+          CateArea,
+          CampaignRecent,
+          CampaignFav
       ]),
   ],
   providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService,
-  ApiplexService, MembersService],
+  ApiplexService, MembersService,CampaignService],
 })
 export class PaymentModelModule {}

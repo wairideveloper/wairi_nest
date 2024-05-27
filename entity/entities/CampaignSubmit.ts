@@ -171,7 +171,7 @@ export class CampaignSubmit {
     options: string | null;
 
     @Column("char", {name: "use_app"})
-    use_app: number;
+    use_app: string;
 
     @Column('text', { name: 'editPostDraft' })
     editPostDraft: string | null;

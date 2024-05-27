@@ -6,7 +6,7 @@ input CreateCampaignSubmitInput{
     endDate: String!
     price: Int!
 #    type: Int!
-    submitChannel: Int!
+    submitChannel: Int
     subContent2: String!
     agreeContent: Int!
 }
@@ -31,7 +31,7 @@ type CampaignSubmit{
     price: Int!
     payTotal: Int!
     type: Int!
-    submitChannel: Int!
+    submitChannel: Int
     subContent2: String!
     agreeContent: String
     campaignName: String
