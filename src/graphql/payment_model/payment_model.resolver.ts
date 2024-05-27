@@ -175,7 +175,10 @@ export class PaymentModelResolver {
 
         } catch (error) {
             console.log("=>(payment_model.resolver.ts:106) error", error);
+            await queryRunner.rollbackTransaction();
             throw new HttpException(error.message, error.error_code);
+        } finally {
+            await queryRunner.release();
         }
     }
 
