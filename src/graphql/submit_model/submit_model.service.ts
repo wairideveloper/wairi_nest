@@ -86,7 +86,7 @@ export class SubmitModelService {
     }
 
     async getSubmitList(memberIdx: number, take: number, page: number) {
-        let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+        let query = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             // .leftJoin("campaignSubmit.campaign", "campaign")
             .leftJoin("campaignSubmit.campaignItem", "campaignItem")
             .leftJoin('campaign', 'campaign', 'campaign.idx = campaignItem.campaignIdx')
@@ -119,12 +119,25 @@ export class SubmitModelService {
                 "campaignSubmit.isPostSummary as isPostSummary",
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
             ])
-            .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')
-            .where("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
-            .orderBy("campaignSubmit.regdate", "DESC")
-            .offset(take * (page - 1))
-            .limit(take)
-            .getRawMany();
+        query.addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')
+        if (process.env.PORT == '3000') {
+            console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+            query.addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('aws_url as image')
+                        .from('campaignImage', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .orderBy('ordering', 'ASC')
+                        .limit(1),
+                'image'
+            )
+        }
+        query.where("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+        query.orderBy("campaignSubmit.regdate", "DESC")
+        query.offset(take * (page - 1))
+        query.limit(take)
+        let data = await query.getRawMany();
         data = bufferToString(data);
         let total = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .select('*')
