@@ -162,7 +162,7 @@ export class SubmitModelResolver {
                 memberIdx: authUser.idx,
                 regdate: getUnixTimeStamp(),
                 autoCancelDate: getUnixTimeStampAfter3Days(), // 3일 후 자동 취소
-                payExpire: getUnixTimeStampAfter42Hours(), // 42시간 후
+                // payExpire: getUnixTimeStampAfter42Hours(), // 42시간 후
                 campaignName: campaign.name,
                 itemName: campaignItem.name,
                 payItem: pay,
