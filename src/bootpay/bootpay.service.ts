@@ -213,6 +213,10 @@ export class BootpayService {
             }
         }catch (e) {
             console.log("=>(bootpay.service.ts:updateKakaoPayment) e", e);
+            await queryRunner.rollbackTransaction();
+            throw new HttpException(e.message,e.status );
+        }finally {
+            await queryRunner.release();
         }
     }
 }
