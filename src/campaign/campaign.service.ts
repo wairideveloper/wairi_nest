@@ -323,7 +323,6 @@ export class CampaignService {
             item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
             result.push(item);
         })
-        console.log("=>(campaign.service.ts:264) result", result);
         // data.forEach((item) => {
         //     item.regdate = moment.unix(item.regdate).format('YYYY-MM-DD HH:mm:ss');
         //     campaignItemLowestPrice.forEach((item2) => {
@@ -796,7 +795,7 @@ export class CampaignService {
                 .andWhere(`campaignItemSchedule.date <= UNIX_TIMESTAMP('${end_day}')`)
                 .getRawMany();
             data = bufferToString(data);
-            console.log("=>(campaign.service.ts:560) data", data);
+            // console.log("=>(campaign.service.ts:560) data", data);
             return data;
         } catch (error) {
             console.log("=>(campaign.service.ts:562) error", error);
@@ -1134,7 +1133,6 @@ export class CampaignService {
             .andWhere('campaignItemSchedule.itemIdx = :idx', {idx: idx})
             .orderBy('campaignItem.ordering', 'ASC')
             .getRawMany();
-        console.log("=>(campaign.service.ts:870) data", data);
 
         //data 에서 신청 가능 date 값만 추출
         let date = data.map((item) => {
