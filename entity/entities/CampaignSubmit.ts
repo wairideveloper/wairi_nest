@@ -173,6 +173,9 @@ export class CampaignSubmit {
     @Column("char", {name: "use_app"})
     use_app: string;
 
+    @Column("datetime", { name: "created_at" })
+    created_at: string;
+
     @Column('text', { name: 'editPostDraft' })
     editPostDraft: string | null;
 

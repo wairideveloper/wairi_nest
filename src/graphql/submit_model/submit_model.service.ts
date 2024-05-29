@@ -68,6 +68,7 @@ export class SubmitModelService {
                 'payItem',
                 'payTotal',
                 'agreeContent',
+                'created_at',
                 'use_app',
             ])
             .values(inputData)

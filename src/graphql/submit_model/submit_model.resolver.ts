@@ -6,7 +6,7 @@ import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {
     _getChannelName, bufferToString, FROM_UNIXTIME_JS_PLUS,
-    genSid, getAfter3Days, getChannelName,
+    genSid, getAfter3Days, getChannelName, getNowYmdHis,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days, getUnixTimeStampAfter42Hours,
     getUnixTimeStampByDate, getUnixTimeStampByDate9Sub
@@ -168,6 +168,7 @@ export class SubmitModelResolver {
                 payItem: pay,
                 payTotal: pay,
                 agreeContent: createCampaignSubmitInput.agreeContent,
+                created_at: getNowYmdHis(),
                 use_app: 'Y',
             }
 
@@ -208,7 +209,7 @@ export class SubmitModelResolver {
                     "인원": createCampaignSubmitInput.nop+'명',
                     "채널주소": submitChannel.link,
                     "자동신청마감시간": getAfter3Days(),
-                    "캠페인페이지승인링크": `https://wairi.co.kr/extranet/campaign/submit#/${data.raw.insertId}`,
+                    "캠페인페이지승인링크": `http://wairiextranet.com/approval/approval_list`,
                 }
                 console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
                 console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));

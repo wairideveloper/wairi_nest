@@ -69,7 +69,6 @@ export class AuthController {
 
 
         const user = req.user;
-        console.log("-> user", user);
 
         const data = await this.authService.naverLogin(req.user);
 
@@ -89,7 +88,6 @@ export class AuthController {
     @UseGuards(AuthGuard("google"))
     @Get('/google/callback')
     async googleCallback(@Req() req, @Res() res): Promise<any> {
-        console.log("-> user", req.user);
         const data = await this.authService.googleLogin(req.user);
         return data;
 
