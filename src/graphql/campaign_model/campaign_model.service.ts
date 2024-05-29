@@ -287,7 +287,7 @@ export class CampaignService {
                     .addOrderBy("weight", 'DESC')
                     .addOrderBy('regdate', 'DESC')
                     .groupBy('campaign.idx')
-                    .limit(1000)
+                    .limit(8)
                 campaign = await query.getRawMany()
 
             }
