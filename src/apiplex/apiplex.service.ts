@@ -187,7 +187,7 @@ export class ApiplexService {
         console.log("=>(apiplex.service.ts:86) axioData", axioData);
         let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
         console.log("=>(apiplex.service.ts:87) result", result.data.results);
-        return result;
+        // return result;
         if (result.data.results[0].code == 'C100') {
           let data = {
             status: this.code[result.data.results.code],
@@ -200,7 +200,7 @@ export class ApiplexService {
           }
           console.log("=>(apiplex.service.ts:144) data", data);
 
-          // await this.notificationTalkSave(data)
+          await this.notificationTalkSave(data)
         }
       } catch (error) {
         this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));

@@ -361,6 +361,7 @@ export class PaymentModelResolver {
                     "채널주소": cannelData['link'],
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
+                await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
             }
 
             return {

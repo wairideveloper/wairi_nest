@@ -348,7 +348,18 @@ export class SubmitModelResolver {
             let data = await this.submitModelService.draftRegistration(
                 draftRegistrationInput.sid,draftRegistrationInput.postTitle, draftRegistrationInput.postRemarks, authUser.idx);
             console.log("=>(submit_model.resolver.ts:194) data", data);
+
+            const campaignSubmit = await this.submitModelService.getSubmitDetail(draftRegistrationInput.sid, authUser.idx);
             if (data.affected === 1) {
+                //Todo apiplex 알림톡
+                const param = {
+                    "이름": authUser.username ? authUser.username : "회원",
+                    "캠페인이름": campaignSubmit.campaignName,
+                    "이용일자": `${campaignSubmit.startDate} ~ ${campaignSubmit.endDate}`,
+                    "인원": campaignSubmit.nop,
+                    "포스팅검수완료페이지": campaignSubmit.postRemarks,
+                }
+                await this.apiPlexService.sendPartnerAlimtalk('592J21Ev2gxG', param, campaignSubmit.campaignIdx);
                 return {
                     code: 200,
                     message: '초안 등록이 완료되었습니다.',
