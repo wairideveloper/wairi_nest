@@ -6,7 +6,7 @@ import {AuthUser} from "../../auth/auth-user.decorator";
 import {Member} from "../../../entity/entities/Member";
 import {
     _getChannelName, bufferToString, FROM_UNIXTIME_JS_PLUS,
-    genSid, getAfter3Days, getChannelName, getNowYmdHis,
+    genSid, getAfter3Days, getChannelName, getNowYmdHis, getNowYmdHisPlus,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days, getUnixTimeStampAfter42Hours,
     getUnixTimeStampByDate, getUnixTimeStampByDate9Sub
@@ -168,7 +168,7 @@ export class SubmitModelResolver {
                 payItem: pay,
                 payTotal: pay,
                 agreeContent: createCampaignSubmitInput.agreeContent,
-                created_at: getNowYmdHis(),
+                created_at: getNowYmdHisPlus(),
                 use_app: 'Y',
             }
 

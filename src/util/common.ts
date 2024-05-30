@@ -158,6 +158,10 @@ export const getymd = () => {
 export const getNowYmdHis = () => {
     return moment().format('YYYY-MM-DD HH:mm:ss');
 }
+//현재시간 Y-m-d H:i:s +9
+export const getNowYmdHisPlus = () => {
+    return moment().add(9, 'hours').format('YYYY-MM-DD HH:mm:ss');
+}
 
 //jwt 토큰 확인 referer
 export const verifyToken = (req) => {
