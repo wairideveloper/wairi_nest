@@ -329,6 +329,8 @@ export class ApiplexService {
             partner = bufferToString(partner)
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
+            data['업체이름'] = partner.corpName;
+            data['캠페인이름'] = partner.corpName;
             console.log("=>(apiplex.service.ts:332) data", data);
 
             // console.log("=>(apiplex.service.ts:333) phoneList", phoneList);
@@ -479,7 +481,7 @@ export class ApiplexService {
                 break;
 
             case "592J21Ev2gxG":
-                return this._592J21Ev2gxG(data);
+                msg = this._592J21Ev2gxG(data);
                 break;
             // case "07860APt33hO": // 이용수칙 알림 (인스타)
             //     msg = this._07860APt33hO(data);

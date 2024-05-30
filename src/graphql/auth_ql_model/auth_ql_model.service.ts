@@ -87,7 +87,7 @@ export class AuthQlModelService {
                 });
                 console.log("-> member.idx", member.idx);
                 let memberChannel = await this.memberService.findChannel(member.idx);
-                memberChannel = bufferToString(memberChannel);
+                bufferToString(memberChannel);
 
                 //array memberChannel.regdate 변환
                 memberChannel = memberChannel.map((item, index) => {

@@ -370,9 +370,9 @@ export class SubmitModelResolver {
                     message: '초안 등록이 실패하였습니다.',
                 }
             }
-        } catch (error) {
-            console.log(error)
-            throw new HttpException(error.message, error.status);
+        } catch (e) {
+            console.log(e)
+            throw new HttpException(e.message, e.status);
         }
     }
 

@@ -236,11 +236,27 @@ export class PaymentModelResolver {
         @Args('confirmPaymentInput') confirmPaymentInput: ConfirmPaymentInput,
         @AuthUser() authUser: Member
     ) {
+
         console.log("=>(payment_model.resolver.ts:34) confirmPaymentInput.sid", confirmPaymentInput.sid);
         console.log("=>(payment_model.resolver.ts:36) confirmStock 유저정보 : ", authUser);
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
 
+            // //Todo 파트너 알림톡
+            // const member = await this.membersService.getMember(authUser.idx);
+            // const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
+            // const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
+            // const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, authUser.idx);
+            // let param = {
+            //     "이름": member.name ? member.name : "회원",
+            //     "캠페인이름": campaign.name,
+            //     "업체이름": partner.corpName,
+            //     "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
+            //     "인원": submitItem.nop,
+            //     "채널주소": cannelData['link'],
+            // }
+            // // await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
+            // await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
@@ -351,7 +367,7 @@ export class PaymentModelResolver {
                 const member = await this.membersService.getMember(authUser.idx);
                 const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
                 const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
-                const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, memberIdx);
+                const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, authUser.idx);
                 let param = {
                     "이름": member.name ? member.name : "회원",
                     "캠페인이름": campaign.name,
@@ -371,6 +387,7 @@ export class PaymentModelResolver {
                 data: response
             }
         } catch (error) {
+            console.log("=>(payment_model.resolver.ts:391) error", error);
             throw new HttpException(error.message, error.error_code);
         }
     }
