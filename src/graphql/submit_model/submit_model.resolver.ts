@@ -209,7 +209,7 @@ export class SubmitModelResolver {
                     "인원": createCampaignSubmitInput.nop+'명',
                     "채널주소": submitChannel.link,
                     "자동신청마감시간": getAfter3Days(),
-                    "캠페인페이지승인링크": `http://www.wairiextranet.com/approval/approval_list`,
+                    "캠페인페이지승인링크": `http://www.wairiextranet.com/approval/approval_list/status=100`,
                 }
                 console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
                 console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));
@@ -357,7 +357,7 @@ export class SubmitModelResolver {
                     "캠페인이름": campaignSubmit.campaignName,
                     "이용일자": `${campaignSubmit.startDate} ~ ${campaignSubmit.endDate}`,
                     "인원": campaignSubmit.nop,
-                    "포스팅검수완료페이지": campaignSubmit.postRemarks,
+                    "포스팅검수완료페이지": `http://www.wairiextranet.com/posting_review/posting/status=500`,
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('592J21Ev2gxG', param, campaignSubmit.campaignIdx);
                 return {
