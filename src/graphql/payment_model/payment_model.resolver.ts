@@ -255,8 +255,10 @@ export class PaymentModelResolver {
             //     "인원": submitItem.nop,
             //     "채널주소": cannelData['link'],
             // }
-            // // await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
+            // await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
             // await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
+            //
+
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
