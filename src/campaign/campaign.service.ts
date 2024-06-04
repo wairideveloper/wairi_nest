@@ -185,6 +185,121 @@ export class CampaignService {
         });
     }
 
+    async getCampaigns(take, page, cate, cateArea){
+
+        const query = await this.campaignRepository.createQueryBuilder('campaign');
+        query.leftJoin('cate', 'cate', 'cate.idx = campaign.cateIdx')
+        query.leftJoin('campaign.cateArea', 'cateArea', 'cateArea.idx = campaign.cateAreaIdx')
+        query.leftJoin('campaign.partner', 'partner', 'partner.idx = campaign.partnerIdx')
+        query.leftJoin(
+                subQuery => {
+                    return subQuery
+                        .select('ci.campaignIdx', 'campaignIdx')
+                        .addSelect('ci.file_name', 'file_name')
+                        .addSelect('ci.aws_url', 'aws_url')
+                        .from(CampaignImage, 'ci')
+                        .where('ci.ordering = 1')
+                },
+                'ci',
+                'ci.campaignIdx = campaign.idx'
+            )
+        query.leftJoin(
+                subQuery => {
+                    return subQuery
+                        .select('ci2.campaignIdx', 'campaignIdx')
+                        .addSelect('MIN(ci2.priceOrig)', 'priceOrig')
+                        .addSelect('MIN(ci2.dc11)', 'dc11')
+                        .addSelect('ci2.memberTarget', 'memberTarget')
+                        .from(CampaignItem, 'ci2')
+                        .where('ci2.remove = 0')
+                        .groupBy('ci2.campaignIdx')
+                },
+                'ci2',
+                'ci2.campaignIdx = campaign.idx'
+            )
+        query.select([
+            'campaign.idx as idx',
+            'campaign.name as name',
+            'campaign.weight as weight',
+            'campaign.regdate as regdate',
+            'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            'cate.name as cateName',
+            'cate.idx as cateIdx',
+            'cateArea.name as cateAreaName',
+            'cateArea.idx as cateAreaIdx',
+            'campaign.status as status',
+            'campaign.approvalMethod as approvalMethod',
+            'campaign.grade as grade',
+            'campaign.approvalRate as approvalRate',
+            'ci2.memberTarget as memberTarget',
+        ])
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('priceOrig')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('priceOrig', 'ASC')
+                    .limit(1),
+            'lowestPriceOrig'
+        )
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('dc11')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('dc11', 'ASC')
+                    .limit(1),
+            'discountPercentage'
+        )
+        if (process.env.PORT == '3000' || process.env.PORT == '4000') {
+            console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
+            query.addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('aws_url')
+                        .from('campaignImage', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .orderBy('ordering', 'ASC')
+                        .limit(1),
+                'image'
+            )
+        }
+        query.where('campaign.remove = 0')
+        query.andWhere('campaign.status BETWEEN 200 AND 700')
+        query.andWhere('ci2.memberTarget = 1')
+        query.andWhere('partner.status = 1')
+        query.orderBy('campaign.weight', 'DESC')
+        query.addOrderBy('campaign.regdate', 'DESC')
+        query.limit(1000)
+        let data = await query.getRawMany();
+        data = bufferToString(data);
+
+        let result = [];
+        data.forEach((item, index) => {
+            item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+            result.push(item);
+        })
+
+        let total = await query.getCount();
+        let totalPage = Math.ceil(total / take);
+        if (page > totalPage) {
+            throw new NotFoundException();
+        }
+
+        console.log("=>(campaign.service.ts:233) data", data);
+        const currentPage = page;
+        return new Pagination({
+            data,
+            total,
+            totalPage,
+            currentPage
+        });
+    }
+
     async mainList(take, page, cate, cateArea, sort) {
         let query: SelectQueryBuilder<Campaign>
         // let submitCount = this.campaignSubmit

@@ -82,7 +82,8 @@ export class CampaignResolver {
     ) {
         try {
 
-            const list = await this.campaignsService.mainList(take, page, cate, cateArea, sort);
+            // const list = await this.campaignsService.mainList(take, page, cate, cateArea, sort);
+            const list = await this.campaignsService.getCampaigns(take, page, cate, cateArea);
             return list
         } catch (error) {
             console.log(error)
