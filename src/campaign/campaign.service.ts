@@ -86,7 +86,7 @@ export class CampaignService {
             'cateArea.name as cateAreaName',
             'partner.corpName as partnerName',
         ])
-        if (process.env.PORT == '3000') {
+        if (process.env.PORT == '3000' || process.env.PORT == '4000') {
             console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
             query.addSelect(
                 (subQuery) =>
@@ -258,7 +258,7 @@ export class CampaignService {
             'campaign.grade as grade',
             'campaign.approvalRate as approvalRate',
         ])
-        if (process.env.PORT == '3000') {
+        if (process.env.PORT == '3000' || process.env.PORT == '4000') {
             console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
             query.addSelect(
                 (subQuery) =>
@@ -527,7 +527,7 @@ export class CampaignService {
                     'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignItem.idx order by ordering asc limit 1)) as image',
                 ]
             )
-        if (process.env.PORT == '3000') {
+        if (process.env.PORT == '3000' || process.env.PORT == '4000') {
             console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
             query.addSelect(
                 (subQuery) =>
@@ -558,7 +558,7 @@ export class CampaignService {
                     'ordering',
                 ]
             )
-        if (process.env.PORT == '3000') {
+        if (process.env.PORT == '3000' || process.env.PORT == '4000') {
             query.addSelect( 'aws_url as fileName')
         }
         query.where('campaignIdx = :idx', {idx: id})
@@ -715,7 +715,7 @@ export class CampaignService {
                 'cateArea.idx as cateAreaIdx',
                 'partner.corpName as partnerName',
             ]);
-            if (process.env.PORT == '3000') {
+            if (process.env.PORT == '3000' || process.env.PORT == '4000') {
                 console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
                 query.addSelect(
                     (subQuery) =>
@@ -858,7 +858,7 @@ export class CampaignService {
                     'cateArea.name as cateAreaName',
                     'partner.corpName as partnerName',
                 ])
-            if (process.env.PORT == '3000') {
+            if (process.env.PORT == '3000' || process.env.PORT == '4000') {
                 console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
                 query.addSelect(
                     (subQuery) =>
@@ -936,7 +936,7 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
             ])
-            if (process.env.PORT == '3000') {
+            if (process.env.PORT == '3000' || process.env.PORT == '4000') {
                 console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
                 weight_query.addSelect(
                     (subQuery) =>
@@ -967,7 +967,7 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
             ])
-            if (process.env.PORT == '3000') {
+            if (process.env.PORT == '3000' || process.env.PORT == '4000') {
                 console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
                 submit_query.addSelect(
                     (subQuery) =>
@@ -1203,7 +1203,7 @@ export class CampaignService {
                 'cateArea.name as cateAreaName',
                 'partner.corpName as partnerName',
             ])
-            if (process.env.PORT == '3000') {
+            if (process.env.PORT == '3000' || process.env.PORT == '4000') {
                 console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
                 query.addSelect(
                     (subQuery) =>
