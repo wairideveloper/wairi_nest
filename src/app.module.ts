@@ -123,6 +123,7 @@ import { EmailModule } from './email/email.module';
             debug: true,
             path: 'api/graphql',
             playground: true,
+            introspection: true,
             include: [MemberModule,
                 Campaign_gqlModule,
                 Auth_gqlModule,
