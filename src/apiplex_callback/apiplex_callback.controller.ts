@@ -48,6 +48,12 @@ async alimtalk_callback(
       @Body() body: any,
       @Res() res: Response
   ) {
+    let data = {
+      "code": "100",
+      "desc": "success"
+    };
+    // @ts-ignore
+    res.status(200).json(data);
    const result = body.results[0];
 
    try{
