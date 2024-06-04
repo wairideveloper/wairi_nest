@@ -290,7 +290,7 @@ export class CampaignService {
             throw new NotFoundException();
         }
 
-        console.log("=>(campaign.service.ts:233) data", data);
+        // console.log("=>(campaign.service.ts:233) data", data);
         const currentPage = page;
         return new Pagination({
             data,
