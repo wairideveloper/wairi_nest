@@ -255,7 +255,7 @@ export class ApiplexService {
 
     async notificationTalkSave(data: any) {
         let attempt = 1;
-        const maxRetries = 3; // 필요에 따라 값 조정
+        const maxRetries = 1; // 필요에 따라 값 조정
         const backoffDelay = 100; // 지연 시간 조정 (밀리초)
 
         while (attempt <= maxRetries) {
@@ -311,7 +311,7 @@ export class ApiplexService {
     async sendAlimtalk(phoneList: any[], template_code: string, params = []) {
         // phoneList.map(async (phone) => {
         for (const phone of phoneList) {
-            console.log(phone)
+            console.log("=>(apiplex.service.ts:315) sendAlimtalk", `${template_code} - ${phone}`);
             try {
                 let headers = this.headers;
                 let setConfigTemplate = this.setConfigTemplate(template_code, params);
