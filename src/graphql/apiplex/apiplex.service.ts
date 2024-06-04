@@ -280,7 +280,8 @@ export class ApiplexService {
     }
 
     async sendAlimtalk(phoneList: any[], template_code: string, params = []) {
-        phoneList.map(async (phone) => {
+        // phoneList.map(async (phone) => {
+        for (const phone of phoneList) {
             console.log(phone)
             try {
                 let headers = this.headers;
@@ -309,7 +310,8 @@ export class ApiplexService {
                 this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
                 throw new Error('Failed to send Alimtalk: ' + error.message);
             }
-        })
+            // })
+        }
     }
 
     async sendPartnerAlimtalk(templateCode: string, data: any, campaignIdx: number, division: string = '') {
