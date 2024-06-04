@@ -266,7 +266,7 @@ export class ApiplexService {
           .values(data)
           .execute();
     } catch (error) {
-      throw error;
+      throw new Error('Failed to save notificationTalk: ' + error.message);
     }
   }
   create(createApiplexDto: CreateApiplexDto) {

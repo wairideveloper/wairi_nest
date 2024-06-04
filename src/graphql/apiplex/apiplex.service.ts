@@ -239,18 +239,47 @@ export class ApiplexService {
         }
     }
 
+    // async notificationTalkSave(data: any) {
+    //     try {
+    //         await this.notificationTalkRepository
+    //             .createQueryBuilder()
+    //             .insert()
+    //             .into(NotificationTalk, ['status',
+    //                 'template_code', 'echo_to_webhook', 'message', 'receiver_number', 'data', 'created_at'])
+    //             .values(data)
+    //             .execute();
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
+
     async notificationTalkSave(data: any) {
-        try {
-            await this.notificationTalkRepository
-                .createQueryBuilder()
-                .insert()
-                .into(NotificationTalk, ['status',
-                    'template_code', 'echo_to_webhook', 'message', 'receiver_number', 'data', 'created_at'])
-                .values(data)
-                .execute();
-        } catch (error) {
-            throw error;
+        let attempt = 1;
+        const maxRetries = 3; // 필요에 따라 값 조정
+        const backoffDelay = 100; // 지연 시간 조정 (밀리초)
+
+        while (attempt <= maxRetries) {
+            try {
+                await this.notificationTalkRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(NotificationTalk, ['status',
+                        'template_code', 'echo_to_webhook', 'message', 'receiver_number', 'data', 'created_at'])
+                    .values(data)
+                    .execute();
+                return; // 성공 시 루프 종료
+            } catch (error) {
+                if (error.code === 'ER_LOCK_WAIT_TIMEOUT') {
+                    console.warn(`시도 ${attempt}: notificationTalk 테이블 락 대기 시간 초과. ${backoffDelay * 2 ** (attempt - 1)}ms 후 재시도...`);
+                    await new Promise(resolve => setTimeout(resolve, backoffDelay * 2 ** (attempt - 1)));
+                    attempt++;
+                } else {
+                    throw error; // 다른 오류는 다시 throw
+                }
+            }
         }
+
+        throw new Error('재시도 후에도 알림 데이터 저장 실패'); // 재시도 횟수 초과 시 처리
     }
 
     async sendUserAlimtalk(template_code: string, phone: string, param: any) {
