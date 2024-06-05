@@ -48,7 +48,14 @@ async alimtalk_callback(
       @Body() body: any,
       @Res() res: Response
   ) {
-
+//Response body (고객사 ➡ API PLEX) 리턴
+    console.log("=>(apiplex_callback.controller.ts:53) 알림톡 콜백 *******", body);
+    let data = {
+      "code": "100",
+      "desc": "success"
+    };
+    // @ts-ignore
+    res.status(200).json(data);
    const result = body.results[0];
 
    try{
