@@ -289,6 +289,7 @@ export class ApiplexService {
             let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
             console.log("=>(apiplex.service.ts:58) axioData", axioData);
             let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
+            console.log("=>(apiplex.service.ts:292) result", result);
             if (result.data.results[0].code == 'C100') {
                 let data = {
                     status: this.code[result.data.results.code],
@@ -445,6 +446,12 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
+            case "ghkf92y98dkj":
+                msg = this.ghkf92y98dkj(data);
+                break;
+            case "A15Ddgjt0fag":
+                msg = this.A15Ddgjt0fag(data);
+                break;
             case "18memDED3j3V":
                 msg = this._18memDED3j3V(data);
                 break;
@@ -1428,6 +1435,25 @@ export class ApiplexService {
             "※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
     }
 
+    private ghkf92y98dkj(data: any) {
+        return "[구매제 캠페인 결제 알림]\n" +
+            "\n" +
+            "안녕하세요, #{업체이름}님 ‘여행 인플루언서 플랫폼 와이리’입니다.\n" +
+            "아래 내용으로 인플루언서 구매제 캠페인 결제가 완료되었습니다.\n" +
+            "\n" +
+            "*구매제 캠페인이란? : 정상 판매가의 70% 금액으로 인플루언서에게 판매하며, 인플루언서가 홍보 콘텐츠를 작성해주는 캠페인(수수료: 판매 금액의 20%)\n" +
+            "\n" +
+            "■ 결제 내용\n" +
+            " - 이름: #{이름}\n" +
+            " - 캠페인 신청내용: #{업체이름}, #{캠페인이름}\n" +
+            " - 이용일자: #{이용일자}\n" +
+            " - 투숙인원: #{인원}\n" +
+            " - #{이름}님의 업로드 채널: #{채널주소}\n" +
+            "\n" +
+            " ※해당건은 결제가 진행됨과 동시에 예약이 완료되는 캠페인입니다.\n" +
+            " ※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
+    }
+
     private _7q0IN9T48W62(data: any) {
         return "[캠페인 신청 알림] \n" +
             " \n" +
@@ -1478,4 +1504,24 @@ export class ApiplexService {
             "\n" +
             "※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
     }
+
+    private A15Ddgjt0fag(data: any) {
+        return "[구매제 캠페인 확정 알림]\n" +
+            "\n" +
+            "안녕하세요 #{이름}님\n" +
+            "구매제 캠페인을 결제 완료하여 아래 내용으로 예약이 확정되었습니다.\n" +
+            "아래 예약 정보를 확인해주시길 바랍니다 :)\n" +
+            "\n" +
+            "■ 예약 내용\n" +
+            " - 이름: #{이름}\n" +
+            " - 캠페인 신청내용: #{업체이름}, #{캠페인이름}\n" +
+            " - 이용일자: #{이용일자}\n" +
+            " - 투숙인원: #{인원}\n" +
+            " - #{이름}님의 업로드 채널: #{채널주소}\n" +
+            " \n" +
+            " ※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
+    }
+
+
+
 }

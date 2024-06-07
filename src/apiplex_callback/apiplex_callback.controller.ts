@@ -59,31 +59,32 @@ async alimtalk_callback(
    const result = body.results[0];
 
    try{
-      if(result.code == '0'){
-        const msg_key = result.msg_key;
-        const code = this.kakaoCode[result.code];
-        const done_date = result.done_date;
-        const echo_to_webhook = result.echo_to_webhook;
-
-        // let updateResult = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
-        // // 업데이트 확인
-        // console.log("=>(apiplex_callback.controller.ts:57) res", updateResult);
-      }else{
-        console.log("=>(apiplex_callback.controller.ts:57) 실패", result);
-      }
-
-      //Response body (고객사 ➡ API PLEX) 리턴
-        let data = {
-            "code": "100",
-            "desc": "success"
-        };
-        // @ts-ignore
-     res.status(200).json(data);
+     //  if(result.code == '0'){
+     //    const msg_key = result.msg_key;
+     //    const code = this.kakaoCode[result.code];
+     //    const done_date = result.done_date;
+     //    const echo_to_webhook = result.echo_to_webhook;
+     //
+     //    // let updateResult = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
+     //    // // 업데이트 확인
+     //    // console.log("=>(apiplex_callback.controller.ts:57) res", updateResult);
+     //  }else{
+     //    console.log("=>(apiplex_callback.controller.ts:57) 실패", result);
+     //  }
+     //
+     //  //Response body (고객사 ➡ API PLEX) 리턴
+     //    let data = {
+     //        "code": "100",
+     //        "desc": "success"
+     //    };
+     //    // @ts-ignore
+     // res.status(200).json(data);
 
 
 
    }catch (e) {
-        console.log("=>(apiplex_callback.controller.ts:51) e", e);
+     console.log("=>(apiplex_callback.controller.ts:51) e", e);
+
    }
   }
 
