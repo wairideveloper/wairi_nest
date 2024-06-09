@@ -35,9 +35,13 @@ export class EmailService {
         }
     }
 
-    private async getCampaignInfo(campaignIdx: number) {
+    private async getCampaignInfo(idx: number) {
+        console.log("=>(email.service.ts:39) campaignIdx", idx);
         try {
-            const campaign = await this.campaignRepository.findOne({ where: { idx: campaignIdx } });
+            const campaign = await this.campaignRepository.createQueryBuilder('campaign')
+                .select('*')
+                .where('campaign.idx = :idx', { idx: idx })
+                .getRawOne();
             bufferToString(campaign);
             return campaign;
         } catch (e) {
@@ -74,11 +78,13 @@ export class EmailService {
             bufferToString(template);
             return template;
         } catch (e) {
+            console.log("=>(email.service.ts:79) e", e);
             throw new ConflictException(e.message);
         }
     }
 
-    private emailList(partner: Partner, campaign: Campaign) {
+    private async emailList(partner: Partner, campaignIdx: any = null) {
+        console.log("=>(email.service.ts:83) campaignIdx", campaignIdx);
         const emailList = [];
         if (partner.contactEmail) {
             // 담당자 연락처
@@ -94,14 +100,19 @@ export class EmailService {
                 }
             });
         }
-        if (campaign.noteReceivers) {
-            // 캠페인 추가 수신자
-            const campaignReceivers = JSON.parse(campaign.noteReceivers);
-            campaignReceivers.forEach((item) => {
-                if (item.receiveEmail == 1 && item.email) {
-                    emailList.push(item.email);
-                }
-            });
+console.log("=>(email.service.ts:101) emailList", emailList);
+        if(campaignIdx){
+            console.log("=>(email.service.ts:100) campaignIdx", campaignIdx);
+            const campaign = await this.getCampaignInfo(campaignIdx);
+            if (campaign.noteReceivers) {
+                // 캠페인 추가 수신자
+                const campaignReceivers = JSON.parse(campaign.noteReceivers);
+                campaignReceivers.forEach((item) => {
+                    if (item.receiveEmail == 1 && item.email) {
+                        emailList.push(item.email);
+                    }
+                });
+            }
         }
         return emailList;
     }
@@ -140,6 +151,90 @@ export class EmailService {
         return msg;
     }
 
+    async partnerEmail(code: string, data: any, partnerIdx: any, campaignIdx: any = null) {
+        try{
+            const partner = await this.getPaterInfo(partnerIdx);
+            const template = await this.getEmailTemplate(code);
+            const emailList = await this.emailList(partner, campaignIdx);
+
+            let templeteData = {};
+            switch (code) {
+                case 'djgoak25gpd0':
+                    console.log("=>(email.service.ts:164) data", data);
+                    templeteData = {
+                        업체이름: partner.corpName,
+                        이름: data['이름'],
+                        캠페인이름: data['캠페인이름'],
+                        이용일자: data['이용일자'],
+                        인원: data['인원'],
+                        채널주소: data['채널주소'],
+                        자동신청마감시간: data['자동신청마감시간'],
+                        캠페인페이지승인링크: data['캠페인페이지승인링크'],
+                        };
+                    break;
+                case '72o88NAj9Gla':
+                    console.log("=>(email.service.ts:164) data", data);
+                    templeteData = {
+                        업체이름: partner.corpName,
+                        이름: data['이름'],
+                        캠페인이름: data['캠페인이름'],
+                        이용일자: data['이용일자'],
+                        인원: data['인원'],
+                        채널주소: data['채널주소'],
+                        취소사유: data['취소사유'],
+                    };
+                    break;
+                case '10jios36HB30':
+                    console.log("=>(email.service.ts:164) data", data);
+                    templeteData = {
+                        업체이름: partner.corpName,
+                        이름: data['이름'],
+                        캠페인이름: data['캠페인이름'],
+                        이용일자: data['이용일자'],
+                        인원: data['인원'],
+                        채널주소: data['채널주소'],
+                    };
+                    break;
+                case '592J21Ev2gxG':
+                    console.log("=>(email.service.ts:164) data", data);
+                    templeteData = {
+                        업체이름: partner.corpName,
+                        이름: data['이름'],
+                        캠페인이름: data['캠페인이름'],
+                        이용일자: data['이용일자'],
+                        인원: data['인원'],
+                        포스팅검수완료페이지: data['포스팅검수완료페이지'],
+                    };
+                    break;
+                case '1cOS69z2IOW5':
+                    console.log("=>(email.service.ts:164) data", data);
+                    templeteData = {
+                        업체이름: partner.corpName,
+                        업체명: data['업체명'],
+                        이름: data['이름'],
+                        캠페인이름: data['캠페인이름'],
+                        이용일자: data['이용일자'],
+                        인원: data['인원'],
+                        콘텐츠URL: data['콘텐츠URL'],
+                    };
+                    break;
+            }
+            // 메일 내용 치환
+            const subject = this.textTransform(template.sendTitle, templeteData);
+            const content = this.textTransform(template.content, templeteData);
+            console.log('=>(email.service.ts:173) subject', content);
+
+            // 메일 전송
+            emailList.forEach((email) => {
+                // console.log('=>(email.service.ts:213) email', email);
+                this.sendEmail(email, subject, content);
+            });
+        }catch (e) {
+            console.log('=>(email.service.ts:54) e', e);
+            throw new ConflictException(e.message);
+        }
+    }
+
     async approvalEmail(code: string, data: any, user: any) {
         try {
             const partner = await this.getPaterInfo(user.idx);
@@ -147,7 +242,7 @@ export class EmailService {
             console.log('=>(email.service.ts:147) campaignSubmit', campaignSubmit);
             const campaign = await this.getCampaignInfo(campaignSubmit.campaignIdx);
             const template = await this.getEmailTemplate(code);
-            const emailList = this.emailList(partner, campaign);
+            const emailList = await this.emailList(partner, campaign.idx);
 
             let templeteData = {};
             switch (code) {

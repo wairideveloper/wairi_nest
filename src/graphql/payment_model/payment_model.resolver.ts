@@ -25,6 +25,7 @@ import {Bootpay} from "@bootpay/backend-js";
 import {Payment} from "../../../entity/entities/Payment";
 import {Connection} from "typeorm";
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
+import {EmailService} from "../../email/email.service";
 
 
 class ConfirmPaymentInput {
@@ -56,6 +57,7 @@ export class PaymentModelResolver {
         private readonly apiPlexService: ApiplexService,
         private readonly membersService: MembersService,
         private readonly campaignsService: CampaignService,
+        private readonly emailService: EmailService,
         private connection: Connection,
     ) {
     }
@@ -255,9 +257,10 @@ export class PaymentModelResolver {
             //     "인원": submitItem.nop,
             //     "채널주소": cannelData['link'],
             // }
-            // await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
-            // await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
             //
+            // await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
+            // await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
+            // await this.emailService.partnerEmail('10jios36HB30', param, partner.idx, campaign.idx);
 
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
@@ -378,8 +381,15 @@ export class PaymentModelResolver {
                     "인원": submitItem.nop,
                     "채널주소": cannelData['link'],
                 }
-                await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
-                await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
+
+                if(campaign.approvalMethod){
+                    await this.apiPlexService.sendUserAlimtalk('A15Ddgjt0fag', authUser.phone, param);
+                    await this.apiPlexService.sendPartnerAlimtalk('ghkf92y98dkj', param, submitItem.campaignIdx);
+                }else {
+                    await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
+                    await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
+                    await this.emailService.partnerEmail('10jios36HB30', param, partner.idx, campaign.idx);
+                }
             }
 
             return {

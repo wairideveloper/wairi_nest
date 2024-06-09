@@ -15,6 +15,7 @@ import {CampaignService} from "../../campaign/campaign.service";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 import {MembersService} from "../member_model/member.service";
 import {ApiplexService} from "../apiplex/apiplex.service";
+import {EmailService} from "../../email/email.service";
 
 class CreateCampaignSubmitInput {
     campaignIdx: number;
@@ -48,6 +49,7 @@ export class SubmitModelResolver {
         private readonly madein20ModelService: Madein20ModelService,
         private readonly membersService: MembersService,
         private readonly apiPlexService: ApiplexService,
+        private readonly emailService: EmailService,
     ) {
     }
 
@@ -219,10 +221,14 @@ export class SubmitModelResolver {
 
                 //authUser.phone string 으로 변환
 
-                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
+
                 // await this.apiPlexService.sendPartnerAlimtalk('7q0IN9T48W62', param, campaign.idx);
                 // await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
+
+                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
                 await this.apiPlexService.sendPartnerAlimtalk('djgoak25gpd0', param, campaign.idx);
+
+                await this.emailService.partnerEmail('djgoak25gpd0', param, campaign.partnerIdx, campaign.idx);
 
                 return {
                     code: 200,
@@ -320,6 +326,7 @@ export class SubmitModelResolver {
                 //Todo 취소 알림톡 72o88NAj9Gla
                 await this.apiPlexService.sendPartnerAlimtalk('72o88NAj9Gla', at_data, campaign.idx);
 
+                await this.emailService.partnerEmail('72o88NAj9Gla', at_data, partner.idx, campaign.idx);
 
                 return {
                     code: 200,
@@ -351,6 +358,7 @@ export class SubmitModelResolver {
             console.log("=>(submit_model.resolver.ts:194) data", data);
 
             const campaignSubmit = await this.submitModelService.getSubmitDetail(draftRegistrationInput.sid, authUser.idx);
+            const campaign = await this.submitModelService.getCampaignByCampaignIdx(campaignSubmit.campaignIdx);
             if (data.affected === 1) {
                 //Todo apiplex 알림톡
                 const param = {
@@ -362,6 +370,7 @@ export class SubmitModelResolver {
                     // "포스팅검수완료페이지": campaignSubmit['postUrl'],
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('592J21Ev2gxG', param, campaignSubmit.campaignIdx);
+                await this.emailService.partnerEmail('592J21Ev2gxG', param, campaign.partnerIdx, campaignSubmit.campaignIdx);
                 return {
                     code: 200,
                     message: '초안 등록이 완료되었습니다.',
@@ -449,6 +458,7 @@ export class SubmitModelResolver {
                     "콘텐츠URL" : draftCompleteInput.url,
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('1cOS69z2IOW5', param, submit.campaignIdx);
+                await this.emailService.partnerEmail('1cOS69z2IOW5', param, partner.idx, submit.campaignIdx);
                 return {
                     code: 200,
                     message: '초안 수정이 완료되었습니다.',

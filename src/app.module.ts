@@ -74,6 +74,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ApiplexModule } from './apiplex/apiplex.module';
 import { EmailModule } from './email/email.module';
+import {EmailTemplate} from "../entity/entities/EmailTemplate";
 @Module({
     imports: [
         CacheModule.register(),
@@ -95,7 +96,8 @@ import { EmailModule } from './email/email.module';
                 Cate, CateArea, Partner, CampaignReview,
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
-                Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk
+                Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk,
+                EmailTemplate
             ],
             synchronize: false,
             charset: 'utf8mb4',

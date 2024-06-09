@@ -24,6 +24,8 @@ import {Cate} from "../../../entity/entities/Cate";
 import {CateArea} from "../../../entity/entities/CateArea";
 import {CampaignRecent} from "../../../entity/entities/CampaignRecent";
 import {CampaignFav} from "../../../entity/entities/CampaignFav";
+import {EmailService} from "../../email/email.service";
+import {EmailTemplate} from "../../../entity/entities/EmailTemplate";
 
 @Module({
   imports: [
@@ -45,10 +47,11 @@ import {CampaignFav} from "../../../entity/entities/CampaignFav";
           Cate,
           CateArea,
           CampaignRecent,
-          CampaignFav
+          CampaignFav,
+          EmailTemplate
       ]),
   ],
   providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService,
-  ApiplexService, MembersService,CampaignService],
+  ApiplexService, MembersService,CampaignService, EmailService],
 })
 export class PaymentModelModule {}

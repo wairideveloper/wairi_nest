@@ -22,18 +22,21 @@ import {MembersService} from "../member_model/member.service";
 import {Admin} from "../../../entity/entities/Admin";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {Config} from "../../../entity/entities/Config";
+import {EmailTemplate} from "../../../entity/entities/EmailTemplate";
+
 import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 import {LogModelService} from "../log_model/log_model.service";
+import {EmailService} from "../../email/email.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
             CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member, Admin,
-            MemberChannel,Config, NotificationTalk
+            MemberChannel,Config, NotificationTalk,EmailTemplate
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService,
-  ApiplexService, LogModelService, MembersService]
+  ApiplexService, LogModelService, MembersService, EmailService]
 })
 export class SubmitModelModule {}
