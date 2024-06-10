@@ -71,6 +71,12 @@ export class ApiplexCallbackController {
                 // 업데이트 확인
                 console.log("=>(apiplex_callback.controller.ts:57) res", updateResult);
             } else {
+                const msg_key = result.msg_key;
+                const code = this.kakaoCode[result.code];
+                const done_date = result.done_date;
+                const echo_to_webhook = result.echo_to_webhook;
+
+                let updateResult = await this.apiplexCallbackService.alimtalk_callback(msg_key, code, done_date, echo_to_webhook);
                 console.log("=>(apiplex_callback.controller.ts:57) 실패", result);
             }
 
