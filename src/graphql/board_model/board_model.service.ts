@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Board } from '../../../entity/entities/Board';
 import { BoardArticles} from "../../../entity/entities/BoardArticles";
-import {bufferToString, FROM_UNIXTIME} from "../../util/common";
+import {bufferToString, FROM_UNIXTIME, FROM_UNIXTIME2} from "../../util/common";
 import {Pagination} from "../../paginate";
 
 @Injectable()
@@ -27,7 +27,8 @@ export class BoardModelService {
             let data = await this.boardArticlesRepository
                 .createQueryBuilder('boardArticles')
                 .select('*')
-                .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+                // .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
+                .addSelect(`(${FROM_UNIXTIME2('regdate')})`, 'regdate')
                 .where('boardArticles.boardIdx = :type', {type: type})
                 .orderBy('boardArticles.idx', 'DESC')
                 .offset(take * (page - 1))

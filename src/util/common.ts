@@ -76,6 +76,12 @@ export const FROM_UNIXDATE = (column: string) => {
     // return `DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(${column}),"UTC","Asia/Seoul"),"%Y-%m-%d")`;
 }
 
+export const FROM_UNIXTIME2 = (column: string) => {
+    return `DATE_FORMAT(FROM_UNIXTIME(${column}),"%Y-%m-%d %H:%i:%s")`;
+}
+
+
+
 //유닉스타임스템프를 javacript  한국 날짜로 변환 YYYY-MM-DD HH:mm:ss
 export const FROM_UNIXTIME_JS = (column: number) => {
     return moment.unix(Number(column)).format('YYYY-MM-DD HH:mm:ss');
