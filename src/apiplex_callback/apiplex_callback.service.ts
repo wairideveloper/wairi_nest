@@ -41,10 +41,10 @@ export class ApiplexCallbackService {
                     done_date: done_date,
                     created_at: new Date().toString()
                 }
-                return await this.notificationTalkCallBackRepository.createQueryBuilder('notification_talk_callback')
+                return await this.notificationTalkCallBackRepository.createQueryBuilder()
                     .insert()
                     .into(NotificationTalkCallBack, ['status',
-                        'template_code', 'echo_to_webhook', 'created_at'])
+                        'template_code', 'echo_to_webhook','done_date', 'created_at'])
                     .values(data)
                     .execute();
 
