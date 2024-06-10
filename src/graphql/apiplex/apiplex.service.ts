@@ -362,7 +362,7 @@ export class ApiplexService {
             data.corpName = partner.corpName;
             data.campaignName = partner.campaignName;
             data['업체이름'] = partner.corpName;
-            data['캠페인이름'] = partner.corpName;
+            data['캠페인이름'] = partner.campaignName;
             console.log("=>(apiplex.service.ts:332) data", data);
 
             // console.log("=>(apiplex.service.ts:333) phoneList", phoneList);

@@ -382,7 +382,7 @@ export class PaymentModelResolver {
                     "채널주소": cannelData['link'],
                 }
 
-                if(campaign.approvalMethod){
+                if(campaign.approvalMethod == 2){
                     await this.apiPlexService.sendUserAlimtalk('A15Ddgjt0fag', authUser.phone, param);
                     await this.apiPlexService.sendPartnerAlimtalk('ghkf92y98dkj', param, submitItem.campaignIdx);
                 }else {
