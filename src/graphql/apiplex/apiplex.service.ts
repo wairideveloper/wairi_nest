@@ -292,7 +292,7 @@ export class ApiplexService {
             console.log("=>(apiplex.service.ts:292) result", result);
             if (result.data.results[0].code == 'C100') {
                 let data = {
-                    status: this.code[result.data.results.code],
+                    status: this.code[result.data.results[0].code],
                     template_code: template_code,
                     echo_to_webhook: axioData.msg_data[0].echo_to_webhook,
                     message: setConfigTemplate,
@@ -323,7 +323,7 @@ export class ApiplexService {
                 console.log("=>(apiplex.service.ts:87) result", result.data.results);
                 if (result.data.results[0].code == 'C100') {
                     let data = {
-                        status: this.code[result.data.results.code],
+                        status: this.code[result.data.results[0].code],
                         template_code: template_code,
                         echo_to_webhook: axioData.msg_data[0].echo_to_webhook,
                         message: setConfigTemplate,
