@@ -125,6 +125,15 @@ export class MemberResolver {
                 data['channelName'] = createMemberChannelInput.channelName;
             }
 
+            const checkChannel = await this.membersService.checkMemberChannel(data);
+
+            if (checkChannel) {
+                return {
+                    code: 500,
+                    message: '이미 등록된 채널이 있습니다.',
+                }
+            }
+
             const createChannel = await this.membersService.setMemberChannel(data);
             const channelIdx = createChannel.raw.insertId;
             if (channelIdx == undefined) {

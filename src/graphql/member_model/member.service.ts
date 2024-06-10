@@ -355,6 +355,15 @@ export class MembersService {
         return await this.configRepository.find({where: [{cfgKey: 'subscription_path'}]})
     }
 
+    async checkMemberChannel(data) {
+        return await this.memberChannelRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+            .andWhere('type = :type', {type: data.type})
+            .getRawOne();
+    }
+
     async setMemberChannel(data: {
         memberIdx: number;
         link: string;

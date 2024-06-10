@@ -1374,8 +1374,7 @@ export class CampaignService {
                 currentPage
             });
         } catch (error) {
-            console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 

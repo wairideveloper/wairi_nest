@@ -1,6 +1,6 @@
 import {Args, Int, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {CampaignService} from "../../campaign/campaign.service";
-import {UseGuards, Req} from "@nestjs/common";
+import {UseGuards, Req, HttpException} from "@nestjs/common";
 import {GqlAuthGuard} from "../../auth/GqlAuthGuard";
 import {bufferToString, FROM_UNIXTIME, FROM_UNIXTIME_JS} from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
@@ -102,8 +102,7 @@ export class CampaignResolver {
             const list = await this.campaignsService.favList(take, page, authUser.idx);
             return list
         } catch (error) {
-            console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -114,8 +113,7 @@ export class CampaignResolver {
             let data = await this.campaignsService.detailCampaign(idx);
             return data
         } catch (error) {
-            console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -127,8 +125,7 @@ export class CampaignResolver {
             //json 형식으로 변환
             return data.campaignItem
         } catch (error) {
-            console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 
@@ -142,8 +139,7 @@ export class CampaignResolver {
             let data = await this.campaignsService.getItemSchedule(idx, start_day, end_day);
             return data
         } catch (error) {
-            console.log(error)
-            throw error;
+            throw new HttpException(error.message, error.status);
         }
     }
 

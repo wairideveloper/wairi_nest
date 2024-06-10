@@ -110,7 +110,7 @@ export class ReviewModelService {
 
         } catch (error) {
             console.log(error)
-            throw new NotFoundException();
+            throw new HttpException(error.message, error.status);
         }
     }
 
