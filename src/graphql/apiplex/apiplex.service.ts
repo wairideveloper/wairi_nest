@@ -284,6 +284,11 @@ export class ApiplexService {
 
     async sendUserAlimtalk(template_code: string, phone: string, param: any) {
         try {
+            //new Date() +9시간 해줘야함
+            const created_at = new Date();
+            created_at.setHours(created_at.getHours() + 9);
+
+
             let headers = this.headers;
             let setConfigTemplate = this.setConfigTemplate(template_code, param);
             let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
@@ -298,7 +303,8 @@ export class ApiplexService {
                     message: setConfigTemplate,
                     receiver_number: phone,
                     data: JSON.stringify(axioData),
-                    created_at: new Date()
+
+                    created_at:created_at
                 }
                 console.log("=>(apiplex.service.ts:144) data", data);
 
