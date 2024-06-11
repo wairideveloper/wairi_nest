@@ -214,6 +214,26 @@ export class PaymentModelResolver {
                     )
                 }
                 await queryRunner.commitTransaction();
+
+                //Todo 파트너 알림톡
+                const member = await this.membersService.getMember(authUser.idx);
+                const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
+                const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
+                const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, authUser.idx);
+                let param = {
+                    "이름": member.name ? member.name : "회원",
+                    "캠페인이름": campaign.name,
+                    "업체이름": partner.corpName,
+                    "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
+                    "인원": submitItem.nop,
+                    "채널주소": cannelData['link'],
+                }
+
+                if(campaign.approvalMethod == 2){
+                    await this.apiPlexService.sendUserAlimtalk('A15Ddgjt0fag', authUser.phone, param);
+                    await this.apiPlexService.sendPartnerAlimtalk('ghkf92y98dkj', param, submitItem.campaignIdx);
+                }
+
                 return {
                     status: response.status,
                     code: 200,
