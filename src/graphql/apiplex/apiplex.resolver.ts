@@ -11,6 +11,7 @@ export class ApiplexResolver {
   @Query()
   async testapiplex() {
     try {
+        console.log("=>(apiplex.resolver.ts:15) 'test", 'test');
         let at_data = {
             "이름": 'authUser.username',
             "업체이름": 'partner.corpName',
@@ -21,6 +22,12 @@ export class ApiplexResolver {
             "취소사유": 'reason',
             "콘텐츠URL": 'reason'
         }
+
+        await this.apiplexService.sendPartnerAlimtalk('djgoak25gpd0', at_data, 144);
+        return {
+            message: '성공',
+            code: 200,
+        };
 console.log("=>(apiplex.resolver.ts:24) test", 'test');
         await this.apiplexService.sendPartnerAlimtalk('1cOS69z2IOW5',at_data,144);
         return

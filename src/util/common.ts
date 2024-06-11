@@ -86,6 +86,10 @@ export const FROM_UNIXTIME2 = (column: string) => {
 export const FROM_UNIXTIME_JS = (column: number) => {
     return moment.unix(Number(column)).format('YYYY-MM-DD HH:mm:ss');
 }
+//유닉스타임스템프를 javacript  +9시간 변환 YYYY-MM-DD HH:mm:ss
+export const FROM_UNIXTIME_JS_PLUS9 = (column: number) => {
+    return moment.unix(Number(column)).add(9, 'hours').format('YYYY-MM-DD HH:mm:ss');
+}
 
 export const FROM_UNIXTIME_JS_YY_MM_DD = (column: number) => {
     return moment.unix(Number(column)).format('YY년MM월DD일');
@@ -411,14 +415,14 @@ export const dataDateTimeTransform = (data) => {
     // data 배열이면 forEach 아니면 그냥
     if(data.length === undefined) {
         data.regdate = FROM_UNIXTIME_JS(data.regdate);
-        data.startDate = FROM_UNIXTIME_JS(data.startDate);
-        data.endDate = FROM_UNIXTIME_JS(data.endDate);
+        data.startDate = FROM_UNIXTIME_JS_PLUS9(data.startDate);
+        data.endDate = FROM_UNIXTIME_JS_PLUS9(data.endDate);
         data.autoCancelDate = FROM_UNIXTIME_JS(data.autoCancelDate);
     }else {
         data.forEach((item) => {
             item.regdate = FROM_UNIXTIME_JS(item.regdate);
-            item.startDate = FROM_UNIXTIME_JS(item.startDate);
-            item.endDate = FROM_UNIXTIME_JS(item.endDate);
+            item.startDate = FROM_UNIXTIME_JS_PLUS9(item.startDate);
+            item.endDate = FROM_UNIXTIME_JS_PLUS9(item.endDate);
             item.autoCancelDate = FROM_UNIXTIME_JS(item.autoCancelDate);
         })
     }
