@@ -67,13 +67,13 @@ import {Withdrawal} from "../entity/entities/Withdrawal";
 import {CampaignReviewImage} from "../entity/entities/CampaignReviewImage";
 import {Admin} from "../entity/entities/Admin";
 import {ApolloServerErrorCode} from "@apollo/server/errors";
-import { ApiplexModule } from './graphql/apiplex/apiplex.module';
+// import { ApiplexModule } from './graphql/apiplex/apiplex.module';
 import { ApiplexCallbackModule } from './apiplex_callback/apiplex_callback.module';
 import {NotificationTalk} from "../entity/entities/NotificationTalk";
 import { LogModelModule } from './graphql/log_model/log_model.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { CacheModule } from '@nestjs/cache-manager';
-// import { ApiplexModule } from './apiplex/apiplex.module';
+import { ApiplexModule } from './apiplex/apiplex.module';
 import { EmailModule } from './email/email.module';
 import {EmailTemplate} from "../entity/entities/EmailTemplate";
 @Module({
