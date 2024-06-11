@@ -23,6 +23,7 @@ import {CampaignItemSchedule} from "../entity/entities/CampaignItemSchedule";
 import {MemberChannel} from "../entity/entities/MemberChannel";
 import {CampaignFav} from "../entity/entities/CampaignFav";
 import {NotificationTalkCallBack} from "../entity/entities/NotificationTalkCallBack";
+import {CampaignSubmitBackup} from "../entity/entities/CampaignSubmitBackup";
 //modules
 import {AuthModule} from './auth/auth.module';
 import {MembersModule} from './members/members.module';
@@ -98,7 +99,7 @@ import {EmailTemplate} from "../entity/entities/EmailTemplate";
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
                 Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk,
-                EmailTemplate,NotificationTalkCallBack
+                EmailTemplate,NotificationTalkCallBack,CampaignSubmitBackup
             ],
             synchronize: false,
             charset: 'utf8mb4',

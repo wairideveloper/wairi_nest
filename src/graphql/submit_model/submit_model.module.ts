@@ -23,6 +23,7 @@ import {Admin} from "../../../entity/entities/Admin";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {Config} from "../../../entity/entities/Config";
 import {EmailTemplate} from "../../../entity/entities/EmailTemplate";
+import {CampaignSubmitBackup} from "../../../entity/entities/CampaignSubmitBackup";
 
 import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
@@ -33,7 +34,7 @@ import {EmailService} from "../../email/email.service";
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
             CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member, Admin,
-            MemberChannel,Config, NotificationTalk,EmailTemplate
+            MemberChannel,Config, NotificationTalk,EmailTemplate,CampaignSubmitBackup
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService,

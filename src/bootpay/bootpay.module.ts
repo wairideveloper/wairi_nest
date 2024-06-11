@@ -9,12 +9,13 @@ import {CampaignItemSchedule} from "../../entity/entities/CampaignItemSchedule";
 import {Campaign} from "../../entity/entities/Campaign";
 import {Partner} from "../../entity/entities/Partner";
 import {CampaignItem} from "../../entity/entities/CampaignItem";
+import {CampaignSubmitBackup} from "../../entity/entities/CampaignSubmitBackup";
 
 @Module({
   imports: [
       TypeOrmModule.forFeature([
           Payment, CampaignSubmit, CampaignSubmit, CampaignItemSchedule, Campaign,
-          Partner, CampaignItem
+          Partner, CampaignItem,CampaignSubmitBackup
         ]),
   ],
   controllers: [BootpayController],

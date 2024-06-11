@@ -1,5 +1,6 @@
 import {HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import {CampaignSubmit} from "../../../entity/entities/CampaignSubmit";
+import {CampaignSubmitBackup} from "../../../entity/entities/CampaignSubmitBackup";
 import {CampaignItemSchedule} from "../../../entity/entities/CampaignItemSchedule";
 import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
@@ -39,6 +40,8 @@ export class SubmitModelService {
         private partnerRepository: Repository<Partner>,
         @InjectRepository(CampaignItem)
         private campaignItemRepository: Repository<CampaignItem>,
+        @InjectRepository(CampaignSubmitBackup)
+        private campaignSubmitBackupRepository: Repository<CampaignSubmitBackup>,
         private connection: Connection
     ) {
     }
@@ -47,6 +50,40 @@ export class SubmitModelService {
         let data = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
             .insert()
             .into(CampaignSubmit, [
+                'sid',
+                'status',
+                'memberType',
+                'memberType2',
+                'nights',
+                'campaignIdx',
+                'itemIdx',
+                'nop',
+                'startDate',
+                'endDate',
+                'price',
+                'submitChannel',
+                'subContent2',
+                'memberIdx',
+                'regdate',
+                'autoCancelDate',
+                'campaignName',
+                'itemName',
+                'payItem',
+                'payTotal',
+                'agreeContent',
+                'created_at',
+                'use_app',
+            ])
+            .values(inputData)
+            .execute();
+
+        return data;
+    }
+
+    async createCampaignSubmitBackup(inputData: any) {
+        let data = await this.campaignSubmitBackupRepository.createQueryBuilder("campaignSubmitBackup")
+            .insert()
+            .into(CampaignSubmitBackup, [
                 'sid',
                 'status',
                 'memberType',
@@ -534,4 +571,5 @@ export class SubmitModelService {
     async getCannelLinkByUserIdx(submitChannel,memberIdx: number) {
 
     }
+
 }

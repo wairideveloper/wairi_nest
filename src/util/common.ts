@@ -88,7 +88,7 @@ export const FROM_UNIXTIME_JS = (column: number) => {
 }
 //유닉스타임스템프를 javacript  +9시간 변환 YYYY-MM-DD HH:mm:ss
 export const FROM_UNIXTIME_JS_PLUS9 = (column: number) => {
-    return moment.unix(Number(column)).add(9, 'hours').format('YYYY-MM-DD HH:mm:ss');
+    return moment.unix(Number(column)).add(9, 'hours').format('YYYY-MM-DD');
 }
 
 export const FROM_UNIXTIME_JS_YY_MM_DD = (column: number) => {

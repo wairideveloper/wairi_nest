@@ -177,6 +177,10 @@ export class SubmitModelResolver {
             console.log('==========> 🤩 : ' + inputData);
 
             let data = await this.submitModelService.createCampaignSubmit(inputData);
+            let backup = await this.submitModelService.createCampaignSubmitBackup(inputData);
+
+            const submitIdx = data.raw.insertId;
+            console.log("=>(submit_model.resolver.ts:182) submitIdx", submitIdx);
 
             if (data) {
                 //캠페인 신청 알림
@@ -395,7 +399,7 @@ export class SubmitModelResolver {
     ) {
         try {
             let data = await this.submitModelService.getDraftDetail(sid, authUser.idx);
-            console.log("=>(submit_model.resolver.ts:220) data", data);
+            console.log("=>(submit_model.resolver.ts:220) getDraftDetail data", data);
             return data;
         } catch (error) {
             console.log(error)
@@ -412,7 +416,7 @@ export class SubmitModelResolver {
         try {
             let data = await this.submitModelService.updateDraftRegistration(
                 draftRegistrationInput.sid, draftRegistrationInput.postTitle, draftRegistrationInput.postRemarks, authUser.idx);
-            console.log("=>(submit_model.resolver.ts:220) data", data);
+            console.log("=>(submit_model.resolver.ts:220) updateDraftRegistration data", data);
             if (data.affected === 1) {
                 return {
                     code: 200,
