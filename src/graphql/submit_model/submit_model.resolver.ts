@@ -370,8 +370,8 @@ export class SubmitModelResolver {
                     "캠페인이름": campaignSubmit.campaignName,
                     "이용일자": `${campaignSubmit.startDate} ~ ${campaignSubmit.endDate}`,
                     "인원": campaignSubmit.nop,
-                    // "포스팅검수완료페이지": `http://www.wairiextranet.com/posting_review/posting/status=500`,
-                    "포스팅검수완료페이지": campaignSubmit['postUrl'],
+                    "포스팅검수완료페이지": `http://www.wairiextranet.com/posting_review/posting/status=500`,
+                    // "포스팅검수완료페이지": campaignSubmit['postUrl'],
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('592J21Ev2gxG', param, campaignSubmit.campaignIdx);
                 await this.emailService.partnerEmail('592J21Ev2gxG', param, campaign.partnerIdx, campaignSubmit.campaignIdx);
@@ -427,8 +427,8 @@ export class SubmitModelResolver {
                     "캠페인이름": campaignSubmit.campaignName,
                     "이용일자": `${campaignSubmit.startDate} ~ ${campaignSubmit.endDate}`,
                     "인원": campaignSubmit.nop,
-                    // "포스팅검수완료페이지": `http://www.wairiextranet.com/posting_review/posting/status=500`,
-                    "포스팅검수완료페이지": campaignSubmit['postUrl'],
+                    "포스팅검수완료페이지": `http://www.wairiextranet.com/posting_review/posting/status=500`,
+                    // "포스팅검수완료페이지": campaignSubmit['postUrl'],
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('T93adh3hkf92', param, campaignSubmit.campaignIdx);
                 return {
