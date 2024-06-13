@@ -452,6 +452,9 @@ export class ApiplexService {
     setConfigTemplate(template_code: any, data: any) {
         let msg = "";
         switch (template_code) {
+            case "T93adh3hkf92":
+                msg = this.T93adh3hkf92(data);
+                break;
             case "ghkf92y98dkj":
                 msg = this.ghkf92y98dkj(data);
                 break;
@@ -1529,5 +1532,18 @@ export class ApiplexService {
     }
 
 
-
+    private T93adh3hkf92(data: any) {
+        return "[초안 수정본 업로드 알림]\n" +
+            " \n" +
+            " 아래 내용으로 진행된 캠페인 포스팅 초안 수정본이 공유되었습니다. 확인바랍니다 :)\n" +
+            " \n" +
+            " ■ 포스팅 검수\n" +
+            " #{포스팅검수완료페이지}\n" +
+            " \n" +
+            " ■ 신청 내용\n" +
+            " - 이름: #{이름}\n" +
+            " - 캠페인 신청내용: #{업체이름}, #{캠페인이름}\n" +
+            " - 이용일자: #{이용일자}\n" +
+            " - 투숙인원: #{인원}";
+    }
 }

@@ -7,6 +7,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Pagination, PaginationOptions} from "../paginate";
 import * as moment from "moment/moment";
+import {bufferToString} from "../util/common";
 
 @Injectable()
 export class NoticeService {
@@ -24,28 +25,30 @@ export class NoticeService {
     }
 
     async findAll(options: PaginationOptions) {
-        const {take, page} = options;
+        const {take, page, memberType} = options;
         const data = await this.boardArticlesRepository.createQueryBuilder('boardArticles')
-            .leftJoin('boardArticles.board', 'board')
+            .leftJoin('board', 'board', 'board.idx = boardArticles.boardIdx')
             .select(
                 [
                     'board.name',
                     'boardArticles.idx',
                     'boardArticles.title',
+                    'boardArticles.content',
                     'boardArticles.regdate',
                 ]
             )
             .where('board.idx = :idx', {idx: 1})
-            .where('boardArticles.memberType = :memberType', {memberType: 0})
+            .where('boardArticles.memberType = :memberType', {memberType: memberType})
             .orderBy('boardArticles.idx', 'DESC')
             .offset(take * (page - 1))
             .limit(take)
             .getMany()
-
+        bufferToString(data)
+        console.log("=>(notice.service.ts:46) data", data);
         const total = await this.boardArticlesRepository.createQueryBuilder('boardArticles')
             .leftJoin('boardArticles.board', 'board')
             .where('board.idx = :idx', {idx: 1})
-            .where('boardArticles.memberType = :memberType', {memberType: 0})
+            .where('boardArticles.memberType = :memberType', {memberType: memberType})
             .getCount()
 
         let totalPage = Math.ceil(total / take);

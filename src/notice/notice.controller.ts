@@ -32,9 +32,10 @@ export class NoticeController {
       @Res() res: Response,
       @Query('page') page: number,
       @Query('take') take: number,
+      @Query('memberType') memberType: number,
   ) {
     try {
-      const list = await this.noticeService.findAll({take, page});
+      const list = await this.noticeService.findAll({take, page, memberType});
       res.status(HttpStatus.OK).json(list);
     } catch (error) {
       throw new HttpException({
