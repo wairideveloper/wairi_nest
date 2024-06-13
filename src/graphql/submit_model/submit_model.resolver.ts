@@ -215,8 +215,8 @@ export class SubmitModelResolver {
                     "인원": createCampaignSubmitInput.nop+'명',
                     "채널주소": submitChannel.link,
                     "자동신청마감시간": getAfter3Days(),
-                    // "캠페인페이지승인링크": `http://www.wairiextranet.com/approval/approval_list/status=100`,
-                    "캠페인페이지승인링크": `http://www.wairi.co.kr/extranet/campaign/submitView#${data.raw.insertId}`,
+                    "캠페인페이지승인링크": `http://www.wairiextranet.com/approval/approval_list/status=100`,
+                    // "캠페인페이지승인링크": `http://www.wairi.co.kr/extranet/campaign/submitView#${data.raw.insertId}`,
                 }
                 console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
                 console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));
@@ -431,6 +431,8 @@ export class SubmitModelResolver {
                     // "포스팅검수완료페이지": campaignSubmit['postUrl'],
                 }
                 await this.apiPlexService.sendPartnerAlimtalk('T93adh3hkf92', param, campaignSubmit.campaignIdx);
+                await this.emailService.partnerEmail('T93adh3hkf92', param, campaign.partnerIdx, campaign.idx);
+
                 return {
                     code: 200,
                     message: '초안 수정이 완료되었습니다.',

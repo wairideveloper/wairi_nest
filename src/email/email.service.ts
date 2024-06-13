@@ -159,6 +159,17 @@ console.log("=>(email.service.ts:101) emailList", emailList);
 
             let templeteData = {};
             switch (code) {
+                case 'T93adh3hkf92':
+                    console.log("=>(email.service.ts:164) data", data);
+                    templeteData = {
+                        이름: data['이름'],
+                        캠페인이름: data['캠페인이름'],
+                        이용일자: data['이용일자'],
+                        인원: data['인원'],
+                        채널주소: data['채널주소'],
+                        포스팅검수완료페이지: data['자동신청마감시간'],
+                    };
+                    break;
                 case 'djgoak25gpd0':
                     console.log("=>(email.service.ts:164) data", data);
                     templeteData = {
