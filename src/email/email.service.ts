@@ -294,7 +294,7 @@ console.log("=>(email.service.ts:101) emailList", emailList);
             this.mailerService
                 .sendMail({
                     to: email,
-                    from: 'wairi_sales@naver.com',
+                    from: '"와이리 관리자" <wairi_sales@naver.com>',
                     subject: subject,
                     text: content,
                     html: content,
