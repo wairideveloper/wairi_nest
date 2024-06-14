@@ -80,12 +80,12 @@ export class ApiplexCallbackController {
             }
 
             //Response body (고객사 ➡ API PLEX) 리턴
-            let data = {
-                "code": "100",
-                "desc": "success"
-            };
-            // @ts-ignore
-            res.status(200).json(data);
+            // let data = {
+            //     "code": "100",
+            //     "desc": "success"
+            // };
+            // // @ts-ignore
+            // res.status(200).json(data);
         } catch (e) {
             console.log("=>(apiplex_callback.controller.ts:51) e", e);
             throw new HttpException(e.message, 500);
