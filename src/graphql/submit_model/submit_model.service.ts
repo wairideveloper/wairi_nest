@@ -6,7 +6,13 @@ import {Payment} from "../../../entity/entities/Payment";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Connection, Repository} from "typeorm";
 import {Pagination} from "../../paginate";
-import {bufferToString, dataDateTimeTransform, FROM_UNIXTIME, getUnixTimeStamp} from "../../util/common";
+import {
+    bufferToString,
+    dataDateTimeTransform,
+    FROM_UNIXTIME,
+    FROM_UNIXTIME2,
+    getUnixTimeStamp
+} from "../../util/common";
 import {ReceiptResponseParameters} from '@bootpay/backend-js/lib/response';
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
