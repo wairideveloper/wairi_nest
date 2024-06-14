@@ -370,7 +370,7 @@ export class PaymentModelResolver {
                 if (itemSchduleIdx.length > 0) {
                     let count: any;
                     if (submitItem.calcType1 == 1) {
-                        count = submitItem.limits;
+                        count = submitItem.nights;
                     } else {
                         count = submitItem.nop;
                     }
