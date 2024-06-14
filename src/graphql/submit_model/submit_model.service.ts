@@ -231,12 +231,12 @@ export class SubmitModelService {
             .addSelect(`(${FROM_UNIXTIME('campaignSubmit.autoCancelDate')})`, 'autoCancelDate')
             .addSelect('CONCAT(DATE(FROM_UNIXTIME(campaignSubmit.startDate)), " ~ ", DATE(FROM_UNIXTIME(campaignSubmit.endDate))) AS application_period')
             .where("campaignSubmit.sid = :sid", {sid: sid})
-            .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
+            // .andWhere("campaignSubmit.memberIdx = :memberIdx", {memberIdx: memberIdx})
             .getRawOne();
 
         if (data) {
             data = bufferToString(data);
-            dataDateTimeTransform(data);
+            // dataDateTimeTransform(data);
             // data.status = switchSubmitStatusText(data.status);
         }
 
