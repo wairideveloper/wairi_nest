@@ -127,7 +127,7 @@ export class CampaignService {
                     'campaign.cateAreaIdx as cateAreaIdx',
                     'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
                 ])
-                if (process.env.PORT == '3000') {
+                if (process.env.PORT == '3000' || process.env.PORT == '4000') {
                     console.log("=>(campaign_model.service.ts:57) process.env.PORT", process.env.PORT);
                     query.addSelect(
                         (subQuery) =>
