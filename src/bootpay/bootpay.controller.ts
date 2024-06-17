@@ -11,12 +11,16 @@ export class BootpayController {
       if(body.method == "vbank") {
         this.bootpayService.updateVbankPayment(body)
         res.status(200).json({"success":true})
-      }else if(body.method == "kakao") {
+      }else{
         this.bootpayService.updateKakaoPayment(body)
         res.status(200).json({"success":true})
-      }else{
-        console.log("=>(bootpay.controller.ts:30) updateVbankPayment(가상계좌 외) : ", body);
       }
+      // }else if(body.method == "kakao") {
+      //   this.bootpayService.updateKakaoPayment(body)
+      //   res.status(200).json({"success":true})
+      // }else{
+      //   console.log("=>(bootpay.controller.ts:30) updateVbankPayment(가상계좌 외) : ", body);
+      // }
       res.status(200).json({"success":true})
     }
     //http status 200 으로 리턴 {"success":true}

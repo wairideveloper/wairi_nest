@@ -216,9 +216,13 @@ export class BootpayService {
                 .set({
                     status: 200,
                     paydate: getUnixTimeStampByDate(body.purchased_at),
+                    payAmount: body.price,
+                    receiptId: body.receipt_id,
+                    cardName: body.method_origin,
+                    cardNum: body.card_data.card_no,
                 })
                 .where("oid = :oid", { oid: body.order_id })
-                .andWhere("status = :status", { status: 100 })
+                // .andWhere("status = :status", { status: 100 })
                 .execute();
             await queryRunner.commitTransaction();
         }catch (e) {
