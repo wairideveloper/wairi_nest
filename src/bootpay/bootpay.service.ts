@@ -220,7 +220,7 @@ export class BootpayService {
                         payAmount: body.price,
                         receiptId: body.receipt_id,
                         cardName: body.method_origin,
-                        cardNum: body.card_data.card_no,
+                        cardNum: body.card_data ? body.card_data.no : '',
                     })
                     .where("oid = :oid", {oid: body.order_id})
                     // .andWhere("status = :status", { status: 100 })
