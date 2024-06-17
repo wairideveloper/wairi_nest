@@ -200,7 +200,7 @@ export class BootpayService {
                 throw new Error("신청 정보가 존재하지 않습니다.")
             }
 
-            if(submit.status == 200){
+            if(submit.status == 200 && submit.use_app == 'N'){
                 //update status = 300
                 await queryRunner.manager.createQueryBuilder()
                     .update(CampaignSubmit)
@@ -211,19 +211,21 @@ export class BootpayService {
                     .where("idx = :idx", { idx: submit.idx })
                     .execute();
             }
-            await queryRunner.manager.createQueryBuilder()
-                .update(Payment)
-                .set({
-                    status: 200,
-                    paydate: getUnixTimeStampByDate(body.purchased_at),
-                    payAmount: body.price,
-                    receiptId: body.receipt_id,
-                    cardName: body.method_origin,
-                    cardNum: body.card_data.card_no,
-                })
-                .where("oid = :oid", { oid: body.order_id })
-                // .andWhere("status = :status", { status: 100 })
-                .execute();
+            if(submit.use_app == 'N') {
+                await queryRunner.manager.createQueryBuilder()
+                    .update(Payment)
+                    .set({
+                        status: 200,
+                        paydate: getUnixTimeStampByDate(body.purchased_at),
+                        payAmount: body.price,
+                        receiptId: body.receipt_id,
+                        cardName: body.method_origin,
+                        cardNum: body.card_data.card_no,
+                    })
+                    .where("oid = :oid", {oid: body.order_id})
+                    // .andWhere("status = :status", { status: 100 })
+                    .execute();
+            }
             await queryRunner.commitTransaction();
         }catch (e) {
             console.log("=>(bootpay.service.ts:updateKakaoPayment) e", e);
