@@ -366,10 +366,12 @@ export class PaymentModelResolver {
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
 
+                const campaignItem = await this.campaignsService.getCampaignItem(submitItem.itemIdx);
+
                 //재고 차감
                 if (itemSchduleIdx.length > 0) {
                     let count: any;
-                    if (submitItem.calcType1 == 1) {
+                    if (campaignItem.calcType1 == 1) {
                         count = submitItem.nights;
                     } else {
                         count = submitItem.nop;

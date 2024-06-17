@@ -211,6 +211,16 @@ export class BootpayService {
                     .where("idx = :idx", { idx: submit.idx })
                     .execute();
             }
+            await queryRunner.manager.createQueryBuilder()
+                .update(Payment)
+                .set({
+                    status: 200,
+                    paydate: getUnixTimeStampByDate(body.purchased_at),
+                })
+                .where("oid = :oid", { oid: body.order_id })
+                .andWhere("status = :status", { status: 100 })
+                .execute();
+            await queryRunner.commitTransaction();
         }catch (e) {
             console.log("=>(bootpay.service.ts:updateKakaoPayment) e", e);
             await queryRunner.rollbackTransaction();
