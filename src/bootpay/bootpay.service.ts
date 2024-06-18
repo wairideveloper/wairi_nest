@@ -219,8 +219,8 @@ export class BootpayService {
                         paydate: getUnixTimeStampByDate(body.purchased_at),
                         payAmount: body.price,
                         receiptId: body.receipt_id,
-                        cardName: body.method_origin,
-                        cardNum: body.card_data ? body.card_data.no : '',
+                        cardName: body.payment_data ? body.payment_data.card_name : '',
+                        cardNum: body.payment_data ? body.payment_data.card_no : '',
                     })
                     .where("oid = :oid", {oid: body.order_id})
                     // .andWhere("status = :status", { status: 100 })
