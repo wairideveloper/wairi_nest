@@ -199,9 +199,9 @@ export class PaymentModelResolver {
                 if (itemSchduleIdx.length > 0) {
                     let count: any;
                     if (campaignItem.calcType1 == 1) {
-                        count = campaignItem.limits;
+                        count = nights;
                     } else {
-                        count = campaignItem.nop;
+                        count = paymentItemInput.nop;
                     }
                     const result = await this.submitModelService.updateCampaignItemSchduleStock(
                         itemSchduleIdx,
@@ -263,24 +263,6 @@ export class PaymentModelResolver {
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
 
-            // //Todo 파트너 알림톡
-            // const member = await this.membersService.getMember(authUser.idx);
-            // const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
-            // const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
-            // const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, authUser.idx);
-            // let param = {
-            //     "이름": member.name ? member.name : "회원",
-            //     "캠페인이름": campaign.name,
-            //     "업체이름": partner.corpName,
-            //     "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
-            //     "인원": submitItem.nop,
-            //     "채널주소": cannelData['link'],
-            // }
-            //
-            // await this.apiPlexService.sendUserAlimtalk('18memDED3j3V', authUser.phone, param);
-            // await this.apiPlexService.sendPartnerAlimtalk('10jios36HB30', param, submitItem.campaignIdx);
-            // await this.emailService.partnerEmail('10jios36HB30', param, partner.idx, campaign.idx);
-
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
             }
@@ -292,14 +274,23 @@ export class PaymentModelResolver {
             if (campaignItemSchdule.length == 0) {
                 throw new HttpException("신청 가능한 스케쥴이 없습니다.", 404);
             }
+
+            const campaignItem = await this.campaignsService.getCampaignItem(submitItem.itemIdx);
+
             let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {
                 // stock 확인 nop > stock
                 itemSchduleIdx.push(item.idx);
-                console.log("=>(payment_model.resolver.ts:48) submitItem.nop", submitItem.nop);
-                console.log("=>(payment_model.resolver.ts:49) item.stock", item.stock);
 
-                if (item.stock == 0) {
+                let count: any;
+                if (campaignItem.calcType1 == 1) {
+                    count = submitItem.nights;
+                } else {
+                    count = submitItem.nop;
+                }
+            console.log("=>(payment_model.resolver.ts:292)  재고 카운트 ", count);
+            console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock  ", item.stock );
+                if (item.stock < count || item.stock == 0) {
                     throw new HttpException("재고가 부족합니다.", 404);
                 }
             })
@@ -366,7 +357,6 @@ export class PaymentModelResolver {
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
                 }
 
-                const campaignItem = await this.campaignsService.getCampaignItem(submitItem.itemIdx);
 
                 //재고 차감
                 if (itemSchduleIdx.length > 0) {
