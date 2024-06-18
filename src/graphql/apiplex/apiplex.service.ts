@@ -306,7 +306,7 @@ export class ApiplexService {
 
                     created_at:created_at
                 }
-                console.log("=>(apiplex.service.ts:144) data", data);
+                // console.log("=>(apiplex.service.ts:144) data", data);
 
                 await this.notificationTalkSave(data)
             }
@@ -337,7 +337,7 @@ export class ApiplexService {
                         data: JSON.stringify(axioData),
                         created_at: new Date()
                     }
-                    console.log("=>(apiplex.service.ts:144) data", data);
+                    // console.log("=>(apiplex.service.ts:144) data", data);
 
                     await this.notificationTalkSave(data)
                 }
