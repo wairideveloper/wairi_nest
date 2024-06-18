@@ -290,7 +290,7 @@ export class PaymentModelResolver {
                 }
             console.log("=>(payment_model.resolver.ts:292)  재고 카운트 ", count);
             console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock  ", item.stock );
-                if (item.stock < count || item.stock == 0) {
+                if (item.stock == 0) {
                     throw new HttpException("재고가 부족합니다.", 404);
                 }
             })
