@@ -288,20 +288,21 @@ export class PaymentModelResolver {
                 } else {
                     count = submitItem.nop;
                 }
-            console.log("=>(payment_model.resolver.ts:292)  재고 카운트 ", count);
-            console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock  ", item.stock );
+            console.log("=>(payment_model.resolver.ts:292)  재고 카운트  => ", count);
+            console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock => ", item.stock );
                 if (item.stock == 0) {
+                    throw new HttpException("재고가 부족합니다.", 404);
+                }
+                if(item.stock-count < 0){
                     throw new HttpException("재고가 부족합니다.", 404);
                 }
             })
             //재고 체크후 결제 confirm
             // authUser.idx set
-            console.log(authUser)
             let memberIdx = authUser ? authUser.idx : 0;
             if (memberIdx == 0) {
                 throw new HttpException("로그인이 필요합니다.", 404);
             }
-            console.log("=>(payment_model.resolver.ts:59) memberIdx", memberIdx);
 
             const response = await this.paymentModelService.confirmPayment(confirmPaymentInput, memberIdx);
             // console.log("=>(payment_model.resolver.ts:53) confirmPayment response", response);
