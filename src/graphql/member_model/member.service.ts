@@ -371,20 +371,31 @@ export class MembersService {
         interests: any;
         channelName?: string;
     }) {
-        return await this.memberChannelRepository
-            .createQueryBuilder()
-            .insert()
-            .into(MemberChannel)
-            .values({
-                memberIdx: data.memberIdx,
-                link: data.link,
-                type: data.type,
-                interests: data.interests,
-                typeText: data.channelName,
-                regdate: getNowUnix(),
-                level: 0
-            })
-            .execute();
+        // return await this.memberChannelRepository
+        //     .createQueryBuilder()
+        //     .insert()
+        //     .into(MemberChannel)
+        //     .values({
+        //         memberIdx: data.memberIdx,
+        //         link: data.link,
+        //         type: data.type,
+        //         interests: data.interests,
+        //         typeText: data.channelName,
+        //         regdate: getNowUnix(),
+        //         level: 0
+        //     })
+        //     .execute();
+        const memberChannel = this.memberChannelRepository.create({
+            memberIdx: data.memberIdx,
+            link: data.link,
+            type: data.type,
+            interests: data.interests,
+            typeText: data.channelName,
+            regdate: getNowUnix(),
+            level: 0
+        });
+
+        return await this.memberChannelRepository.save(memberChannel);
     }
 
     async checkChannelType(channelType: number, memberIdx: number) {

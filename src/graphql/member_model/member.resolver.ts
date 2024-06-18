@@ -135,7 +135,9 @@ export class MemberResolver {
             }
 
             const createChannel = await this.membersService.setMemberChannel(data);
-            const channelIdx = createChannel.raw.insertId;
+            console.log("=>(member.resolver.ts:138) createChannel", createChannel);
+
+            const channelIdx = createChannel.idx;
             if (channelIdx == undefined) {
                 return {
                     code: 500,
@@ -154,7 +156,7 @@ export class MemberResolver {
                     "채널주소": createMemberChannelInput.link,
                 }
                 // @ts-ignore
-                await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', member.phone, param)
+                // await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', member.phone, param)
             }
 
             return {
