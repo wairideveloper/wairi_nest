@@ -175,7 +175,7 @@ export class BootpayService {
         }
     }
 
-    async updateKakaoPayment(body) {
+    async updateWebPayment(body) {
         if(body.status != 1){
             throw new HttpException("status is not 1", 404);
         }

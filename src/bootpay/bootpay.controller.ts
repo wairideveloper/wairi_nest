@@ -14,12 +14,13 @@ export class BootpayController {
       }else if(body.method == "auth") {
         console.log("=>(bootpay.controller.ts:15) updateVbankPayment( auth ) : ", body);
         res.status(200).json({"success":true})
+      }else if (body.payment_data) {
+        console.log("=>(bootpay.controller.ts:18) 웹 모든결제", body);
+        this.bootpayService.updateWebPayment(body)
+        res.status(200).json("OK")
       }else{
-        console.log("=>(bootpay.controller.ts:18) 모든결제", body);
-        this.bootpayService.updateKakaoPayment(body)
+        console.log("=>(bootpay.controller.ts:23) 앱 결제", body);
         res.status(200).json({"success":true})
-
-
       }
       // }else if(body.method == "kakao") {
       //   this.bootpayService.updateKakaoPayment(body)
