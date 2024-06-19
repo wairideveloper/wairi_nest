@@ -276,9 +276,11 @@ export class PaymentModelResolver {
                 throw new HttpException("신청 가능한 스케쥴이 없습니다.", 404);
             }
 
-            const campaignItem = await this.campaignsService.getCampaignItemStock(submitItem.itemIdx);
-            console.log("=>(payment_model.resolver.ts:280) campaignItem", campaignItem);
-            console.log("=>(payment_model.resolver.ts:280) campaignItem calcType1", campaignItem.calcType1);
+
+
+            const campaignItemCalcType = await this.campaignsService.getCampaignItemCalcType(submitItem.itemIdx);
+            console.log("=>(payment_model.resolver.ts:280) campaignItem", campaignItemCalcType);
+            console.log("=>(payment_model.resolver.ts:280) campaignItem calcType1", campaignItemCalcType.calcType1);
 
             let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {
@@ -286,14 +288,14 @@ export class PaymentModelResolver {
                 itemSchduleIdx.push(item.idx);
 
                 let count: any;
-                if (campaignItem.calcType1 == 1) {
-                    count = submitItem.nights;
+                if (campaignItemCalcType.calcType1 == 1) {
+                    count = 1;
                 } else {
                     count = submitItem.nop;
                 }
-                count = 1;
-            console.log("=>(payment_model.resolver.ts:292)  재고 카운트  => ", count);
-            console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock => ", item.stock );
+                console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock => ", item.stock );
+                console.log("=>(payment_model.resolver.ts:292)  재고 카운트  => ", count);
+
                 if (item.stock == 0) {
                     throw new HttpException("재고가 부족합니다.", 404);
                 }
@@ -349,10 +351,7 @@ export class PaymentModelResolver {
                 }
             }
 
-            console.log("=>(payment_model.resolver.ts:90) itemSchduleIdx", itemSchduleIdx);
-            console.log("=>(payment_model.resolver.ts:86) response", response);
-            console.log("=>(payment_model.resolver.ts:86) submitItem", submitItem);
-            console.log("=>(payment_model.resolver.ts:87) response.price", response.price);
+            console.log("=>(payment_model.resolver.ts:86) 결제  response : ", response);
 
             if (response.status === 1) {
 
@@ -366,8 +365,8 @@ export class PaymentModelResolver {
                 //재고 차감
                 if (itemSchduleIdx.length > 0) {
                     let count: any;
-                    if (campaignItem.calcType1 == 1) {
-                        count = submitItem.nights;
+                    if (campaignItemCalcType.calcType1 == 1) {
+                        count = 1;
                     } else {
                         count = submitItem.nop;
                     }

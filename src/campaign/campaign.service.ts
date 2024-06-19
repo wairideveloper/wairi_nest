@@ -1412,9 +1412,12 @@ export class CampaignService {
             .getRawMany();
     }
 
-    async getCampaignItemStock(itemIdx: any) {
+    async getCampaignItemCalcType(itemIdx: any) {
         return await this.campaignItemRepository.createQueryBuilder('campaignItem')
-            .select('campaignItem.calcType1 as calcType1')
+            .select([
+                'campaignItem.calcType1 as calcType1',
+                'campaignItem.calcType2 as calcType2',
+            ])
             .where('idx = :itemIdx', {itemIdx: itemIdx})
             .getRawOne();
 
