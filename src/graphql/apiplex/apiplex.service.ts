@@ -294,7 +294,7 @@ export class ApiplexService {
             let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
             console.log("=>(apiplex.service.ts:58) axioData", axioData);
             let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
-            console.log("=>(apiplex.service.ts:292) result", result);
+            // console.log("=>(apiplex.service.ts:292) result", result);
             if (result.data.results[0].code == 'C100') {
                 let data = {
                     status: this.code[result.data.results[0].code],
