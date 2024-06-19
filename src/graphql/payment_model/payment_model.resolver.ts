@@ -277,6 +277,7 @@ export class PaymentModelResolver {
             }
 
             const campaignItem = await this.campaignsService.getCampaignItemStock(submitItem.itemIdx);
+            console.log("=>(payment_model.resolver.ts:280) campaignItem calcType1", campaignItem.calcType1);
 
             let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {
