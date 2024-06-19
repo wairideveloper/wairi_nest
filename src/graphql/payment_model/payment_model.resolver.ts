@@ -262,6 +262,7 @@ export class PaymentModelResolver {
         console.log("=>(payment_model.resolver.ts:36) confirmStock 유저정보 : ", authUser);
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
+            console.log("=>(payment_model.resolver.ts:265) 승인정보 : ", submitItem);
 
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
@@ -275,7 +276,7 @@ export class PaymentModelResolver {
                 throw new HttpException("신청 가능한 스케쥴이 없습니다.", 404);
             }
 
-            const campaignItem = await this.campaignsService.getCampaignItem(submitItem.itemIdx);
+            const campaignItem = await this.campaignsService.getCampaignItemStock(submitItem.itemIdx);
 
             let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {
@@ -288,6 +289,7 @@ export class PaymentModelResolver {
                 } else {
                     count = submitItem.nop;
                 }
+                count = 1;
             console.log("=>(payment_model.resolver.ts:292)  재고 카운트  => ", count);
             console.log("=>(payment_model.resolver.ts:292)  재고 카운트 item.stock => ", item.stock );
                 if (item.stock == 0) {

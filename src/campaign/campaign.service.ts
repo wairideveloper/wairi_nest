@@ -1411,4 +1411,12 @@ export class CampaignService {
             .addOrderBy('c.regdate', 'DESC')
             .getRawMany();
     }
+
+    async getCampaignItemStock(itemIdx: any) {
+        return await this.campaignItemRepository.createQueryBuilder('campaignItem')
+            .select('campaignItem.calcType1 as calcType1')
+            .where('idx = :itemIdx', {itemIdx: itemIdx})
+            .getRawOne();
+
+    }
 }
