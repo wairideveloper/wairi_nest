@@ -262,7 +262,7 @@ export class PaymentModelResolver {
         console.log("=>(payment_model.resolver.ts:36) confirmStock 유저정보 : ", authUser);
         try {
             const submitItem = await this.submitModelService.getSubmitBySid(confirmPaymentInput.sid) //sid로 신청 정보 가져오기
-            console.log("=>(payment_model.resolver.ts:265) 승인정보 : ", submitItem);
+            console.log("=>(payment_model.resolver.ts:265) 승인정보 => ", submitItem);
 
             if (!submitItem) { //신청 정보가 없을 경우
                 throw new HttpException("신청 정보가 존재하지 않습니다.", 404);
@@ -277,6 +277,7 @@ export class PaymentModelResolver {
             }
 
             const campaignItem = await this.campaignsService.getCampaignItemStock(submitItem.itemIdx);
+            console.log("=>(payment_model.resolver.ts:280) campaignItem", campaignItem);
             console.log("=>(payment_model.resolver.ts:280) campaignItem calcType1", campaignItem.calcType1);
 
             let itemSchduleIdx = [];
