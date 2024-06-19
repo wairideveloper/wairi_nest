@@ -30,6 +30,8 @@ export class BoardModelService {
                 // .addSelect(`(${FROM_UNIXTIME('regdate')})`, 'regdate')
                 .addSelect(`(${FROM_UNIXTIME2('regdate')})`, 'regdate')
                 .where('boardArticles.boardIdx = :type', {type: type})
+                //memberType 0, 1 포함
+                .andWhere('boardArticles.memberType IN (0, 1)')
                 .orderBy('boardArticles.idx', 'DESC')
                 .offset(take * (page - 1))
                 .limit(take)
