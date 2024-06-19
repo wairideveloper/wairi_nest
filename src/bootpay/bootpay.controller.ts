@@ -15,9 +15,14 @@ export class BootpayController {
         console.log("=>(bootpay.controller.ts:15) updateVbankPayment( auth ) : ", body);
         res.status(200).json({"success":true})
       }else if (body.payment_data) {
-        console.log("=>(bootpay.controller.ts:18) 웹 모든결제", body);
-        this.bootpayService.updateWebPayment(body)
-        res.status(200).json("OK")
+        try {
+          console.log("=>(bootpay.controller.ts:18) 웹 모든결제", body);
+          this.bootpayService.updateWebPayment(body)
+          res.status(200).json("OK")
+        }catch(e){
+          console.log("=>(bootpay.controller.ts:22) 웹 모든결제 에러", e);
+          res.status(200).json("OK")
+        }
       }else{
         console.log("=>(bootpay.controller.ts:23) 앱 결제", body);
         res.status(200).json({"success":true})
