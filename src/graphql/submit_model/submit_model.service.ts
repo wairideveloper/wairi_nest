@@ -308,7 +308,7 @@ export class SubmitModelService {
                 .where("campaignItemSchedule.itemIdx = :itemIdx", {itemIdx: itemIdx})
                 .andWhere(new Brackets(qb => {
                     qb.where("campaignItemSchedule.date >= :startDate", {startDate: startDate})
-                        .andWhere("campaignItemSchedule.date < :endDate", {endDate: endDate});
+                        .andWhere("campaignItemSchedule.date <= :endDate", {endDate: endDate});
                 }))
                 .getRawMany();
         }else {
