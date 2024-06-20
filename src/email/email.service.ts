@@ -114,6 +114,8 @@ console.log("=>(email.service.ts:101) emailList", emailList);
                 });
             }
         }
+        // 중복 제거
+        emailList.filter((item, index) => emailList.indexOf(item) === index);
         return emailList;
     }
 
@@ -237,10 +239,10 @@ console.log("=>(email.service.ts:101) emailList", emailList);
             console.log('=>(email.service.ts:173) subject', content);
 
             // 메일 전송
-            emailList.forEach((email) => {
-                // console.log('=>(email.service.ts:213) email', email);
-                this.sendEmail(email, subject, content);
-            });
+            for (let i = 0; i < emailList.length; i++) {
+                await this.sendEmail(emailList[i], subject, content);
+            }
+
         }catch (e) {
             console.log('=>(email.service.ts:54) e', e);
             throw new ConflictException(e.message);
