@@ -248,7 +248,7 @@ export class MembersService {
             // status -9 는 탈퇴회원
             // .andWhere('status != -9')
             .getRawOne();
-
+        bufferToString(result);
         return result;
     }
 
