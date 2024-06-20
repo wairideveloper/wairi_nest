@@ -226,8 +226,8 @@ export class PaymentModelResolver {
                     "이름": member.name ? member.name : "회원",
                     "캠페인이름": campaign.name,
                     "업체이름": partner.corpName,
-                    "이용일자": FROM_UNIXTIME_JS_PLUS(submitItem.startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(submitItem.endDate),
-                    "인원": submitItem.nop,
+                    "이용일자": FROM_UNIXTIME_JS_PLUS(startDate) + ' ~ ' + FROM_UNIXTIME_JS_PLUS(endDate),
+                    "인원": paymentItemInput.nop,
                     "채널주소": cannelData['link'],
                 }
 console.log("=>(payment_model.resolver.ts:232) 구매제 알림톡 param : ", param);
