@@ -41,6 +41,7 @@ export class EmailService {
             const campaign = await this.campaignRepository.createQueryBuilder('campaign')
                 .select('*')
                 .where('campaign.idx = :idx', { idx: idx })
+                .andWhere('campaign.status = 200')
                 .getRawOne();
             bufferToString(campaign);
             return campaign;
