@@ -233,7 +233,7 @@ export class PaymentModelResolver {
 console.log("=>(payment_model.resolver.ts:232) 구매제 알림톡 param : ", param);
                     await this.apiPlexService.sendUserAlimtalk('A15Ddgjt0fag', authUser.phone, param);
                     await this.apiPlexService.sendPartnerAlimtalk('ghkf92y98dkj', param, paymentItemInput.campaignIdx);
-
+                    await this.emailService.partnerEmail('ghkf92y98dkj', param, campaign.partnerIdx, paymentItemInput.campaignIdx);
 
                 return {
                     status: response.status,
