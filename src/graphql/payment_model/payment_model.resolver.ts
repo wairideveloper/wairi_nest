@@ -148,6 +148,7 @@ export class PaymentModelResolver {
             console.log("=>(payment_model.resolver.ts:109) submitIdx", submitIdx);
 
             const submitItem = await this.submitModelService.getSubmitBySid(sid) //sid로 신청 정보 가져오기
+            console.log("=>(payment_model.resolver.ts:151) submitItem", submitItem);
 
             await Bootpay.getAccessToken()
             const response = await Bootpay.confirmPayment(paymentItemInput.receipt_id)
@@ -218,7 +219,7 @@ export class PaymentModelResolver {
 
                 //Todo 파트너 알림톡
                 const member = await this.membersService.getMember(authUser.idx);
-                const campaign = await this.submitModelService.getCampaignByCampaignIdx(submitItem.campaignIdx);
+                const campaign = await this.submitModelService.getCampaignByCampaignIdx(paymentItemInput.campaignIdx);
                 const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
                 const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, authUser.idx);
                 let param = {
