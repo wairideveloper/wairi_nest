@@ -221,7 +221,7 @@ export class PaymentModelResolver {
                 const member = await this.membersService.getMember(authUser.idx);
                 const campaign = await this.submitModelService.getCampaignByCampaignIdx(paymentItemInput.campaignIdx);
                 const partner = await this.submitModelService.getPartnerByPartnerIdx(campaign.partnerIdx);
-                const cannelData = await this.membersService.getCannelLinkByUserIdx(submitItem.submitChannel, authUser.idx);
+                const cannelData = await this.membersService.getCannelLinkByUserIdx(paymentItemInput.submitChannel, authUser.idx);
                 let param = {
                     "이름": member.name ? member.name : "회원",
                     "캠페인이름": campaign.name,
