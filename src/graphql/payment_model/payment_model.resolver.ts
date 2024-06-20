@@ -68,6 +68,7 @@ export class PaymentModelResolver {
         @Args('paymentItemInput') paymentItemInput: PaymentItemInput,
         @AuthUser() authUser: Member
     ) {
+
         console.log("=>(payment_model.resolver.ts:58) paymentItemInput", paymentItemInput);
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
