@@ -436,3 +436,14 @@ export const randomString = () => {
     for (let i = 12; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
+
+//두 unixtime 날짜 사이 enddate 제외 값만 추출
+export const getBetweenDate = (startDate, endDate) => {
+    let date = [];
+    for (let i = startDate; i < endDate; i += 86400) {
+        date.push(i);
+    }
+    return date;
+}
+
+

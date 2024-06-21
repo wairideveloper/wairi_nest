@@ -6,7 +6,7 @@ import {
     FROM_UNIXTIME_JS_PLUS,
     FROM_UNIXTIME_JS_YY_MM_DD,
     genSid,
-    getAfter3Days,
+    getAfter3Days, getBetweenDate,
     getBootpayStatusText,
     getUnixTimeStamp,
     getUnixTimeStampAfter3Days,
@@ -272,17 +272,22 @@ console.log("=>(payment_model.resolver.ts:232) 구매제 알림톡 param : ", pa
 
             const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
                 submitItem.itemIdx, submitItem.startDate, submitItem.endDate) // 신청 정보의 itemIdx와 startDate로 스케쥴 정보 가져오기
-            console.log("=>(payment_model.resolver.ts:44) campaignItemSchdule", campaignItemSchdule);
+            const campaignItemCalcType = await this.campaignsService.getCampaignItemCalcType(submitItem.itemIdx);
 
             if (campaignItemSchdule.length == 0) {
                 throw new HttpException("신청 가능한 스케쥴이 없습니다.", 404);
             }
 
-
-
-            const campaignItemCalcType = await this.campaignsService.getCampaignItemCalcType(submitItem.itemIdx);
-            console.log("=>(payment_model.resolver.ts:280) campaignItem", campaignItemCalcType);
-            console.log("=>(payment_model.resolver.ts:280) campaignItem calcType1", campaignItemCalcType.calcType1);
+            //연박 체크
+            const nights = (submitItem.endDate - submitItem.startDate) / 86400;
+            if(nights > 1) {
+                const betweenDays = getBetweenDate(submitItem.startDate, submitItem.endDate);
+                console.log("=>(payment_model.resolver.ts:285) 연박체크 : campaignItemSchdule", campaignItemSchdule);
+                console.log("=>(payment_model.resolver.ts:286) 연박체크 : betweenDays", betweenDays);
+                if(betweenDays.length !== campaignItemSchdule.length){
+                    throw new HttpException("신청 가능한 스케쥴이 없습니다.", 404);
+                }
+            }
 
             let itemSchduleIdx = [];
             campaignItemSchdule.forEach((item) => {

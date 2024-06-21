@@ -355,6 +355,17 @@ export class SubmitModelService {
                 .execute();
             console.log("=>(submit_model.service.ts:256) paymentDataInsert", paymentDataInsert);
 
+            const paymentIdx = paymentDataInsert.raw.insertId;
+
+            let submitDataUpdate = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
+                .update(CampaignSubmit)
+                .set({
+                    status: 300,
+                    paymentIdx: paymentIdx,
+                })
+                .where("campaignSubmit.sid = :sid", {sid: sid})
+                .execute();
+
             //재고 차감
             let campaignItemSchduleUpdate = await queryRunner.manager.createQueryBuilder()
                 .update(CampaignItemSchedule)
@@ -362,15 +373,6 @@ export class SubmitModelService {
                     stock: () => "stock - " + count
                 })
                 .where("idx IN (:...idx)", {idx: itemSchduleIdx})
-                .execute();
-
-            let submitDataUpdate = await this.campaignSubmitRepository.createQueryBuilder("campaignSubmit")
-                .update(CampaignSubmit)
-                .set({
-                    status: 300,
-                    paymentIdx: paymentDataInsert.raw.insertId,
-                })
-                .where("campaignSubmit.sid = :sid", {sid: sid})
                 .execute();
 
             await queryRunner.commitTransaction();
