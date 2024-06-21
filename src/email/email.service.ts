@@ -41,7 +41,7 @@ export class EmailService {
             const campaign = await this.campaignRepository.createQueryBuilder('campaign')
                 .select('*')
                 .where('campaign.idx = :idx', { idx: idx })
-                .andWhere('campaign.status = 200')
+                // .andWhere('campaign.status = 200')
                 .getRawOne();
             bufferToString(campaign);
             return campaign;
@@ -105,7 +105,8 @@ console.log("=>(email.service.ts:101) emailList", emailList);
         if(campaignIdx){
             console.log("=>(email.service.ts:100) campaignIdx", campaignIdx);
             const campaign = await this.getCampaignInfo(campaignIdx);
-            if (campaign.noteReceivers) {
+            console.log("=>(email.service.ts:108) campaign", campaign);
+            if (campaign.noteReceivers ) {
                 // 캠페인 추가 수신자
                 const campaignReceivers = JSON.parse(campaign.noteReceivers);
                 campaignReceivers.forEach((item) => {
