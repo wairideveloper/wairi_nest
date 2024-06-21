@@ -210,6 +210,10 @@ export class Campaign {
 
     @Column("int", {name: "approvalRate"})
     approvalRate: number;
+
+    @Column("char", {name: "extra_yn",})
+    extra_yn: string;
+
     //relation
     @OneToMany((type) => CampaignItem, (CampaignItem) => CampaignItem.campaign)
     campaignItem: CampaignItem[]

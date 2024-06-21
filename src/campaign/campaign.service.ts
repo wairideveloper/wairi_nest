@@ -807,6 +807,7 @@ export class CampaignService {
                 'campaign.tiktokCount as tiktokCount',
                 'campaign.tstoryCount as tstoryCount',
                 'campaign.etcCount as etcCount',
+                'campaign.extra_yn as extra_yn',
 
                 `(SELECT 
                     IF(

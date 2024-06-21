@@ -46,6 +46,7 @@ type Campaign {
     caution: String
     submitCount:String
     approvalRate:Int
+    extra_yn: String
 }
 
 type CampaignDetail{
