@@ -432,6 +432,7 @@ export class SubmitModelService {
                 "campaignSubmit.agreeContent as agreeContent",
                 "campaignSubmit.postTitle as postTitle",
                 "campaignSubmit.postRemarks as postRemarks",
+                "campaignSubmit.editPostDraft as editPostDraft",
                 'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignItemImage where itemIdx = campaignSubmit.itemIdx order by ordering asc limit 1)) as image',
             ])
             .addSelect(`(${FROM_UNIXTIME('campaignSubmit.autoCancelDate')})`, 'autoCancelDate')

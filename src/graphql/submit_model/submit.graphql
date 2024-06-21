@@ -46,6 +46,7 @@ type CampaignSubmit{
     postRemarks: String
     postUrl: String
     isPostSummary: Int
+    editPostDraft: String
 }
 
 type Submits implements Pagination {
