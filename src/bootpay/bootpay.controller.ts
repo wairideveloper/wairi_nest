@@ -13,8 +13,11 @@ export class BootpayController {
         res.status(200).json({"success":true})
       }else if(body.method == "auth") {
         console.log("=>(bootpay.controller.ts:15) updateVbankPayment( auth ) : ", body);
+        if(body.payment_data){
+          res.set('Content-Type', 'text/plain');
+          res.send("OK");
+        }
         res.status(200).json({"success":true})
-        res.status(200).json("OK")
       }else if (body.payment_data) {
         try {
           console.log("=>(bootpay.controller.ts:18) 웹 모든결제", body);
