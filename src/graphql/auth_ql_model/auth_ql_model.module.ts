@@ -21,11 +21,13 @@ import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 import {Admin} from "../../../entity/entities/Admin";
 import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
+import {MemberDevice} from "../../../entity/entities/MemberDevice";
+import {PushLog} from "../../../entity/entities/PushLog";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Member, MemberChannel, Campaign, CampaignItem, CampaignImage, Cate, CateArea
-            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal, Admin, NotificationTalk
+            , Partner, CampaignReview, CampaignRecent, Config, Withdrawal, Admin, NotificationTalk, MemberDevice, PushLog
         ]),
     ],
     providers: [AuthQlModelResolver, AuthQlModelService, MembersService, JwtService,

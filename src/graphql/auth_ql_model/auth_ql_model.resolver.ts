@@ -116,6 +116,7 @@ export class AuthQlModelResolver {
                 // channelType: signupInput.channelType,
                 // link: signupInput.link,
                 agree: signupInput.agree,
+
             }
             console.log("-> data", data);
             return await this.authQlModelService.signup(data);

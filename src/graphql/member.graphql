@@ -23,6 +23,16 @@ type Member {
     campaignReview: [CampaignReview]
     code: String
     is_black: Int
+    deviceToken: [MemberDevice]
+}
+
+type MemberDevice {
+    idx: Int!
+    memberIdx: Int!
+    platform: String!
+    device_token: String!
+    created_at: String!
+    updated_at: String!
 }
 
 type MemberChannel {
@@ -82,11 +92,37 @@ type Channel{
     channelName: String
 }
 
+type PushLog{
+    idx: Int
+    memberIdx: Int
+    title: String
+    subTitle: String
+    isRead: Boolean
+    roomName: String
+    roomIdx: String
+    category: String
+    created_at: String
+}
+
+type IsReadCount{
+    count: Int
+}
+
+type NotificationSetting{
+    event: Boolean
+    action: Boolean
+    night: Boolean
+    agree: Boolean
+}
+
 extend type Query {
     getAllMember(skip: Int, take: Int!,title:String): [Member]
     getMember(id: Int!): Member
     getMemberByEmail(email: String!): Member
     getMemberChannel:[Channel]
+    getMemberPushLogs: [PushLog]
+    getIsReadCount(idx: Int!): IsReadCount
+    getNotification(idx: Int!,device_id:String!): NotificationSetting
 }
 
 extend type Mutation {
@@ -94,4 +130,6 @@ extend type Mutation {
     createMemberChannel(createMemberChannelInput: CreateMemberChannelInput):setMemberChannelResponse
     updateMemberChannel(updateMemberChannelInput: UpdateMemberChannelInput):setMemberChannelResponse
     deleteMemberChannel(channelIdx: Int!):setMemberChannelResponse
+    updateNotificationSetting(event: Boolean, action: Boolean, night: Boolean, agree: Boolean, device_id: String): GraphqlHttpResponse
+    updateIsRead(idx: Int!): GraphqlHttpResponse
 }

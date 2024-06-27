@@ -316,7 +316,7 @@ console.log("=>(email.service.ts:101) emailList", emailList);
                     html: content,
                 })
                 .then((result) => {
-                    console.log("=>(email.service.ts:319) sendEmail result", result);
+                    console.log("=>(email.service.ts:319) sendEmail result", email);
                 })
                 .catch((error) => {
                     new ConflictException(error);

@@ -1,0 +1,45 @@
+type memberDevice {
+    idx: Int!
+    memberIdx: Int!
+    device_id: String
+    platform: String!
+    device_token: String!
+    created_at: String!
+    updated_at: String!
+}
+
+input CreateDeviceModelInput {
+    device_id: String!
+    platform: String!
+    event: Boolean
+    action: Boolean
+    night: Boolean
+    device_token: String!
+}
+
+input UpdateDeviceModelInput {
+    idx: Int
+    platform: String
+    deviceToken: String
+}
+
+input UpdateAllowInput {
+    allow: String!
+}
+
+input DeleteDeviceInput {
+    device_id: String!
+}
+
+extend type Query {
+    getDevices: [memberDevice]
+    getDeviceByIdx(id: Int!): memberDevice
+    getDeviceByMemberIdx(memberIdx: Int!): memberDevice
+}
+
+extend type Mutation {
+    createDeviceModel(createDeviceModelInput: CreateDeviceModelInput!): memberDevice!
+    updateDeviceModel(updateDeviceModelInput: UpdateDeviceModelInput!): memberDevice!
+    deleteDeviceModel(deleteDeviceInput: DeleteDeviceInput): GraphqlHttpResponse
+    updateAllow(updateDeviceModelInput: UpdateDeviceModelInput! ): memberDevice!
+}

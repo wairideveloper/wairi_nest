@@ -1,7 +1,7 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {Member} from '../../../entity/entities/Member';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {Connection, Repository} from 'typeorm';
 import {
     AES_ENCRYPT,
     AES_DECRYPT,
@@ -9,7 +9,7 @@ import {
     getNowUnix,
     AES_ENCRYPT2,
     hashPassword,
-    bufferToString
+    bufferToString, getUnixTimeStampByDate
 } from "../../util/common";
 import {FetchPaginationInput} from "../../members/dto/fetch-pagination.input";
 import {SignupInput} from '../auth_ql_model/dto/signupInput';
@@ -17,7 +17,10 @@ import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
 import {Partner} from "../../../entity/entities/Partner";
+import {MemberDevice} from "../../../entity/entities/MemberDevice";
+import {PushLog} from "../../../entity/entities/PushLog";
 import * as moment from "moment/moment";
+import {Payment} from "../../../entity/entities/Payment";
 
 @Injectable()
 export class MembersService {
@@ -32,6 +35,11 @@ export class MembersService {
         private configRepository: Repository<Config>,
         @InjectRepository(Partner)
         private partnerRepository: Repository<Partner>,
+        @InjectRepository(MemberDevice)
+        private memberDeviceRepository: Repository<MemberDevice>,
+        @InjectRepository(PushLog)
+        private pushLogRepository: Repository<PushLog>,
+        private connection: Connection,
     ) {
     }
 
@@ -654,5 +662,151 @@ export class MembersService {
             .andWhere('memberIdx = :memberIdx', {memberIdx: memberIdx})
             .getRawOne();
         return bufferToString(data);
+    }
+
+    async findDevice(idx) {
+        let data = await this.memberDeviceRepository
+            .createQueryBuilder()
+            .select('*')
+            .where('memberIdx = :memberIdx', {memberIdx: idx})
+            .getRawMany();
+        return bufferToString(data);
+    }
+
+    async updateNotificationSetting(data:any) {
+        //트렌젝션
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try{
+            console.log("=>(member.service.ts:677) data.device_id", data.device_id);
+            console.log("=>(member.service.ts:677) data.device_id", typeof data.device_id);
+            console.log("=>(member.service.ts:677) data.device_id",  data.memberIdx);
+            const memberDevice = await this.memberDeviceRepository
+                .createQueryBuilder('memberDevice')
+                .select('*')
+                .where('device_id = :device_id', {device_id: data.device_id})
+                .andWhere('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+                .getRawOne();
+            console.log("=>(member.service.ts:685) memberDevice", memberDevice);
+            if(!memberDevice){
+                throw new HttpException('일치하는 정보가 없습니다.', 404);
+            }
+            const updateMemberDevice = await queryRunner.manager.createQueryBuilder()
+                .update(MemberDevice)
+                .set({
+                    event: data.event,
+                    action: data.action,
+                    night: data.night
+                })
+                .where('device_id = :device_id', {device_id: data.device_id})
+                .andWhere('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+                .execute();
+
+            const member = await queryRunner.manager.createQueryBuilder()
+                .update(Member)
+                .set({
+                    agreeMsg: data.agree,
+                })
+                .where('idx = :idx', {idx: data.memberIdx})
+                .execute();
+
+            await queryRunner.commitTransaction();
+
+            return updateMemberDevice;
+
+        }catch (e){
+            await queryRunner.rollbackTransaction();
+            throw new HttpException(e.message, e.status);
+        }finally {
+            await queryRunner.release();
+        }
+    }
+
+    async getMemberPushLogs(memberIdx: number) {
+        try{
+            let data = await this.pushLogRepository
+                .createQueryBuilder()
+                .select('*')
+                .addSelect('DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s")', 'created_at')
+                .where('memberIdx = :memberIdx', {memberIdx: memberIdx})
+                .orderBy('idx', 'DESC')
+                .getRawMany();
+            if(!data){
+                throw new HttpException('Not Found', 404);
+            }
+            return bufferToString(data);
+
+        }catch (e){
+            throw new HttpException(e.message, e.status);
+        }
+    }
+
+    async updateIsRead(data: { memberIdx: number; idx: number }) {
+        console.log("=>(member.service.ts:713) data", data);
+        try{
+            return await this.pushLogRepository
+                .createQueryBuilder()
+                .update()
+                .set({isRead: true})
+                .where('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+                .andWhere('idx = :idx', {idx: data.idx})
+                .execute();
+
+        }catch (e){
+            throw new HttpException(e.message, e.status);
+        }
+    }
+
+    async getIsReadCount(idx: number) {
+        console.log("=>(member.service.ts:762) idx", idx);
+        try{
+            let data = await this.pushLogRepository
+                .createQueryBuilder()
+                .select('*')
+                .where('memberIdx = :memberIdx', {memberIdx: idx})
+                .andWhere('isRead = 0')
+                .getCount();
+            console.log("=>(member.service.ts:770) data", data);
+
+            return data;
+
+        }catch (e){
+            throw new HttpException(e.message, e.status);
+        }
+    }
+
+    async getNotification(idx: number,device_id: string) {
+        try{
+            let device = await this.memberDeviceRepository
+                .createQueryBuilder()
+                .select(['event', 'action', 'night'])
+                .where('memberIdx = :memberIdx', {memberIdx: idx})
+                .andWhere('device_id = :device_id', {device_id: device_id})
+                .getRawOne();
+            if(device) {
+                bufferToString(device);
+                console.log("=>(member.service.ts:789) device", device);
+            }
+            let member = await this.memberRepository
+                .createQueryBuilder()
+                .select('agreeMsg')
+                .where('idx = :idx', {idx: idx})
+                .getRawOne();
+            if(member) {
+                bufferToString(member);
+                console.log("=>(member.service.ts:798) member", member);
+            }
+
+            return {
+                action: device ? device.action : 0,
+                event: device ? device.event : 0,
+                night: device ? device.night : 0,
+                agree: member ? member.agreeMsg : 0
+            }
+
+        }catch (e){
+            throw new HttpException(e.message, e.status);
+        }
     }
 }

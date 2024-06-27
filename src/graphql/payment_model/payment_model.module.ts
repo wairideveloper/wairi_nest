@@ -27,6 +27,8 @@ import {CampaignFav} from "../../../entity/entities/CampaignFav";
 import {EmailService} from "../../email/email.service";
 import {EmailTemplate} from "../../../entity/entities/EmailTemplate";
 import {CampaignSubmitBackup} from "../../../entity/entities/CampaignSubmitBackup";
+import {MemberDevice} from "../../../entity/entities/MemberDevice";
+import {PushLog} from "../../../entity/entities/PushLog";
 
 @Module({
   imports: [
@@ -50,7 +52,9 @@ import {CampaignSubmitBackup} from "../../../entity/entities/CampaignSubmitBacku
           CampaignRecent,
           CampaignFav,
           EmailTemplate,
-          CampaignSubmitBackup
+          CampaignSubmitBackup,
+          MemberDevice,
+          PushLog
       ]),
   ],
   providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService,

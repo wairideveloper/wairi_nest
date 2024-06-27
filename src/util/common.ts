@@ -80,6 +80,11 @@ export const FROM_UNIXTIME2 = (column: string) => {
     return `DATE_FORMAT(FROM_UNIXTIME(${column}),"%Y-%m-%d %H:%i:%s")`;
 }
 
+// created_at: 2024-06-24T02:32:58.000Z 서울시간으로 변경
+export const FROM_UNIXTIME_JS_STRING_PLUS9 = (column: string) => {
+    return moment(column).format('YYYY-MM-DD HH:mm:ss');
+}
+
 
 
 //유닉스타임스템프를 javacript  한국 날짜로 변환 YYYY-MM-DD HH:mm:ss

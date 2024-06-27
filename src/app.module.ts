@@ -24,6 +24,7 @@ import {MemberChannel} from "../entity/entities/MemberChannel";
 import {CampaignFav} from "../entity/entities/CampaignFav";
 import {NotificationTalkCallBack} from "../entity/entities/NotificationTalkCallBack";
 import {CampaignSubmitBackup} from "../entity/entities/CampaignSubmitBackup";
+import {MemberDevice} from "../entity/entities/MemberDevice";
 //modules
 import {AuthModule} from './auth/auth.module';
 import {MembersModule} from './members/members.module';
@@ -77,6 +78,8 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ApiplexModule } from './apiplex/apiplex.module';
 import { EmailModule } from './email/email.module';
 import {EmailTemplate} from "../entity/entities/EmailTemplate";
+import { DeviceModelModule } from './graphql/device_model/device_model.module';
+import {PushLog} from "../entity/entities/PushLog";
 @Module({
     imports: [
         CacheModule.register(),
@@ -99,7 +102,8 @@ import {EmailTemplate} from "../entity/entities/EmailTemplate";
                 Board, BoardArticles, CampaignRecent, CampaignItemSchedule,
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
                 Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk,
-                EmailTemplate,NotificationTalkCallBack,CampaignSubmitBackup
+                EmailTemplate,NotificationTalkCallBack,CampaignSubmitBackup, MemberDevice,
+                PushLog
             ],
             synchronize: false,
             charset: 'utf8mb4',
@@ -143,6 +147,7 @@ import {EmailTemplate} from "../entity/entities/EmailTemplate";
                 SubmitModelModule,
                 ReviewModelModule,
                 ApiplexModule,
+                DeviceModelModule
                 // ApiplexModule2
             ],
             typePaths: ['./**/*.graphql'],
@@ -223,7 +228,8 @@ import {EmailTemplate} from "../entity/entities/EmailTemplate";
         ApiplexCallbackModule,
         LogModelModule,
         SchedulerModule,
-        EmailModule
+        EmailModule,
+        DeviceModelModule
     ],
     controllers: [AppController],
     providers: [

@@ -17,6 +17,7 @@ import {Member} from "../../../entity/entities/Member";
 import {LoginInput} from "../auth_ql_model/dto/loginInput";
 import {Madein20ModelService} from "../madein20_model/madein20_model.service";
 import {ApiplexService} from "../apiplex/apiplex.service";
+import {Board} from "../../../entity/entities/Board";
 
 class CeateMemberChannelInput {
     type: number;
@@ -291,6 +292,117 @@ export class MemberResolver {
         } catch (error) {
             console.log("=>(member.resolver.ts:246) error", error);
             throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getMemberPushLogs(
+        @AuthUser() authUser: Member,
+    ){
+        try {
+            let data = await this.membersService.getMemberPushLogs(authUser.idx);
+            return data;
+        } catch (error) {
+            console.log("=>(member.resolver.ts:246) error", error);
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getIsReadCount(
+        @AuthUser() authUser: Member,
+        @Args('idx', {type: () => Int}) idx: number,
+    ){
+        try {
+            let data = await this.membersService.getIsReadCount(authUser.idx);
+            return {count: data};
+        } catch (error) {
+            console.log("=>(member.resolver.ts:246) error", error);
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Query()
+    @UseGuards(GqlAuthGuard)
+    async getNotification(
+        @AuthUser() authUser: Member,
+        @Args('idx', {type: () => Int}) idx: number,
+        @Args('device_id', {type: () => String}) device_id: string,
+    ){
+        try {
+            let data = await this.membersService.getNotification(authUser.idx,device_id);
+            return data;
+        } catch (error) {
+            console.log("=>(member.resolver.ts:246) error", error);
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Mutation('updateIsRead')
+    @UseGuards(GqlAuthGuard)
+    async updateIsRead(
+        @AuthUser() authUser: Member,
+        @Args('idx', {type: () => Int}) idx: number,
+    ) {
+        try {
+            const data = {
+                memberIdx: authUser.idx,
+                idx: idx
+            }
+            const result = await this.membersService.updateIsRead(data);
+            if (result.affected > 0) {
+                return {
+                    code: 200,
+                    message: '읽음 처리 성공',
+                }
+            } else {
+                return {
+                    code: 500,
+                    message: '읽음 처리 실패',
+                }
+            }
+        } catch (error) {
+            throw new HttpException(error.message, 500);
+        }
+    }
+
+    @Mutation('updateNotificationSetting')
+    @UseGuards(GqlAuthGuard)
+    async updateNotificationSetting(
+        @AuthUser() authUser: Member,
+        @Args('event', {type: () => Boolean}) event: boolean,
+        @Args('action', {type: () => Boolean}) action: boolean,
+        @Args('night', {type: () => Boolean}) night: boolean,
+        @Args('agree', {type: () => Boolean}) agree: boolean,
+        @Args('device_id', {type: () => String}) device_id: String,
+    ) {
+
+        try {
+            const data = {
+                device_id: device_id,
+                memberIdx: authUser.idx,
+                event: event,
+                action: action,
+                night: night,
+                agree: agree
+            }
+            console.log("=>(member.resolver.ts:360) data", data);
+            const result = await this.membersService.updateNotificationSetting(data);
+            if (result.affected > 0) {
+                return {
+                    code: 200,
+                    message: '알림 설정 변경 성공',
+                }
+            } else {
+                return {
+                    code: 500,
+                    message: '알림 설정 변경 실패',
+                }
+            }
+        } catch (e) {
+            throw new HttpException(e.message, e.status);
         }
     }
 }

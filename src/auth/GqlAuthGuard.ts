@@ -39,7 +39,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     }
 
     validateToken(token: string) {
-        // console.log("-> token", token);
+        console.log("-> token", token);
         const secretKey = process.env.JWT_SECRET;
         // console.log("-> secretKey", secretKey);
 
@@ -62,6 +62,8 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
                     throw new HttpException('유효하지 않은 토큰입니다.', 401);
                 case 'jwt expired':
                     throw new HttpException('토큰이 만료되었습니다.', 410);
+                case 'Cannot read properties of undefined (reading \'verify\')':
+                    throw new HttpException('토큰이 유효하지 않습니다.', 401);
                 default:
                     throw new HttpException('서버 오류입니다.', 500);
             }

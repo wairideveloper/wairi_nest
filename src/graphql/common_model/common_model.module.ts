@@ -7,6 +7,8 @@ import {Member} from "../../../entity/entities/Member";
 import {MemberChannel} from "../../../entity/entities/MemberChannel";
 import {CampaignReview} from "../../../entity/entities/CampaignReview";
 import {Config} from "../../../entity/entities/Config";
+import {MemberDevice} from "../../../entity/entities/MemberDevice";
+import {PushLog} from "../../../entity/entities/PushLog";
 // import {Config} from "aws-sdk";
 import {JwtService} from "@nestjs/jwt";
 import {Partner} from "../../../entity/entities/Partner";
@@ -15,7 +17,7 @@ import {Partner} from "../../../entity/entities/Partner";
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            Member, MemberChannel, CampaignReview,Config, Partner
+            Member, MemberChannel, CampaignReview,Config, Partner, MemberDevice, PushLog
         ]),
     ],
     providers: [CommonModelResolver, CommonModelService, MembersService, JwtService]

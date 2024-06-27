@@ -96,7 +96,12 @@ export class AuthQlModelService {
                     return memberChannel[index];
                 })
                 member.memberChannel = memberChannel;
-                console.log("=>(auth_ql_model.service.ts:80) member", member);
+
+                let memberDevice = await this.memberService.findDevice(member.idx);
+                console.log("=>(auth_ql_model.service.ts:101) memberDevice", memberDevice);
+                if(memberDevice){
+                    member.deviceToken = memberDevice;
+                }
 
                 //lastSignin update
                 await this.memberService.updateLastSignin(member.idx);
@@ -702,6 +707,11 @@ console.log("=>(auth_ql_model.service.ts:672) 소셜 로그인 payload: ", paylo
                 })
                 memberCheck.memberChannel = memberChannel;
 
+                // let memberDevice = await this.memberService.findDevice(memberCheck.idx);
+                // console.log("=>(auth_ql_model.service.ts:101) memberDevice", memberDevice);
+                // if(memberDevice){
+                //     memberCheck.deviceToken = memberDevice;
+                // }
                 //lastSignin update
                 await this.memberService.updateLastSignin(memberCheck.idx);
 

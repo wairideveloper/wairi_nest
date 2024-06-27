@@ -29,12 +29,14 @@ import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 import {LogModelService} from "../log_model/log_model.service";
 import {EmailService} from "../../email/email.service";
+import {MemberDevice} from "../../../entity/entities/MemberDevice";
+import {PushLog} from "../../../entity/entities/PushLog";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
             CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member, Admin,
-            MemberChannel,Config, NotificationTalk,EmailTemplate,CampaignSubmitBackup
+            MemberChannel,Config, NotificationTalk,EmailTemplate,CampaignSubmitBackup,MemberDevice,PushLog
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService,
