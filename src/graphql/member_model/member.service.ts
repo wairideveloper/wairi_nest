@@ -821,13 +821,14 @@ export class MembersService {
         idx: number;
         type: number;
         interests: number
-    }) {
+    },html: string) {
         try{
             const memberChannelLog = this.memberChannelLogRepository.create({
                 memberIdx: data.memberIdx,
                 link: data.link ? data.link : "",
                 channelIdx: data.idx,
                 channelType: data.type,
+                changeText: html,
                 regdate: getNowUnix()
             });
             return await this.memberChannelLogRepository.save(memberChannelLog);

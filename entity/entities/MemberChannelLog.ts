@@ -18,6 +18,9 @@ export class MemberChannelLog {
   @Column("text", { name: "link" })
   link: string;
 
+  @Column("text", { name: "changeText" })
+  changeText: string;
+
   @Column("int", { name: "regdate" })
   regdate: number;
 }

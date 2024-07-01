@@ -197,8 +197,6 @@ export class MemberResolver {
 
             const channel = await this.membersService.updateMemberChannel(data);
 
-            const channelLog = await this.membersService.memberChannelLog(data);
-
             if (channel.affected > 0) {
                 let getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
                 if (getChannel) {
@@ -211,6 +209,7 @@ export class MemberResolver {
                 updateMemberChannelInput.link ? html += `   링크 : ${updateMemberChannelInput.link} \n` : "";
                 updateMemberChannelInput.interests ? html += `   관심분야 : ${changeInterestsText(updateMemberChannelInput.interests)} \n` : "";
 
+                const channelLog = await this.membersService.memberChannelLog(data,html);
 
                 let param = {
                     "이름": authUser.username,
