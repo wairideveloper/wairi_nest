@@ -76,7 +76,7 @@ export class ReviewModelResolver {
     ) {
         try {
             let data = await this.reviewModelService.getMyReviews(authUser.idx, take, page);
-            console.log("=>(review_model.resolver.ts:60) data", data);
+            // console.log("=>(review_model.resolver.ts:60) data", data);
             return data;
         } catch (error) {
             console.log(error)

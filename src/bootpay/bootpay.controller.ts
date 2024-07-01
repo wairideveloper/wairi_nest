@@ -22,7 +22,8 @@ export class BootpayController {
         try {
           console.log("=>(bootpay.controller.ts:18) 웹 모든결제", body);
           this.bootpayService.updateWebPayment(body)
-          res.status(200).json("OK")
+          res.set('Content-Type', 'text/plain');
+          res.send("OK");
         }catch(e){
           console.log("=>(bootpay.controller.ts:22) 웹 모든결제 에러", e);
           res.status(200).json("OK")
