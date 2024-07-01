@@ -21,6 +21,8 @@ type Category{
 }
 
 type Product{
+    manuscriptFee: Int,
+#    lowestPriceDeposit: Int,
     approvalRate: Int
     weight: Int
     idx: Int

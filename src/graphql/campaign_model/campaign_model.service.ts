@@ -46,6 +46,7 @@ export class CampaignService {
                     'campaign.name as name',
                     'campaign.approvalMethod as approvalMethod',
                     'campaign.grade as grade',
+                    'campaign.manuscriptFee as manuscriptFee',
                     'campaign.status as status',
                     'campaign.regdate as regdate',
                     'campaign.weight as weight',
@@ -77,6 +78,17 @@ export class CampaignService {
                             .orderBy('priceOrig', 'ASC')
                             .limit(1),
                     'lowestPriceOrig'
+                )
+                query.addSelect(
+                    (subQuery) =>
+                        subQuery
+                            .select('priceDeposit')
+                            .from('campaignItem', 'ci')
+                            .where('ci.campaignIdx = campaign.idx')
+                            .andWhere('ci.remove = 0')
+                            .orderBy('priceDeposit', 'ASC')
+                            .limit(1),
+                    'lowestPriceDeposit'
                 )
                 query.addSelect(
                     (subQuery) =>
@@ -121,6 +133,7 @@ export class CampaignService {
                     'campaign.status as status',
                     'campaign.approvalMethod as approvalMethod',
                     'campaign.grade as grade',
+                    'campaign.manuscriptFee as manuscriptFee',
                     'campaign.regdate as regdate',
                     'campaign.weight as weight',
                     'campaign.cateIdx as cateIdx',
@@ -227,6 +240,7 @@ export class CampaignService {
                     'campaign.status as status',
                     'campaign.approvalMethod as approvalMethod',
                     'campaign.grade as grade',
+                    'campaign.manuscriptFee as manuscriptFee',
                     'campaign.regdate as regdate',
                     'campaign.weight as weight',
                     'campaign.cateIdx as cateIdx',

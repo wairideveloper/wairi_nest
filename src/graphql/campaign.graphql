@@ -14,6 +14,7 @@ type Campaign {
     status: Int
     approvalMethod: Int
     grade: Int
+    manuscriptFee: Int
     regdate: String
     info: String
     lastUpdate: String

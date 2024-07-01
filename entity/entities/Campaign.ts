@@ -23,6 +23,9 @@ export class Campaign {
     @Column("int", {name: "grade"})
     grade: number;
 
+    @Column("int", {name: "manuscriptFee"})
+    manuscriptFee: number;
+
     @Column("int", {name: "partnerIdx"})
     partnerIdx: number;
 
