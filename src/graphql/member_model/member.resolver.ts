@@ -156,8 +156,8 @@ export class MemberResolver {
                     "이름": member.name ? member.name : "회원",
                     "채널주소": createMemberChannelInput.link,
                 }
-                // @ts-ignore
-                // await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', member.phone, param)
+
+                await this.apiPlexService.sendUserAlimtalk('1EHu0hjNSYvP', member.phone, param)
             }
 
             return {
@@ -213,11 +213,12 @@ export class MemberResolver {
 
 
                 let param = {
-                    name: authUser.username,
-                    changes: html
+                    "이름": authUser.username,
+                    "변경내용": html
                 }
 
                 // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'kjR290Pm0Xac0NzLZNU2');
+                await this.apiPlexService.sendUserAlimtalk('kjR290Pm0Xac', authUser.phone, param);
 
                 return {
                     code: 200,
