@@ -16,11 +16,12 @@ import {ApiplexService} from "../apiplex/apiplex.service";
 import {NotificationTalk} from "../../../entity/entities/NotificationTalk";
 import {MemberDevice} from "../../../entity/entities/MemberDevice";
 import {PushLog} from "../../../entity/entities/PushLog";
+import {MemberChannelLog} from "../../../entity/entities/MemberChannelLog";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Member, MemberChannel,
         CampaignReview, Config, Partner, Admin, Campaign, CampaignItem, NotificationTalk,
-        MemberDevice, PushLog
+        MemberDevice, PushLog, MemberChannelLog
     ])],
     providers: [MemberResolver,MembersService,JwtService, Madein20ModelService, ApiplexService],
 })

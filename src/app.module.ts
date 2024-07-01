@@ -80,6 +80,7 @@ import { EmailModule } from './email/email.module';
 import {EmailTemplate} from "../entity/entities/EmailTemplate";
 import { DeviceModelModule } from './graphql/device_model/device_model.module';
 import {PushLog} from "../entity/entities/PushLog";
+import {MemberChannelLog} from "../entity/entities/MemberChannelLog";
 @Module({
     imports: [
         CacheModule.register(),
@@ -103,7 +104,7 @@ import {PushLog} from "../entity/entities/PushLog";
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
                 Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk,
                 EmailTemplate,NotificationTalkCallBack,CampaignSubmitBackup, MemberDevice,
-                PushLog
+                PushLog, MemberChannelLog
             ],
             synchronize: false,
             charset: 'utf8mb4',

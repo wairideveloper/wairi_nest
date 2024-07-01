@@ -19,6 +19,8 @@ import {Config} from "../../../entity/entities/Config";
 import {Partner} from "../../../entity/entities/Partner";
 import {MemberDevice} from "../../../entity/entities/MemberDevice";
 import {PushLog} from "../../../entity/entities/PushLog";
+import{MemberChannelLog} from "../../../entity/entities/MemberChannelLog";
+
 import * as moment from "moment/moment";
 import {Payment} from "../../../entity/entities/Payment";
 
@@ -39,6 +41,8 @@ export class MembersService {
         private memberDeviceRepository: Repository<MemberDevice>,
         @InjectRepository(PushLog)
         private pushLogRepository: Repository<PushLog>,
+        @InjectRepository(MemberChannelLog)
+        private memberChannelLogRepository: Repository<MemberChannelLog>,
         private connection: Connection,
     ) {
     }
@@ -804,6 +808,29 @@ export class MembersService {
                 night: device ? device.night : 0,
                 agree: member ? member.agreeMsg : 0
             }
+
+        }catch (e){
+            throw new HttpException(e.message, e.status);
+        }
+    }
+
+    async memberChannelLog(data: {
+        memberIdx: number;
+        link: string;
+        channelName: string;
+        idx: number;
+        type: number;
+        interests: number
+    }) {
+        try{
+            const memberChannelLog = this.memberChannelLogRepository.create({
+                memberIdx: data.memberIdx,
+                link: data.link ? data.link : "",
+                channelIdx: data.idx,
+                channelType: data.type,
+                regdate: getNowUnix()
+            });
+            return await this.memberChannelLogRepository.save(memberChannelLog);
 
         }catch (e){
             throw new HttpException(e.message, e.status);

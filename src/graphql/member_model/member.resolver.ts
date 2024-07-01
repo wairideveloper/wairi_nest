@@ -196,6 +196,9 @@ export class MemberResolver {
             }
 
             const channel = await this.membersService.updateMemberChannel(data);
+
+            const channelLog = await this.membersService.memberChannelLog(data);
+
             if (channel.affected > 0) {
                 let getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
                 if (getChannel) {

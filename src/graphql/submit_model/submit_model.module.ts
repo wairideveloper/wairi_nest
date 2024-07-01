@@ -31,12 +31,15 @@ import {LogModelService} from "../log_model/log_model.service";
 import {EmailService} from "../../email/email.service";
 import {MemberDevice} from "../../../entity/entities/MemberDevice";
 import {PushLog} from "../../../entity/entities/PushLog";
+import {MemberChannelLog} from "../../../entity/entities/MemberChannelLog";
+
 
 @Module({
     imports: [TypeOrmModule.forFeature([
             Campaign, CampaignItem, CampaignImage, CampaignReview, Cate, CateArea, Partner,
             CampaignRecent, CampaignItemSchedule, CampaignFav, CampaignSubmit, Payment, Member, Admin,
-            MemberChannel,Config, NotificationTalk,EmailTemplate,CampaignSubmitBackup,MemberDevice,PushLog
+            MemberChannel,Config, NotificationTalk,EmailTemplate,CampaignSubmitBackup,MemberDevice,PushLog,
+        MemberChannelLog
         ]
     )],
   providers: [SubmitModelResolver, SubmitModelService, JwtService, CampaignService, Madein20ModelService, MembersService,

@@ -12,12 +12,13 @@ import {PushLog} from "../../../entity/entities/PushLog";
 // import {Config} from "aws-sdk";
 import {JwtService} from "@nestjs/jwt";
 import {Partner} from "../../../entity/entities/Partner";
+import {MemberChannelLog} from "../../../entity/entities/MemberChannelLog";
 
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            Member, MemberChannel, CampaignReview,Config, Partner, MemberDevice, PushLog
+            Member, MemberChannel, CampaignReview,Config, Partner, MemberDevice, PushLog, MemberChannelLog
         ]),
     ],
     providers: [CommonModelResolver, CommonModelService, MembersService, JwtService]

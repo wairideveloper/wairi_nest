@@ -29,6 +29,7 @@ import {EmailTemplate} from "../../../entity/entities/EmailTemplate";
 import {CampaignSubmitBackup} from "../../../entity/entities/CampaignSubmitBackup";
 import {MemberDevice} from "../../../entity/entities/MemberDevice";
 import {PushLog} from "../../../entity/entities/PushLog";
+import {MemberChannelLog} from "../../../entity/entities/MemberChannelLog";
 
 @Module({
   imports: [
@@ -54,7 +55,8 @@ import {PushLog} from "../../../entity/entities/PushLog";
           EmailTemplate,
           CampaignSubmitBackup,
           MemberDevice,
-          PushLog
+          PushLog,
+          MemberChannelLog
       ]),
   ],
   providers: [PaymentModelResolver, PaymentModelService, JwtService, SubmitModelService,
