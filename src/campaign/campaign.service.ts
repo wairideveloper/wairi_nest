@@ -865,8 +865,7 @@ export class CampaignService {
                     .split(',')
                     .map((keyword: string) => keyword.trim());
             }
-
-            // console.log("=>(campaign.service.ts:671) result", result);
+            
             return result;
             //info , production_guide, caution = "" -> null
             if (result.info == "") {

@@ -366,6 +366,7 @@ export class SubmitModelService {
                 .where("campaignSubmit.sid = :sid", {sid: sid})
                 .execute();
 
+
             //재고 차감
             let campaignItemSchduleUpdate = await queryRunner.manager.createQueryBuilder()
                 .update(CampaignItemSchedule)

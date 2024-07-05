@@ -28,14 +28,14 @@ export class DeviceModelService {
 
             if (existingDeviceModel) {
                 // // 레코드가 존재하면 업데이트
-                // existingDeviceModel.platform = createDeviceModelInput.platform;
-                // existingDeviceModel.device_token = createDeviceModelInput.device_token;
-                // existingDeviceModel.event = createDeviceModelInput.event;
-                // existingDeviceModel.action = createDeviceModelInput.action;
-                // existingDeviceModel.night = createDeviceModelInput.night;
-                // existingDeviceModel.updated_at = getNowYmdHis();
+                existingDeviceModel.platform = createDeviceModelInput.platform;
+                existingDeviceModel.device_token = createDeviceModelInput.device_token;
+                existingDeviceModel.event = createDeviceModelInput.event;
+                existingDeviceModel.action = createDeviceModelInput.action;
+                existingDeviceModel.night = createDeviceModelInput.night;
+                existingDeviceModel.updated_at = getNowYmdHis();
 
-                // await this.deviceModelRepository.save(existingDeviceModel);
+                await this.deviceModelRepository.save(existingDeviceModel);
                 return bufferToString(existingDeviceModel); // 업데이트된 데이터 반환
             } else {
                 // 레코드가 존재하지 않으면 인서트
