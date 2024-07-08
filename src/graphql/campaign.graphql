@@ -181,6 +181,10 @@ type ItemScedule{
 }
 
 extend type Query {
+
+    # 날짜 선택 우선 으로 스케쥴 있는 캠페인 리스트
+    getActivateCampaign(take: Int!,page:Int!,cate:Int,cateArea:Int,sort:String,start:Int,end:Int,keyword:String): Campaigns!
+
     #  getAllMember(skip: Int, take: Int!,title:String): [Member]
     getCampaign(id: Int!): Campaign!
     #캠페인 리스트

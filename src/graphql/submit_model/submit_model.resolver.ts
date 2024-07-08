@@ -229,7 +229,8 @@ export class SubmitModelResolver {
                 // await this.apiPlexService.sendPartnerAlimtalk('7q0IN9T48W62', param, campaign.idx);
                 // await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
 
-                await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
+                // await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
+                await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI92',member.phone, param);
                 await this.apiPlexService.sendPartnerAlimtalk('djgoak25gpd0', param, campaign.idx);
 
                 await this.emailService.partnerEmail('djgoak25gpd0', param, campaign.partnerIdx, campaign.idx);

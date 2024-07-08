@@ -16,6 +16,37 @@ export class CampaignResolver {
     constructor(private readonly campaignsService: CampaignService) {
     }
 
+
+    @Query()
+    async getActivateCampaign(
+        @Args('keyword', {type: () => String}) keyword: string,
+        @Args('take', {type: () => Int}) take: number,
+        @Args('page', {type: () => Int}) page: number,
+        @Args('cate', {type: () => Int}) cate: number,
+        @Args('cateArea', {type: () => Int}) cateArea: number,
+        @Args('start', {type: () => Int}) start: string,
+        @Args('end', {type: () => Int}) end: string,
+        @Args('sort', {type: () => Int}) sort: number,
+    ){
+        try{
+
+            let data = await this.campaignsService.getActivateCampaign(
+                keyword,
+                take,
+                page,
+                cate,
+                cateArea,
+                start,
+                end,
+                sort
+            );
+            return data;
+        }catch(error){
+            console.log(error)
+            throw error;
+        }
+    }
+
     @Query()
     async getRecommendedSearchWords(
         @Args('type', {type: () => String}) type: string,

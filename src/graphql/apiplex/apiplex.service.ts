@@ -187,58 +187,6 @@ export class ApiplexService {
         }
     }
 
-    async test2(phoneList, template_code, params = []) {
-        phoneList.map(async (phone) => {
-            console.log(phone)
-            try {
-                let headers = this.headers;
-                let setConfigTemplate = this.setConfigTemplate(template_code, params);
-                console.log("=>(apiplex.service.ts:84) setConfigTemplate", setConfigTemplate);
-                let axioData = this.setConfig(template_code, "테스트", phone, setConfigTemplate);
-                console.log("=>(apiplex.service.ts:86) axioData", axioData);
-                let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
-                console.log("=>(apiplex.service.ts:87) result", result.data.results);
-                // if (result.data.results[0].code == 'C100') {
-                //     let data = {
-                //         status: this.code[result.data.results.code],
-                //         template_code: template_code,
-                //         echo_to_webhook: axioData.msg_data[0].echo_to_webhook,
-                //         message: setConfigTemplate,
-                //         receiver_number: phone,
-                //         data: JSON.stringify(axioData),
-                //         created_at: new Date()
-                //     }
-                //     console.log("=>(apiplex.service.ts:144) data", data);
-                //
-                //     await this.notificationTalkSave(data)
-                // }
-            } catch (error) {
-                this.logger.error('Failed to send Alimtalk DATA: ' + JSON.stringify(params));
-                this.logger.error('Failed to send Alimtalk ERROR MSG: ' + error.message);
-                throw new Error('Failed to send Alimtalk: ' + error.message);
-            }
-        })
-    }
-
-    async test() {
-        try {
-            let param = {
-                "이름": "test",
-                "채널주소": "htps://pf.kakao.com/_xgxbxjK",
-            }
-            let headers = this.headers;
-            let setConfigTemplate = this.setConfigTemplate("EHu0hjNSYvP3", param);
-            console.log("=>(apiplex.service.ts:42) setConfigTemplate", setConfigTemplate);
-
-            let axioData = this.setConfig('EHu0hjNSYvP3', "테스트", '01082308203', setConfigTemplate);
-            console.log("=>(apiplex.service.ts:41) axioData", axioData);
-            let result = await axios.post(this.API_PLEX_URL, axioData, {headers});
-            console.log("=>(apiplex.service.ts:43) result", result.data.results);
-        } catch (error) {
-            throw error;
-        }
-    }
-
     // async notificationTalkSave(data: any) {
     //     try {
     //         await this.notificationTalkRepository
@@ -499,6 +447,9 @@ export class ApiplexService {
                 break;
             case "1ZBQ0QxY7WI9":
                 msg = this._1ZBQ0QxY7WI9(data);
+                break;
+            case "ZBQ0QxY7WI92":
+                msg = this.ZBQ0QxY7WI92(data);
                 break;
             case "ZBQ0QxY7WI99":
                 msg = this.ZBQ0QxY7WI99(data);
@@ -1352,6 +1303,25 @@ export class ApiplexService {
             "- #{이름}님의 업로드 채널: #{채널주소}\n" +
             "\n" +
             "※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
+    }
+
+    private ZBQ0QxY7WI92(data: any) {
+        return "[캠페인 신청 대기 알림]\n" +
+            " \n" +
+            "안녕하세요 #{이름}님 여행 인플루언서 플랫폼 와이리입니다.\n" +
+            "아래 내용으로 캠페인 신청이 완료되었습니다. 관리자 검토 및 업체 측 승인 후 선정 결과 안내해드리겠습니다 :)\n" +
+            " \n" +
+            "선정 결과 발표일: #{자동신청마감시간}\n" +
+            "*상황에 따라 더 빠르게 발표될 수 있습니다. \n" +
+            " \n" +
+            " ■ 신청 내용\n" +
+            " - 이름: #{이름}\n" +
+            " - 캠페인 신청내용: #{업체이름}, #{캠페인이름}\n" +
+            " - 이용일자: #{이용일자}\n" +
+            " - 투숙인원: #{인원}\n" +
+            " - #{이름}님의 업로드 채널: #{채널주소}\n" +
+            " \n" +
+            " ※문의사항은 카카오톡 wairi 채널 혹은 홈페이지 채널톡을 이용해주시길 바랍니다. 감사합니다.";
     }
 
     private _1148DrKHkbs2(data: any) {

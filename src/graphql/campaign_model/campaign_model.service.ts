@@ -34,8 +34,6 @@ export class CampaignService {
     async getProducts(sort: string) {
         let campaign: any[];
         try {
-            //접근 port 확인
-            console.log("=>(campaign.resolver.ts:41) process.env.PORT", process.env.PORT);
             if (sort == 'recent') {
                 const query = this.campaignRepository.createQueryBuilder('campaign');
                 query.leftJoin('campaign.campaignItem', 'campaignItem')
@@ -443,4 +441,5 @@ export class CampaignService {
             throw new HttpException(error.message, error.status);
         }
     }
+
 }

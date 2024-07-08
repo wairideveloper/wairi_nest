@@ -865,7 +865,7 @@ export class CampaignService {
                     .split(',')
                     .map((keyword: string) => keyword.trim());
             }
-            
+
             return result;
             //info , production_guide, caution = "" -> null
             if (result.info == "") {
@@ -1425,5 +1425,145 @@ export class CampaignService {
             .where('idx = :itemIdx', {itemIdx: itemIdx})
             .getRawOne();
 
+    }
+
+    async getActivateCampaign(keyword,
+                              take,
+                              page,
+                              cate,
+                              cateArea,
+                              start,
+                              end,
+                              sort) {
+        // const {take, page} = {take: 10, page: 1};
+        let query = this.campaignRepository.createQueryBuilder('campaign');
+        query.leftJoin('campaign.campaignItem', 'campaignItem')
+        query.leftJoin('campaign.campaignImage', 'campaignImage')
+        query.leftJoin('campaign.cate', 'cate')
+        query.leftJoin('campaign.cateArea', 'cateArea')
+        query.leftJoin('campaign.partner', 'partner')
+        query.leftJoin('campaignItem.campaignItemSchedule', 'campaignItemSchedule')
+        query.select([
+            'campaign.idx as idx',
+            'campaign.name as name',
+            'campaign.weight as weight',
+            'campaign.manuscriptFee as manuscriptFee',
+            'campaign.status as status',
+            'campaign.approvalMethod as approvalMethod',
+            'campaign.grade as grade',
+            'campaign.regdate as regdate',
+            // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
+            // 'min(campaignItem.priceOrig) as lowestPriceOrig',
+            // 'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
+            'min(campaignItem.calcType1) as lowestPriceCalcType1',
+            'min(campaignItem.calcType2) as lowestPriceCalcType2',
+            'min(campaignItem.sellType) as lowestPriceSellType',
+            'CONCAT("https://wairi.co.kr/img/campaign/",(select file_name from campaignImage where campaignIdx = campaign.idx order by ordering asc limit 1)) as image',
+            'cate.name as cateName',
+            'cate.idx as cateIdx',
+            'cateArea.name as cateAreaName',
+            'cateArea.idx as cateAreaIdx',
+            'partner.corpName as partnerName',
+        ])
+        if (process.env.PORT == '3000' || process.env.PORT == '4000') {
+            console.log("=>(campaign.service.ts:1470) getActivateCampaign process.env.PORT", process.env.PORT);
+            query.addSelect(
+                (subQuery) =>
+                    subQuery
+                        .select('aws_url')
+                        .from('campaignImage', 'ci')
+                        .where('ci.campaignIdx = campaign.idx')
+                        .orderBy('ordering', 'ASC')
+                        .limit(1),
+                'image'
+            )
+        }
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('priceOrig')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('priceOrig', 'ASC')
+                    .limit(1),
+            'lowestPriceOrig'
+        )
+        query.addSelect(
+            (subQuery) =>
+                subQuery
+                    .select('dc11')
+                    .from('campaignItem', 'ci')
+                    .where('ci.campaignIdx = campaign.idx')
+                    .andWhere('ci.remove = 0')
+                    .orderBy('dc11', 'ASC')
+                    .limit(1),
+            'discountPercentage'
+        )
+        // .where('(campaign.status = 200 AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR (campaign.status = 200  AND campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword)', {
+
+        query.where('1=1')
+        query.andWhere('campaign.status = 200 and campaign.remove = 0')
+        if(keyword !== "" && keyword) {
+            query.andWhere('((campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaign.name like :campaignKeyword) OR ( campaignItem.memberTarget = 1 AND campaign.remove = 0 AND campaignItem.name like :itemKeyword))', {
+                // status: 200,
+                // remove: 0,
+                campaignKeyword: '%' + keyword + '%',
+                itemKeyword: '%' + keyword + '%',
+            })
+        }
+        if(cate){
+            console.log("=>(campaign.service.ts:1512) cate", cate);
+            query.andWhere('campaign.cateIdx = :cate', {cate: cate})
+        }
+        if(cateArea){
+            query.andWhere('campaign.cateAreaIdx = :cateArea', {cateArea: cateArea})
+        }
+
+        if(start && end){
+            query.andWhere('campaignItemSchedule.date >= :start', {start: start})
+            query.andWhere('campaignItemSchedule.date <= :end', {end: end})
+        }
+
+        switch (sort){
+            case 'recent' : query.orderBy('campaign.regdate','DESC')
+                break;
+            case 'popular' : query.orderBy('campaign.weight','DESC')
+                query.addOrderBy('campaign.regdate','DESC')
+                break;
+            case 'approval' : query.orderBy('campaign.approvalRate','DESC')
+                query.orderBy('campaign.weight','DESC')
+                query.addOrderBy('campaign.regdate','DESC')
+                break;
+        }
+
+        // query.orderBy('campaign.idx', 'DESC')
+        // query.addOrderBy('campaign.weight', 'DESC')
+        query.groupBy('campaign.idx')
+        query.offset(take * (page - 1))
+        query.limit(take)
+
+        let data = await query.getRawMany();
+        const total = await query.getCount()
+        // await this.getCampaignLowestPrice();
+        data = bufferToString(data);
+        let result = [];
+        data.forEach((item, index) => {
+            item.discountPrice = Math.round(item.lowestPriceOrig * item.discountPercentage / 100);
+            result.push(item);
+        })
+
+        let totalPage = Math.ceil(total / take);
+        if (page > totalPage) {
+            throw new NotFoundException();
+        }
+        const currentPage = page;
+
+        return new Pagination({
+            data,
+            total,
+            totalPage,
+            currentPage
+        });
     }
 }
