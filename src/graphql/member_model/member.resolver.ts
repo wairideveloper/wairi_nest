@@ -191,11 +191,21 @@ export class MemberResolver {
                 interests: updateMemberChannelInput.interests,
                 channelName: ""
             }
+
+            //getchannel
+            let getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);
+
             if (updateMemberChannelInput.type == 9) {
                 data['channelName'] = updateMemberChannelInput.channelName;
             }
 
-            const channel = await this.membersService.updateMemberChannel(data);
+            let channel;
+
+            if(getChannel.link !== updateMemberChannelInput.link){
+                channel = await this.membersService.updateMemberChannelLink(data);
+            }else{
+                channel = await this.membersService.updateMemberChannel(data);
+            }
 
             if (channel.affected > 0) {
                 let getChannel = await this.membersService.getMemberChannel(updateMemberChannelInput.idx);

@@ -220,15 +220,9 @@ export class SubmitModelResolver {
                 }
                 console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
                 console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));
-                // await this.madein20ModelService.sendUserAlimtalk(authUser.phone, param, 'ZBQ0QxY7WI99M8UrfAHq');
-                // await this.madein20ModelService.sendPartnerAlimtalk(param, '2jSKar7G587ZpGo6ZsKa', campaign.idx);
-
-                //authUser.phone string 으로 변환
-
-
+               
                 // await this.apiPlexService.sendPartnerAlimtalk('7q0IN9T48W62', param, campaign.idx);
                 // await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
-
                 // await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
                 await this.apiPlexService.sendUserAlimtalk('ZBQ0QxY7WI92',member.phone, param);
                 await this.apiPlexService.sendPartnerAlimtalk('djgoak25gpd0', param, campaign.idx);

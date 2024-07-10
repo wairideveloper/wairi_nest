@@ -495,11 +495,12 @@ export class MembersService {
     }
 
     async getMemberChannel(channelIdx: number) {
-        return await this.memberChannelRepository
+        let data = await this.memberChannelRepository
             .createQueryBuilder()
             .select('*')
             .where('idx = :idx', {idx: channelIdx})
             .getRawOne();
+        return bufferToString(data);
     }
 
     async updateMemberChannel(data: {
@@ -519,11 +520,34 @@ export class MembersService {
                 interests: data.interests,
                 typeText: data.channelName,
                 regdate: getNowUnix(),
-                level: 0
             })
             .where('idx = :idx', {idx: data.idx})
             .andWhere('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
             .execute();
+    }
+
+    async updateMemberChannelLink(data: {
+        idx: number;
+        memberIdx: number;
+        link: string;
+        channelName: string;
+        type: number;
+        interests: any
+    }) {
+        return await this.memberChannelRepository
+          .createQueryBuilder()
+          .update()
+          .set({
+              link: data.link,
+              type: data.type,
+              interests: data.interests,
+              typeText: data.channelName,
+              regdate: getNowUnix(),
+              level: 0
+          })
+          .where('idx = :idx', {idx: data.idx})
+          .andWhere('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+          .execute();
     }
 
     async getMemberChannelAll(idx: number) {
