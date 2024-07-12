@@ -311,10 +311,11 @@ export class MemberResolver {
     @Query()
     @UseGuards(GqlAuthGuard)
     async getMemberPushLogs(
+        @Args('deviceId', {type: () => Int}) deviceId: number,
         @AuthUser() authUser: Member,
     ){
         try {
-            let data = await this.membersService.getMemberPushLogs(authUser.idx);
+            let data = await this.membersService.getMemberPushLogs(authUser.idx,deviceId);
             return data;
         } catch (error) {
             console.log("=>(member.resolver.ts:246) error", error);

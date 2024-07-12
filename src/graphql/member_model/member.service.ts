@@ -751,13 +751,14 @@ export class MembersService {
         }
     }
 
-    async getMemberPushLogs(memberIdx: number) {
+    async getMemberPushLogs(memberIdx: number, deviceId : number) {
         try{
             let data = await this.pushLogRepository
                 .createQueryBuilder()
                 .select('*')
                 .addSelect('DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s")', 'created_at')
                 .where('memberIdx = :memberIdx', {memberIdx: memberIdx})
+                .andWhere('deviceId = :deviceId', {deviceId: deviceId})
                 .orderBy('idx', 'DESC')
                 .getRawMany();
             if(!data){
