@@ -95,6 +95,7 @@ type Channel{
 type PushLog{
     idx: Int
     memberIdx: Int
+    deviceId: String
     title: String
     subTitle: String
     isRead: Boolean
@@ -120,7 +121,7 @@ extend type Query {
     getMember(id: Int!): Member
     getMemberByEmail(email: String!): Member
     getMemberChannel:[Channel]
-    getMemberPushLogs: [PushLog]
+    getMemberPushLogs(deviceId:String!): [PushLog]
     getIsReadCount(idx: Int!): IsReadCount
     getNotification(idx: Int!,device_id:String!): NotificationSetting
 }
