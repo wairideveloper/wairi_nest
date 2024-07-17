@@ -143,7 +143,7 @@ export class SubmitModelResolver {
                 let minDays = campaignItem.minDays - 1;
                 //nights 를 minDays 로 나눠 개수
                 let count = Math.floor(nights / minDays);
-                pay = pay * count;
+                pay = pay * nights;
             }
 
             let inputData = {
@@ -220,7 +220,7 @@ export class SubmitModelResolver {
                 }
                 console.log("=>(submit_model.resolver.ts:200) createCampaignSubmitInput.startDate", createCampaignSubmitInput.startDate);
                 console.log("=>(submit_model.resolver.ts:201) typeof(", typeof(createCampaignSubmitInput.startDate));
-               
+
                 // await this.apiPlexService.sendPartnerAlimtalk('7q0IN9T48W62', param, campaign.idx);
                 // await this.apiPlexService.sendPartnerAlimtalk('12jSKar7G587', param, campaign.idx);
                 // await this.apiPlexService.sendUserAlimtalk('1ZBQ0QxY7WI9',member.phone, param);
