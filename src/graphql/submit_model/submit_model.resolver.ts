@@ -142,8 +142,14 @@ export class SubmitModelResolver {
             if(campaignItem.minDays > 1){
                 let minDays = campaignItem.minDays - 1;
                 //nights 를 minDays 로 나눠 개수
+                let finalPrice = createCampaignSubmitInput.price;
                 let count = Math.floor(nights / minDays);
-                pay = pay * nights;
+
+                if(finalPrice > 0){
+                    pay = finalPrice;
+                }else{
+                    pay = pay * nights;
+                }
             }
 
             let inputData = {
