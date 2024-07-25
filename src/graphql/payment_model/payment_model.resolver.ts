@@ -94,15 +94,17 @@ export class PaymentModelResolver {
             const startDate = getUnixTimeStampByDate9Sub(paymentItemInput.startDate);
             const endDate = getUnixTimeStampByDate9Sub(paymentItemInput.endDate);
             const nights = (endDate - startDate) / 86400;
-            if (campaignItem.minDays > 1) {
-                let minDays = campaignItem.minDays - 1;
-                //nights 를 minDays 로 나눠 개수
-                let count = Math.floor(nights / minDays);
-                pay = pay * count;
-            }else{
-                let finalPrice = paymentItemInput.price;
-                pay = finalPrice;
-            }
+            let finalPrice = paymentItemInput.price;
+            pay = finalPrice;
+            // if (campaignItem.minDays > 1) {
+            //     let minDays = campaignItem.minDays - 1;
+            //     //nights 를 minDays 로 나눠 개수
+            //     let count = Math.floor(nights / minDays);
+            //     pay = pay * count;
+            // }else{
+            //
+            //     pay = finalPrice;
+            // }
 
             //재고 체크
             const campaignItemSchdule = await this.submitModelService.getCampaignItemSchduleByItemIdxAndRangeDate(
@@ -160,7 +162,7 @@ export class PaymentModelResolver {
             if (response.status === 1) {
                 console.log("-> response", response);
 
-                if ((campaignItem.priceDeposit) != response.price) {
+                if ((submitItem.payTotal) != response.price) {
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
