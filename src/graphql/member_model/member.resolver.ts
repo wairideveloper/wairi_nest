@@ -35,6 +35,10 @@ class UpdateMemberChannelInput {
 }
 
 
+class ReauthorizationInput {
+    idx: number;
+}
+
 @Resolver('Member')
 export class MemberResolver {
     constructor(
@@ -418,5 +422,17 @@ export class MemberResolver {
         } catch (e) {
             throw new HttpException(e.message, e.status);
         }
+    }
+
+    @Mutation()
+    @UseGuards(GqlAuthGuard)
+    async reauthorization(
+      @AuthUser() authUser: Member,
+      @Args('reauthorizationInput',) reauthorizationInput: ReauthorizationInput
+    ){
+console.log("=>(member.resolver.ts:434) ", reauthorizationInput);
+return {
+    code : 200,
+}
     }
 }

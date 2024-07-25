@@ -101,6 +101,8 @@ export class AuthQlModelService {
                 console.log("=>(auth_ql_model.service.ts:101) memberDevice", memberDevice);
                 if(memberDevice){
                     member.deviceToken = memberDevice;
+                }else{
+                    member.deviceToken = null;
                 }
 
                 //lastSignin update

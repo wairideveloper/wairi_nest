@@ -27,12 +27,12 @@ type Member {
 }
 
 type MemberDevice {
-    idx: Int!
-    memberIdx: Int!
-    platform: String!
-    device_token: String!
-    created_at: String!
-    updated_at: String!
+    idx: Int
+    memberIdx: Int
+    platform: String
+    device_token: String
+    created_at: String
+    updated_at: String
 }
 
 type MemberChannel {
@@ -79,6 +79,10 @@ input UpdateMemberChannelInput {
     link: String!
     interests: Int
     channelName: String
+}
+
+input ReauthorizationInput{
+    idx: Int!
 }
 
 type Channel{
@@ -133,4 +137,6 @@ extend type Mutation {
     deleteMemberChannel(channelIdx: Int!):setMemberChannelResponse
     updateNotificationSetting(event: Boolean, action: Boolean, night: Boolean, agree: Boolean, device_id: String): GraphqlHttpResponse
     updateIsRead(idx: Int!): GraphqlHttpResponse
+
+    reauthorization(reauthorizationInput: ReauthorizationInput): GraphqlHttpResponse
 }
