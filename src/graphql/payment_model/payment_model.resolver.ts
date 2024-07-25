@@ -162,7 +162,7 @@ export class PaymentModelResolver {
             if (response.status === 1) {
                 console.log("-> response", response);
 
-                if ((submitItem.payTotal) != response.price) {
+                if ((pay) != response.price) {
                     //cancelPayment
                     await this.paymentModelService.cancelPayment(response.receipt_id);
                     throw new HttpException("결제 금액이 일치하지 않습니다.", 404);
