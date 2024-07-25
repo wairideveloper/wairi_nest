@@ -99,6 +99,9 @@ export class PaymentModelResolver {
                 //nights 를 minDays 로 나눠 개수
                 let count = Math.floor(nights / minDays);
                 pay = pay * count;
+            }else{
+                let finalPrice = paymentItemInput.price;
+                pay = finalPrice;
             }
 
             //재고 체크
