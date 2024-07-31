@@ -426,7 +426,7 @@ export class AuthQlModelService {
               };
             default:
               return {
-                message: `이미 등록된 일반계정 아이디: ${checkUnique.id} 계정입니다.`,
+                message: `${checkUnique.id}`,
               };
           }
         }
