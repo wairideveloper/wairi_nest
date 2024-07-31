@@ -94,7 +94,7 @@ type identityVerificationResponse{
     data: identityVerificationData
 }
 type identityVerificationV2Response{
-    status: String!
+    status: String
     code: String
     message: String
     data: identityVerificationDataV2
