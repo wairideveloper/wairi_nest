@@ -406,29 +406,32 @@ export class AuthQlModelService {
       console.log(data.authenticate_data['di']);
       if (data) {
         let checkUnique = await this.memberService.checkUnique(data.authenticate_data.unique);
-        if (checkUnique) {
-          switch (checkUnique.social_type) {
-            case 1:
-              return {
-                message: '이미 등록된 카카오 계정입니다.',
-              };
-            case 2:
-              return {
-                message: '이미 등록된 네이버 계정입니다.',
-              };
-            case 3:
-              return {
-                message: '이미 등록된 구글 계정입니다.',
-              };
-            case 4:
-              return {
-                message: '이미 등록된 애플 계정입니다.',
-              };
-            default:
-              return {
-                message: `${checkUnique.id}`,
-              };
-          }
+        // if (checkUnique) {
+        //   switch (checkUnique.social_type) {
+        //     case 1:
+        //       return {
+        //         message: '이미 등록된 카카오 계정입니다.',
+        //       };
+        //     case 2:
+        //       return {
+        //         message: '이미 등록된 네이버 계정입니다.',
+        //       };
+        //     case 3:
+        //       return {
+        //         message: '이미 등록된 구글 계정입니다.',
+        //       };
+        //     case 4:
+        //       return {
+        //         message: '이미 등록된 애플 계정입니다.',
+        //       };
+        //     default:
+        //       return {
+        //         message: `${checkUnique.id}`,
+        //       };
+        //   }
+        // }
+        if(checkUnique){
+          throw new HttpException('이미 등록된 본인인증 정보입니다.', 404);
         }
 
         const update = await this.memberService.updateUnique(
