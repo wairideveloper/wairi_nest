@@ -12,6 +12,12 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  // @Get()
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
+
+
   //Static 이미지 접근경로
   @Get('/images/:path/:fileId')
   async getImage(@Param('path') path,

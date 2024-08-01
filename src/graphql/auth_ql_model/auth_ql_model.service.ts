@@ -409,25 +409,15 @@ export class AuthQlModelService {
         // if (checkUnique) {
         //   switch (checkUnique.social_type) {
         //     case 1:
-        //       return {
-        //         message: '이미 등록된 카카오 계정입니다.',
-        //       };
+        //       throw new HttpException('이미 등록된 카카오 계정입니다.', 404);
         //     case 2:
-        //       return {
-        //         message: '이미 등록된 네이버 계정입니다.',
-        //       };
+        //       throw new HttpException('이미 등록된 네이버 계정입니다.', 404);
         //     case 3:
-        //       return {
-        //         message: '이미 등록된 구글 계정입니다.',
-        //       };
+        //       throw new HttpException('이미 등록된 구글 계정입니다.', 404);
         //     case 4:
-        //       return {
-        //         message: '이미 등록된 애플 계정입니다.',
-        //       };
+        //       throw new HttpException('이미 등록된 애플 계정입니다.', 404);
         //     default:
-        //       return {
-        //         message: `${checkUnique.id}`,
-        //       };
+        //       throw new HttpException(`${checkUnique.id}`, 404);
         //   }
         // }
         if(checkUnique){
@@ -441,6 +431,8 @@ export class AuthQlModelService {
           data.authenticate_data.phone,
           data.authenticate_data.name,
         );
+
+        console.log("=>(auth_ql_model.service.ts:446) data", data);
 
         return {
           message: '본인인증 성공',
@@ -841,17 +833,22 @@ export class AuthQlModelService {
 
   async withdrawal(data: { reason: string; memberIdx: number }) {
     try {
+      //delete
       const withdrawal = await this.memberRepository.createQueryBuilder()
-        .update()
-        .set(
-          {
-            withdrawal: data.reason,
-            status: -9,
-            exitdate: getNowUnix().toString(),
-          },
-        )
+        .delete()
+        .from(Member)
         .where('idx = :idx', { idx: data.memberIdx })
         .execute();
+        // .update()
+        // .set(
+        //   {
+        //     withdrawal: data.reason,
+        //     status: -9,
+        //     exitdate: getNowUnix().toString(),
+        //   },
+        // )
+        // .where('idx = :idx', { idx: data.memberIdx })
+        // .execute();
 
       if (withdrawal) {
         return {
