@@ -386,6 +386,33 @@ export class MemberResolver {
         }
     }
 
+    @Mutation('updateIsReadAll')
+    @UseGuards(GqlAuthGuard)
+    async updateIsReadAll(
+      @AuthUser() authUser: Member,
+      @Args('idx', {type: () => Int}) idx: number,
+    ) {
+        try {
+            const data = {
+                memberIdx: authUser.idx,
+            }
+            const result = await this.membersService.updateIsReadAll(data);
+            if (result.affected > 0) {
+                return {
+                    code: 200,
+                    message: '읽음 처리 성공',
+                }
+            } else {
+                return {
+                    code: 500,
+                    message: '읽음 처리 실패',
+                }
+            }
+        } catch (error) {
+            throw new HttpException(error.message, 500);
+        }
+    }
+
     @Mutation('updateNotificationSetting')
     @UseGuards(GqlAuthGuard)
     async updateNotificationSetting(

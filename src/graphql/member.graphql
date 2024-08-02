@@ -137,6 +137,7 @@ extend type Mutation {
     deleteMemberChannel(channelIdx: Int!):setMemberChannelResponse
     updateNotificationSetting(event: Boolean, action: Boolean, night: Boolean, agree: Boolean, device_id: String): GraphqlHttpResponse
     updateIsRead(idx: Int!): GraphqlHttpResponse
+    updateIsReadAll: GraphqlHttpResponse
 
     reauthorization(reauthorizationInput: ReauthorizationInput): GraphqlHttpResponse
 }

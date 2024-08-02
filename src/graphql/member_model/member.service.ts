@@ -862,4 +862,19 @@ export class MembersService {
             throw new HttpException(e.message, e.status);
         }
     }
+
+    async updateIsReadAll(data: {memberIdx: number}) {
+        console.log("=>(member.service.ts:713) data", data);
+        try{
+            return await this.pushLogRepository
+              .createQueryBuilder()
+              .update()
+              .set({isRead: true})
+              .where('memberIdx = :memberIdx', {memberIdx: data.memberIdx})
+              .execute();
+
+        }catch (e){
+            throw new HttpException(e.message, e.status);
+        }
+    }
 }
