@@ -1452,9 +1452,6 @@ export class CampaignService {
             'campaign.approvalMethod as approvalMethod',
             'campaign.grade as grade',
             'campaign.regdate as regdate',
-            // case when campaignItem.priceDeposit > 0 then campaignItem.priceDeposit else ROUND(CAST(campaignItem.priceOrig * campaignItem.dc11 / 100 AS UNSIGNED), -2) end as lowestPriceDeposit,
-            // 'min(campaignItem.priceOrig) as lowestPriceOrig',
-            // 'case when min(campaignItem.priceDeposit) > 0 then campaignItem.priceDeposit else campaignItem.priceOrig end as lowestPriceOrig',
             'min(campaignItem.calcType1) as lowestPriceCalcType1',
             'min(campaignItem.calcType2) as lowestPriceCalcType2',
             'min(campaignItem.sellType) as lowestPriceSellType',
@@ -1523,6 +1520,8 @@ export class CampaignService {
         if(start && end){
             query.andWhere('campaignItemSchedule.date >= :start', {start: start})
             query.andWhere('campaignItemSchedule.date <= :end', {end: end})
+            //stock > 0
+            query.andWhere('campaignItemSchedule.stock > 0')
         }
 
         switch (sort){
@@ -1537,8 +1536,6 @@ export class CampaignService {
                 break;
         }
 
-        // query.orderBy('campaign.idx', 'DESC')
-        // query.addOrderBy('campaign.weight', 'DESC')
         query.groupBy('campaign.idx')
         query.offset(take * (page - 1))
         query.limit(take)

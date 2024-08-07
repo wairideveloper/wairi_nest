@@ -81,6 +81,8 @@ import {EmailTemplate} from "../entity/entities/EmailTemplate";
 import { DeviceModelModule } from './graphql/device_model/device_model.module';
 import {PushLog} from "../entity/entities/PushLog";
 import {MemberChannelLog} from "../entity/entities/MemberChannelLog";
+import { ShortLinkModule } from './short_link/short_link.module';
+import { ShortLink } from '../entity/entities/ShortLink';
 @Module({
     imports: [
         CacheModule.register(),
@@ -104,7 +106,7 @@ import {MemberChannelLog} from "../entity/entities/MemberChannelLog";
                 Config, Banner, Cate, CateArea, CampaignSubmit, CampaignFav,
                 Payment, Popup, Withdrawal, CampaignReviewImage, Admin, NotificationTalk,
                 EmailTemplate,NotificationTalkCallBack,CampaignSubmitBackup, MemberDevice,
-                PushLog, MemberChannelLog
+                PushLog, MemberChannelLog, ShortLink
             ],
             synchronize: false,
             charset: 'utf8mb4',
@@ -230,7 +232,8 @@ import {MemberChannelLog} from "../entity/entities/MemberChannelLog";
         LogModelModule,
         SchedulerModule,
         EmailModule,
-        DeviceModelModule
+        DeviceModelModule,
+        ShortLinkModule
     ],
     controllers: [AppController],
     providers: [
