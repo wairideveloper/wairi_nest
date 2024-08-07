@@ -39,6 +39,18 @@ export class ShortLinkService {
       }
 
       //shortLink 생성
+      const newShortLink = this.shortLinkRepository.create({
+        memberIdx: data.memberIdx,
+        code: data.code,
+        returnUrl: data.returnUrl,
+        count: 0, // 초기 카운트를 0으로 설정
+        created_at: new Date().toISOString(),
+      });
+  
+      // 데이터베이스에 저장
+      const savedShortLink = await this.shortLinkRepository.save(newShortLink);
+  
+      return savedShortLink;
 
     }catch (e){
       throw new HttpException(e.message, e.status);
