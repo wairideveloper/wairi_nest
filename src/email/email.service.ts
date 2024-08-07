@@ -86,7 +86,7 @@ export class EmailService {
 
     private async emailList(partner: Partner, campaignIdx: any = null) {
         console.log("=>(email.service.ts:83) campaignIdx", campaignIdx);
-        const emailList = [];
+        let emailList = [];
         if (partner.contactEmail) {
             // 담당자 연락처
             emailList.push(partner.contactEmail);
@@ -117,7 +117,8 @@ console.log("=>(email.service.ts:101) emailList", emailList);
             }
         }
         // 중복 제거
-        emailList.filter((item, index) => emailList.indexOf(item) === index);
+        emailList = Array.from(new Set(emailList));
+        // emailList.filter((item, index) => emailList.indexOf(item) === index);
         return emailList;
     }
 
