@@ -410,14 +410,19 @@ export class AuthQlModelService {
           switch (checkUnique.social_type) {
             case 1:
               throw new HttpException('이미 등록된 카카오 계정입니다.', 404);
+              break;
             case 2:
               throw new HttpException('이미 등록된 네이버 계정입니다.', 404);
+              break;
             case 3:
               throw new HttpException('이미 등록된 구글 계정입니다.', 404);
+              break;
             case 4:
               throw new HttpException('이미 등록된 애플 계정입니다.', 404);
+              break;
             default:
               throw new HttpException(`${checkUnique.id}`, 404);
+              break;
           }
         }
         // if(checkUnique){
