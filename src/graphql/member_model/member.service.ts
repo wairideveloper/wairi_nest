@@ -469,11 +469,12 @@ export class MembersService {
     }
 
     async checkUnique(unique: any) {
-        return await this.memberRepository
+        let data =  await this.memberRepository
             .createQueryBuilder()
             .select('*')
             .where('ci = :unique', {unique: unique})
             .getRawOne();
+        return bufferToString(data);
     }
 
     async checkUniqueFindId(unique: any, phone, name) {

@@ -404,25 +404,24 @@ export class AuthQlModelService {
       const data = await Bootpay.certificate(receipt_id);
       console.log('=>(auth_ql_model.service.ts:316) data', data);
       console.log(data.authenticate_data['di']);
+
+     // let data = 'U6ZuXhp3+5jXYfFuI28RAHl9zR22edN0S+vAFTVc8FoR/SK6bgKXceLjAlFjymZtOVpbamDZMAtNlGwCZy6HzQ=='
       if (data) {
         let checkUnique = await this.memberService.checkUnique(data.authenticate_data.unique);
+        // let checkUnique = await this.memberService.checkUnique(data);
+        console.log("=>(auth_ql_model.service.ts:409) checkUnique", checkUnique);
         if (checkUnique) {
           switch (checkUnique.social_type) {
-            case 1:
+            case '1':
               throw new HttpException('이미 등록된 카카오 계정입니다.', 404);
-              break;
-            case 2:
+            case '2':
               throw new HttpException('이미 등록된 네이버 계정입니다.', 404);
-              break;
-            case 3:
+            case '3':
               throw new HttpException('이미 등록된 구글 계정입니다.', 404);
-              break;
-            case 4:
+            case '4':
               throw new HttpException('이미 등록된 애플 계정입니다.', 404);
-              break;
             default:
               throw new HttpException(`${checkUnique.id}`, 404);
-              break;
           }
         }
         // if(checkUnique){
