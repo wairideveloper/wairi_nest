@@ -3,14 +3,14 @@ import { ShortLink } from '../../entity/entities/ShortLink';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { getNowYmdHis } from '../util/common';
+import {AuthUser} from "../auth/auth-user.decorator";
 
 @Injectable()
 export class ShortLinkService {
   constructor(
     @InjectRepository(ShortLink)
     private readonly shortLinkRepository: Repository<ShortLink>,
-  ) {
-  }
+  ) {}
 
   async getTest() {
     try {
@@ -30,21 +30,26 @@ export class ShortLinkService {
     }
   }
 
-  async createShortLink(data: any) {
+  async createShortLink(
+    originalUrl: string,
+    memberIdx: number,
+  ): Promise<ShortLink>  {
     try{
       // shortLink 중복체크
-      const shortLink = await this.shortLinkRepository.findOne({ where: { code: data.code } });
-      if(shortLink){
-        return shortLink;
-      }
+      // const shortLink = await this.shortLinkRepository.findOne({ where: { code: data.code } });
+      // if(shortLink){
+      //   return shortLink;
+      // }
 
-      //shortLink 생성
+       // shortLink 생성
+      const shortUrl = await this.createRandomString();
+     
       const newShortLink = this.shortLinkRepository.create({
-        memberIdx: data.memberIdx,
-        code: data.code,
-        returnUrl: data.returnUrl,
-        count: 0, // 초기 카운트를 0으로 설정
-        created_at: new Date().toISOString(),
+        memberIdx,
+        code: shortUrl ,
+        returnUrl: originalUrl,
+        count: 0, 
+        created_at: getNowYmdHis(),
       });
   
       // 데이터베이스에 저장

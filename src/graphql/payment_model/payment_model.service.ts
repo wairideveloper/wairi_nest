@@ -1,7 +1,7 @@
 import {HttpException, Injectable} from '@nestjs/common';
 import {Bootpay} from "@bootpay/backend-js";
 import * as process from 'process';
-import {ReceiptResponseParameters} from "@bootpay/backend-js/lib/response";
+import {ReceiptResponseParameters} from "@bootpay/backend-js";
 import {getUnixTimeStamp} from "../../util/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Payment} from "../../../entity/entities/Payment";

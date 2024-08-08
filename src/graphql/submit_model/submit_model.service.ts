@@ -13,7 +13,7 @@ import {
     FROM_UNIXTIME2,
     getUnixTimeStamp
 } from "../../util/common";
-import {ReceiptResponseParameters} from '@bootpay/backend-js/lib/response';
+import {ReceiptResponseParameters} from '@bootpay/backend-js';
 import {Campaign} from "../../../entity/entities/Campaign";
 import {CampaignItem} from "../../../entity/entities/CampaignItem";
 import {Partner} from "../../../entity/entities/Partner";

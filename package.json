@@ -27,7 +27,7 @@
     "@arendajaelu/nestjs-passport-apple": "^2.0.1",
     "@aws-sdk/client-s3": "^3.413.0",
     "@aws-sdk/s3-request-presigner": "^3.441.0",
-    "@bootpay/backend-js": "^2.1.8",
+    "@bootpay/backend-js": "^2.3.2",
     "@bootpay/server-rest-client": "^1.0.9",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/apollo": "^12.0.7",
@@ -75,7 +75,7 @@
     "rxjs": "^7.2.0",
     "typeorm": "^0.3.15",
     "typeorm-encrypted": "^0.8.0",
-    "typeorm-model-generator": "^0.2.1",
+    "typeorm-model-generator": "^0.4.6",
     "winston": "^3.10.0",
     "winston-daily-rotate-file": "^4.7.1",
     "ws": "^8.13.0"

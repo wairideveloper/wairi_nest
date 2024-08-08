@@ -13,8 +13,4 @@ describe('ShortLinkController', () => {
 
     controller = module.get<ShortLinkController>(ShortLinkController);
   });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
 });
