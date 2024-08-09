@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { getNowYmdHis } from '../util/common';
 import {AuthUser} from "../auth/auth-user.decorator";
+import { Member } from 'entity/entities/Member';
 
 @Injectable()
 export class ShortLinkService {
   constructor(
     @InjectRepository(ShortLink)
     private readonly shortLinkRepository: Repository<ShortLink>,
+    // private readonly memberRepository: Repository<Member>
   ) {}
 
   async getTest() {
@@ -60,6 +62,11 @@ export class ShortLinkService {
     }catch (e){
       throw new HttpException(e.message, e.status);
     }
+  }
+
+  // 숏링크 입력시 원래 url리턴
+  async findByCode(code: string): Promise<ShortLink | undefined> {
+    return this.shortLinkRepository.findOne({ where: { code } });
   }
 
   //20자리 난수 생성

@@ -150,7 +150,8 @@ import { ShortLink } from '../entity/entities/ShortLink';
                 SubmitModelModule,
                 ReviewModelModule,
                 ApiplexModule,
-                DeviceModelModule
+                DeviceModelModule,
+                ShortLinkModule
                 // ApiplexModule2
             ],
             typePaths: ['./**/*.graphql'],

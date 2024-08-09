@@ -1,10 +1,17 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Res, HttpException, HttpStatus, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Response } from 'express';
 import { ShortLinkService } from './short_link.service';
 import { AuthUser } from "../auth/auth-user.decorator";
+import { Member } from '../../entity/entities/Member';
+import { MembersService } from '../members/members.service';
+import { GqlAuthGuard } from 'src/auth/GqlAuthGuard';
 
 @Controller('short-link')
 export class ShortLinkController {
-  constructor(private readonly shortLinkService: ShortLinkService) {}
+  constructor(
+    private readonly shortLinkService: ShortLinkService,
+    private readonly membersService: MembersService,
+  ) {}
 
   @Get()
   async getTest() {
@@ -12,24 +19,26 @@ export class ShortLinkController {
   }
 
   @Post()
+  @UseGuards(GqlAuthGuard)
   async createShortLink(
     @Body('url') url: string,
-    @AuthUser() user: any, 
+    @AuthUser() user: Member,
   ): Promise<any> {
-    const memberIdx = user.id; // 사용자 ID 추출
-    const allianceid = '3419652';
-    const sid = '16519959';  
+    
+    const memberIdx = user.idx;
+    // const memberIdx = 608;
 
-    if (!memberIdx) {
-      throw new Error('User ID is not existed');
-    }
+    // MemberService를 사용하여 idx에 해당하는 Member 조회
+    const memberid = await this.membersService.findIdByIdx(memberIdx);  
+    const allianceid = '3419652';
+    const sid = '16519959';    
 
     // originalUrl에 파라미터 추가
-    const originalUrlWithParams = `${url}?allianceid=${allianceid}&sid=${sid}&memberid=${memberIdx}`;
+    const originalUrlWithParams = `${url}?allianceid=${allianceid}&sid=${sid}&memberid=${memberid}`;
 
     // 서비스 호출
     const shortLink = await this.shortLinkService.createShortLink(originalUrlWithParams, memberIdx);
-    // return { shortUrl: shortLink.code }; // shortUrl 대신 code를 반환
+
     return {
       message: 'Short link created successfully',
       shortUrl: shortLink.code, // 생성된 숏링크 코드
@@ -38,11 +47,19 @@ export class ShortLinkController {
 
   }
 
+  @Get(':code')
+  async redirectToOriginalUrl(
+    @Param('code') code: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const shortLink = await this.shortLinkService.findByCode(code);
+
+    if (!shortLink) {
+      res.status(404).send('Short link not found');
+      console.log("shortLink 없음");
+      return;
+    }
+
+    res.redirect(shortLink.returnUrl);
+  }
 }
-
-  // 트립 상품 링크 입력받아 ?allianceid=''sid=''&ouid={회원아이디} & 추가 파라미터 확인, 숏링크 생성  DB 저장 후 리턴
-
-  // 숏링크 입력받아 원래 URL 리턴 (DB 조회) 테스트용 - 추후 삭제 (실 구현은 wairi.co.kr/shortLink/{숏링크} 도메인에서 처리)
-
-  // wairi.co.kr/index/shortLink/난수
-  // ouid(회원아이디) : jwt토큰 풀어서 해당 회원 idx찾아서 아이디를 찾아와서 붙이기

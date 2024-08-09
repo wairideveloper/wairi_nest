@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {CreateMemberDto} from './dto/create-member.dto';
 import {UpdateMemberDto} from './dto/update-member.dto';
 import {Member} from '../../entity/entities/Member';
@@ -137,5 +137,31 @@ export class MembersService {
             .andWhere(`${socialType} = :id`, {id: id})
             .getRawOne();
 
+    }
+
+    async findIdByIdx(idx: number): Promise<string> {
+
+    console.log(`Attempting to find member with idx: ${idx}`);
+    try {
+        const member = await this.memberRepository.findOneBy({ idx });
+        console.log(`Query result:`, member);
+        
+        if (!member) {
+            console.log(`Member not found for idx: ${idx}`);
+            throw new NotFoundException(`Member with idx ${idx} not found`);
+        }
+        
+        console.log(`Returning id for member:`, member.id);
+        return member.id;
+    } catch (error) {
+        console.error(`Error in findIdByIdx:`, error);
+        throw error;
+    }
+
+        // const member = await this.memberRepository.findOne({where: { idx }});
+        // if (!member) {
+        //     throw new NotFoundException(`Member with idx ${idx} not found`);
+        // }
+        // return member.id;
     }
 }
